@@ -55,6 +55,8 @@ export interface InvitationData {
   timeline: TimelineItem[];
   themeAccentColor?: string;
   coverMusicTrack?: string;
+  customVideoUrl?: string;
+  customImageUrl?: string;
   createdAt: string;
   updatedAt: string;
 }

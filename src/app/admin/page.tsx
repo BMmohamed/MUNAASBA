@@ -20,7 +20,9 @@ import {
   Volume2,
   Share2,
   ShieldCheck,
-  ChevronLeft
+  ChevronLeft,
+  Video,
+  Image as ImageIcon
 } from 'lucide-react';
 import { InvitationData, InvitationTemplateId, TimelineItem } from '@/types/invitation';
 import { QURANIC_AND_POETIC_PRESETS } from '@/lib/constants';
@@ -895,7 +897,46 @@ export default function AdminDashboardPage() {
                 )}
               </div>
 
-              {/* 8. Event Timeline Items Manager */}
+              {/* 8. Background Media Customization (AI Image / Slow-Motion Loop Video) */}
+              <div className="p-4 rounded-2xl bg-neutral-950/70 border border-neutral-800 space-y-3">
+                <div className="text-xs font-bold text-amber-300 font-cairo flex items-center gap-1.5">
+                  <Video className="w-4 h-4" />
+                  <span>خلفية كرت الدعوة (فيديو سلو موشن أو صورة ذكاء اصطناعي)</span>
+                </div>
+                <p className="text-[11px] text-neutral-400 font-tajawal">
+                  يتم تطبيق فيديو سلو موشن سلس وصورة ذكاء اصطناعي مخصصة افتراضياً لكل قالب مع تدرج حماية للقراءة. يمكنك تخصيص الرابط إذا رغبت:
+                </p>
+
+                <div className="space-y-2">
+                  <div>
+                    <label className="block text-[11px] text-neutral-300 mb-1">
+                      رابط فيديو سلو موشن لوب (MP4 / WebM):
+                    </label>
+                    <input
+                      type="text"
+                      value={editingInv.customVideoUrl || ''}
+                      onChange={(e) => setEditingInv({ ...editingInv, customVideoUrl: e.target.value })}
+                      placeholder="https://...mp4 (اتركه فارغاً للاعتماد على فيديو القالب السلس الافتراضي)"
+                      className="w-full px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-800 text-xs text-neutral-200 font-mono focus:outline-none focus:border-amber-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] text-neutral-300 mb-1">
+                      رابط صورة الذكاء الاصطناعي البديلة (Poster Image):
+                    </label>
+                    <input
+                      type="text"
+                      value={editingInv.customImageUrl || ''}
+                      onChange={(e) => setEditingInv({ ...editingInv, customImageUrl: e.target.value })}
+                      placeholder="/images/backgrounds/bg_classic_arch.jpg (أو رابط خارجي)"
+                      className="w-full px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-800 text-xs text-neutral-200 font-mono focus:outline-none focus:border-amber-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* 9. Event Timeline Items Manager */}
               <div className="p-4 rounded-2xl bg-neutral-950/70 border border-neutral-800 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-amber-300 font-cairo">

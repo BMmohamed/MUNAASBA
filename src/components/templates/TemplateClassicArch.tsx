@@ -4,6 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { InvitationData } from '@/types/invitation';
 import { BismillahCalligraphy, GoldFlourishDivider, MashrabiyaWatermark, AmbientParticles } from '../common/CalligraphyDecorations';
+import { BackgroundMediaLayer } from '../invitation/BackgroundMediaLayer';
 import { CountdownTimer } from '../invitation/CountdownTimer';
 import { RsvpButton } from '../invitation/RsvpButton';
 import { CalendarButtons } from '../invitation/CalendarButtons';
@@ -19,22 +20,27 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ 
   const dateFormatted = formatArabicDateDisplay(invitation.eventDate);
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-[#041a14] via-[#082a20] to-[#03130e] text-neutral-100 overflow-hidden font-cairo">
-      {/* Background Watermark & Floating Ambient Sparkles */}
-      <MashrabiyaWatermark opacity={0.06} color="#d4af37" />
-      <AmbientParticles count={16} color="#e5c158" />
+    <div className="relative min-h-screen text-neutral-100 overflow-hidden font-cairo">
+      
+      {/* Slow-Motion Ambient Loop Video & AI Image Layer */}
+      <BackgroundMediaLayer
+        templateId="template-1"
+        customVideoUrl={invitation.customVideoUrl}
+        customImageUrl={invitation.customImageUrl}
+      />
 
-      {/* Decorative Gold Radial Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+      {/* Decorative Overlays */}
+      <MashrabiyaWatermark opacity={0.08} color="#d4af37" />
+      <AmbientParticles count={16} color="#e5c158" />
 
       {/* Main Invitation Container */}
       <div className="relative max-w-lg mx-auto px-4 py-8 sm:py-12 z-10">
         
-        {/* Exterior Classic Arch Border Frame */}
-        <div className="relative border-2 border-amber-500/40 rounded-t-[160px] rounded-b-3xl p-4 sm:p-7 bg-[#052119]/85 backdrop-blur-md shadow-2xl shadow-emerald-950/60">
+        {/* Exterior Classic Arch Border Frame - High Contrast Deep Royal Emerald */}
+        <div className="relative border-2 border-amber-400/60 rounded-t-[160px] rounded-b-3xl p-4 sm:p-7 bg-[#021812]/92 backdrop-blur-xl shadow-2xl shadow-black/80">
           
           {/* Inner Golden Hairline Arch */}
-          <div className="relative border border-amber-400/30 rounded-t-[145px] rounded-b-2xl p-4 sm:p-6 text-center">
+          <div className="relative border border-amber-400/40 rounded-t-[145px] rounded-b-2xl p-4 sm:p-6 text-center">
 
             {/* Arch Crown Finial Ornament */}
             <motion.div
@@ -55,22 +61,22 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ 
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.1 }}
             >
-              <BismillahCalligraphy color="#e5c158" className="w-56 h-auto mx-auto my-2" />
+              <BismillahCalligraphy color="#fde047" className="w-60 h-auto mx-auto my-2 drop-shadow-md" />
             </motion.div>
 
-            {/* Quranic Verse */}
+            {/* Quranic Verse - Sharp Contrast */}
             {invitation.headerVerse && (
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="my-5 px-3 py-3 rounded-xl bg-amber-500/5 border border-amber-400/20"
+                className="my-5 px-4 py-3.5 rounded-xl bg-black/40 border border-amber-400/30 shadow-inner"
               >
-                <p className="text-xs sm:text-sm font-amiri leading-loose text-amber-100/90 italic">
+                <p className="text-xs sm:text-sm font-amiri leading-loose text-amber-100 font-bold italic text-contrast-dark">
                   &ldquo;{invitation.headerVerse}&rdquo;
                 </p>
                 {invitation.verseSource && (
-                  <span className="block text-[11px] font-tajawal text-amber-400/70 mt-1">
+                  <span className="block text-[11px] font-tajawal text-amber-300 font-semibold mt-1">
                     [{invitation.verseSource}]
                   </span>
                 )}
@@ -79,21 +85,21 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ 
 
             <GoldFlourishDivider color="#d4af37" className="w-36 h-5 mx-auto my-3" />
 
-            {/* Parents / Families Welcome Announcement */}
+            {/* Parents Announcement - Crisp White Text for 100% Readability */}
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
-              className="my-4 space-y-2"
+              className="my-4 space-y-2 text-contrast-dark"
             >
-              <p className="text-xs sm:text-sm font-tajawal text-amber-200/90 leading-relaxed">
+              <p className="text-xs sm:text-sm font-tajawal text-white font-semibold leading-relaxed">
                 {invitation.groomParents}
               </p>
-              <span className="inline-block text-xs text-amber-400 font-bold">مع</span>
-              <p className="text-xs sm:text-sm font-tajawal text-amber-200/90 leading-relaxed">
+              <span className="inline-block text-xs text-amber-300 font-bold">• مع •</span>
+              <p className="text-xs sm:text-sm font-tajawal text-white font-semibold leading-relaxed">
                 {invitation.brideParents}
               </p>
-              <p className="text-xs text-neutral-300 font-tajawal mt-2">
+              <p className="text-xs text-amber-100/90 font-tajawal mt-2 font-medium">
                 {invitation.welcomeMessage}
               </p>
             </motion.div>
@@ -105,28 +111,28 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ 
               transition={{ duration: 0.7, delay: 0.4 }}
               className="my-5"
             >
-              <div className="inline-flex items-center gap-2 px-5 py-1.5 rounded-full bg-gradient-to-r from-amber-500/20 via-amber-400/30 to-amber-500/20 border border-amber-400/40 text-amber-200 text-xs sm:text-sm font-bold tracking-wide">
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <div className="inline-flex items-center gap-2 px-5 py-1.5 rounded-full bg-gradient-to-r from-amber-500/30 via-amber-400/40 to-amber-500/30 border border-amber-400/50 text-amber-100 text-xs sm:text-sm font-bold tracking-wide shadow-md">
+                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
                 <span>{invitation.eventTitle}</span>
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
               </div>
             </motion.div>
 
-            {/* Groom & Bride Names - Royal Arabic Calligraphy typography */}
+            {/* Groom & Bride Names - Royal Gold Calligraphy */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
-              className="my-6 py-4 border-y border-amber-500/20 bg-neutral-950/30 rounded-2xl"
+              className="my-6 py-5 border-y border-amber-400/30 bg-black/50 rounded-2xl shadow-inner"
             >
               <div className="flex flex-col items-center justify-center gap-1">
-                <h1 className="text-3xl sm:text-4xl font-bold font-ruqaa text-amber-300 gold-text-shimmer drop-shadow-md">
+                <h1 className="text-3xl sm:text-5xl font-bold font-ruqaa text-amber-200 gold-text-shimmer drop-shadow-lg">
                   {invitation.groomName}
                 </h1>
-                <div className="w-10 h-10 my-1 rounded-full border border-amber-400/40 flex items-center justify-center text-amber-300 font-amiri text-lg font-bold bg-[#041a14]">
+                <div className="w-10 h-10 my-1 rounded-full border border-amber-400/50 flex items-center justify-center text-amber-200 font-amiri text-xl font-bold bg-[#021812] shadow-md">
                   &
                 </div>
-                <h2 className="text-3xl sm:text-4xl font-bold font-ruqaa text-amber-300 gold-text-shimmer drop-shadow-md">
+                <h2 className="text-3xl sm:text-5xl font-bold font-ruqaa text-amber-200 gold-text-shimmer drop-shadow-lg">
                   {invitation.brideName}
                 </h2>
               </div>
@@ -137,15 +143,15 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ 
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
-              className="my-5 p-4 rounded-2xl bg-neutral-900/60 border border-amber-500/30 text-center"
+              className="my-5 p-4 rounded-2xl bg-black/60 border border-amber-400/40 text-center shadow-lg"
             >
-              <div className="text-amber-300 font-bold font-cairo text-lg mb-1">
+              <div className="text-amber-200 font-bold font-cairo text-lg mb-1 drop-shadow-sm">
                 يوم {invitation.dayOfWeek}
               </div>
-              <div className="text-sm font-tajawal text-neutral-200">
+              <div className="text-sm font-tajawal text-white font-semibold">
                 {dateFormatted.dayNumber} {dateFormatted.monthName} {dateFormatted.year} م
               </div>
-              <div className="text-xs text-amber-400/80 font-tajawal mt-0.5">
+              <div className="text-xs text-amber-300 font-tajawal mt-0.5 font-medium">
                 الموافق {invitation.eventDateHijri}
               </div>
               <div className="text-xs font-bold text-amber-200 mt-2 font-cairo">
@@ -188,7 +194,7 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ 
 
             {/* Dress Code Notice */}
             {invitation.toggles.showDressCode && (
-              <div className="my-5 p-3 rounded-xl bg-neutral-900/50 border border-amber-500/20 flex items-center justify-center gap-2 text-xs font-tajawal text-neutral-300 max-w-sm mx-auto">
+              <div className="my-5 p-3 rounded-xl bg-black/50 border border-amber-400/30 flex items-center justify-center gap-2 text-xs font-tajawal text-neutral-200 max-w-sm mx-auto">
                 <Shirt className="w-4 h-4 text-amber-400 shrink-0" />
                 <span>{invitation.toggles.dressCodeText}</span>
               </div>
@@ -204,7 +210,7 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ 
 
             {/* Single-tap RSVP Button with Device Locking */}
             {invitation.toggles.showRsvp && (
-              <div className="mt-8 pt-4 border-t border-amber-500/30">
+              <div className="mt-8 pt-4 border-t border-amber-400/40">
                 <RsvpButton
                   invitationId={invitation.id}
                   slug={invitation.slug}
@@ -225,10 +231,10 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ 
 
             {/* Footer Closing Gratitude */}
             <div className="mt-8 pt-4 border-t border-amber-500/20 text-center">
-              <p className="text-xs text-amber-300/80 font-amiri italic">
+              <p className="text-xs text-amber-200 font-amiri italic font-bold">
                 دامـت أفراحكم بالمسـرّات عامرـة
               </p>
-              <div className="text-[10px] text-neutral-500 mt-2 font-tajawal">
+              <div className="text-[10px] text-neutral-400 mt-2 font-tajawal">
                 منصة مناسبة • تصميم دعوات إلكترونية تفاعلية
               </div>
             </div>

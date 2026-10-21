@@ -9,13 +9,13 @@ export const DesktopFrameWrapper: React.FC<{ invitation: InvitationData }> = ({ 
   const [viewMode, setViewMode] = useState<'phone' | 'full'>('phone');
   const [showQr, setShowQr] = useState<boolean>(false);
 
-  // Background ambiance theme colors
+  // Background ambiance theme colors (deep luxury backdrop)
   const themeBg = {
-    'template-1': 'bg-[#03130e]',
-    'template-2': 'bg-[#f4efe8]',
-    'template-3': 'bg-[#fcedf0]',
+    'template-1': 'bg-[#020b08]',
+    'template-2': 'bg-[#08090a]',
+    'template-3': 'bg-[#0d0509]',
     'template-4': 'bg-[#03060c]',
-    'template-5': 'bg-[#eadaaa]',
+    'template-5': 'bg-[#0e0704]',
   }[invitation.templateId] || 'bg-neutral-950';
 
   const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(

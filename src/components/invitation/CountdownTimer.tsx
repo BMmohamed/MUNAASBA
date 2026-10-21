@@ -44,32 +44,32 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
     );
   }
 
-  // Theme-specific styles
+  // Theme-specific styles (All optimized for crystal-clear contrast)
   const themeStyles = {
     gold: {
-      box: 'bg-neutral-900/80 border-amber-500/40 text-amber-200 shadow-lg shadow-amber-950/20',
-      label: 'text-amber-300/80',
-      accent: 'text-amber-100',
+      box: 'bg-black/60 border-amber-400/50 text-amber-200 shadow-lg shadow-black/40',
+      label: 'text-amber-300 font-bold',
+      accent: 'text-amber-100 font-extrabold',
     },
     minimal: {
-      box: 'bg-stone-50 border-stone-200 text-stone-800 shadow-sm',
-      label: 'text-stone-500',
-      accent: 'text-stone-900',
+      box: 'bg-black/60 border-stone-600/60 text-stone-100 shadow-lg shadow-black/40',
+      label: 'text-stone-300 font-bold',
+      accent: 'text-white font-extrabold',
     },
     floral: {
-      box: 'bg-white/90 border-rose-200 text-rose-950 shadow-md shadow-rose-100',
-      label: 'text-rose-700/80',
-      accent: 'text-rose-900',
+      box: 'bg-black/60 border-rose-400/50 text-rose-100 shadow-lg shadow-black/40',
+      label: 'text-rose-300 font-bold',
+      accent: 'text-rose-100 font-extrabold',
     },
     midnight: {
-      box: 'bg-slate-900/90 border-amber-400/40 text-amber-100 shadow-lg shadow-indigo-950/40',
-      label: 'text-amber-300/70',
-      accent: 'text-amber-200',
+      box: 'bg-black/60 border-amber-400/50 text-amber-100 shadow-lg shadow-black/40',
+      label: 'text-amber-300 font-bold',
+      accent: 'text-amber-100 font-extrabold',
     },
     heritage: {
-      box: 'bg-amber-950/70 border-amber-700/50 text-amber-100 shadow-md',
-      label: 'text-amber-300/80',
-      accent: 'text-amber-50',
+      box: 'bg-black/60 border-amber-600/50 text-amber-100 shadow-lg shadow-black/40',
+      label: 'text-amber-300 font-bold',
+      accent: 'text-amber-50 font-extrabold',
     },
   }[theme];
 

@@ -4,6 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { InvitationData } from '@/types/invitation';
 import { MashrabiyaWatermark, GoldFlourishDivider } from '../common/CalligraphyDecorations';
+import { BackgroundMediaLayer } from '../invitation/BackgroundMediaLayer';
 import { CountdownTimer } from '../invitation/CountdownTimer';
 import { RsvpButton } from '../invitation/RsvpButton';
 import { CalendarButtons } from '../invitation/CalendarButtons';
@@ -13,33 +14,40 @@ import { ChildrenAdvisory } from '../invitation/ChildrenAdvisory';
 import { ShareAction } from '../invitation/ShareAction';
 import { AmbientMusicPlayer } from '../invitation/AmbientMusicPlayer';
 import { formatArabicDateDisplay } from '@/lib/date-utils';
-import { Compass, Shirt } from 'lucide-react';
+import { Compass, Shirt, Sparkles } from 'lucide-react';
 
 export const TemplateHeritageTraditional: React.FC<{ invitation: InvitationData }> = ({ invitation }) => {
   const dateFormatted = formatArabicDateDisplay(invitation.eventDate);
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-[#fbf6ef] via-[#f7ebe0] to-[#ecd9c6] text-amber-950 font-cairo overflow-hidden">
+    <div className="relative min-h-screen text-amber-100 font-cairo overflow-hidden">
       
+      {/* Slow-Motion Video Loop & AI Background */}
+      <BackgroundMediaLayer
+        templateId="template-5"
+        customVideoUrl={invitation.customVideoUrl}
+        customImageUrl={invitation.customImageUrl}
+      />
+
       {/* Traditional Mashrabiya Background Watermark */}
-      <MashrabiyaWatermark opacity={0.07} color="#a0522d" />
+      <MashrabiyaWatermark opacity={0.08} color="#d4af37" />
 
       <div className="relative max-w-lg mx-auto px-4 py-8 sm:py-12 z-10">
         
-        {/* Heritage Terracotta & Sand Card */}
-        <div className="relative bg-[#fffdf9]/95 border-2 border-amber-800/30 rounded-3xl p-6 sm:p-9 shadow-2xl shadow-amber-900/10 backdrop-blur-md text-center">
+        {/* Heritage Terracotta & Dark Mahogany Card - High Contrast */}
+        <div className="relative bg-[#190c06]/92 border-2 border-amber-600/60 rounded-3xl p-6 sm:p-9 shadow-2xl shadow-black/90 backdrop-blur-xl text-center">
           
           {/* Traditional Geometric Border Accent */}
-          <div className="absolute inset-2 border border-dashed border-amber-700/20 rounded-2xl pointer-events-none" />
+          <div className="absolute inset-2 border border-dashed border-amber-600/30 rounded-2xl pointer-events-none" />
 
           {/* Heritage Emblem */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8 }}
-            className="w-14 h-14 mx-auto mb-3 rounded-full bg-amber-100 border border-amber-700/30 flex items-center justify-center text-amber-900 shadow-sm"
+            className="w-14 h-14 mx-auto mb-3 rounded-full bg-black/60 border-2 border-amber-600/60 flex items-center justify-center text-amber-300 shadow-md"
           >
-            <Compass className="w-7 h-7 text-amber-800" />
+            <Compass className="w-7 h-7 text-amber-300" />
           </motion.div>
 
           {/* Bismillah Calligraphy */}
@@ -47,47 +55,47 @@ export const TemplateHeritageTraditional: React.FC<{ invitation: InvitationData 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-amber-900 font-amiri text-lg font-bold tracking-wide my-2"
+            className="text-amber-200 font-amiri text-lg font-bold tracking-wide my-2 drop-shadow-md"
           >
             بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
           </motion.div>
 
-          {/* Poetic Line / Verse */}
+          {/* Poetic Line / Verse - High Contrast */}
           {invitation.headerVerse && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.2 }}
-              className="my-5 p-4 rounded-2xl bg-amber-50 border border-amber-700/20"
+              className="my-5 p-4 rounded-2xl bg-black/50 border border-amber-600/40 shadow-inner"
             >
-              <p className="text-xs sm:text-sm font-amiri text-amber-950 leading-relaxed italic whitespace-pre-line">
+              <p className="text-xs sm:text-sm font-amiri text-amber-100 font-bold leading-relaxed italic whitespace-pre-line text-contrast-dark">
                 &ldquo;{invitation.headerVerse}&rdquo;
               </p>
               {invitation.verseSource && (
-                <span className="text-[10px] text-amber-800 font-tajawal mt-1 block">
+                <span className="text-[10px] text-amber-300 font-tajawal font-semibold mt-1 block">
                   [{invitation.verseSource}]
                 </span>
               )}
             </motion.div>
           )}
 
-          <GoldFlourishDivider color="#a0522d" className="w-36 h-5 mx-auto my-3" />
+          <GoldFlourishDivider color="#d4af37" className="w-36 h-5 mx-auto my-3" />
 
-          {/* Parents Introduction */}
+          {/* Parents Introduction - Pure White for 100% Readability */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3 }}
-            className="my-4 space-y-1.5"
+            className="my-4 space-y-2 text-contrast-dark"
           >
-            <p className="text-xs font-tajawal text-amber-900 font-medium">
+            <p className="text-xs sm:text-sm font-tajawal text-white font-bold">
               {invitation.groomParents}
             </p>
-            <span className="text-xs text-amber-700 block font-bold">• مع •</span>
-            <p className="text-xs font-tajawal text-amber-900 font-medium">
+            <span className="text-xs text-amber-400 block font-bold">• مع •</span>
+            <p className="text-xs sm:text-sm font-tajawal text-white font-bold">
               {invitation.brideParents}
             </p>
-            <p className="text-xs text-amber-800/80 font-tajawal mt-2">
+            <p className="text-xs text-amber-200/90 font-tajawal mt-2 font-medium">
               {invitation.welcomeMessage}
             </p>
           </motion.div>
@@ -99,25 +107,27 @@ export const TemplateHeritageTraditional: React.FC<{ invitation: InvitationData 
             transition={{ duration: 0.6, delay: 0.4 }}
             className="my-4"
           >
-            <span className="inline-block px-5 py-1.5 rounded-full text-xs font-bold bg-amber-900 text-amber-50 shadow-sm">
-              {invitation.eventTitle}
+            <span className="inline-flex items-center gap-1.5 px-5 py-1.5 rounded-full text-xs font-bold bg-amber-600/30 text-amber-100 border border-amber-500/50 shadow-md">
+              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+              <span>{invitation.eventTitle}</span>
+              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
             </span>
           </motion.div>
 
-          {/* Couple Names in Heritage Arabic Calligraphy */}
+          {/* Couple Names in Heritage Arabic Calligraphy - Bright Amber Gold */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5 }}
-            className="my-6 py-5 rounded-2xl bg-amber-50/70 border border-amber-700/20"
+            className="my-6 py-5 rounded-2xl bg-black/40 border border-amber-600/40"
           >
-            <h1 className="text-3xl sm:text-4xl font-bold font-ruqaa text-amber-950">
+            <h1 className="text-3xl sm:text-5xl font-bold font-ruqaa text-amber-200 drop-shadow-lg">
               {invitation.groomName}
             </h1>
-            <div className="text-amber-700 font-amiri text-2xl font-bold my-1">
+            <div className="text-amber-300 font-amiri text-2xl font-bold my-1">
               &
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold font-ruqaa text-amber-950">
+            <h2 className="text-3xl sm:text-5xl font-bold font-ruqaa text-amber-200 drop-shadow-lg">
               {invitation.brideName}
             </h2>
           </motion.div>
@@ -127,15 +137,15 @@ export const TemplateHeritageTraditional: React.FC<{ invitation: InvitationData 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.6 }}
-            className="my-5 p-4 rounded-2xl bg-white border border-amber-700/20 text-center shadow-sm"
+            className="my-5 p-4 rounded-2xl bg-black/60 border border-amber-600/40 text-center shadow-md"
           >
-            <div className="text-amber-950 font-bold font-cairo text-base">
+            <div className="text-amber-200 font-bold font-cairo text-base">
               يوم {invitation.dayOfWeek} • {dateFormatted.dayNumber} {dateFormatted.monthName} {dateFormatted.year} م
             </div>
-            <div className="text-xs text-amber-800 font-tajawal mt-1">
+            <div className="text-xs text-amber-300 font-tajawal mt-1 font-medium">
               الموافق {invitation.eventDateHijri}
             </div>
-            <div className="text-xs font-bold text-amber-900 mt-2 font-cairo">
+            <div className="text-xs font-bold text-white mt-2 font-cairo">
               {invitation.timeFormatted}
             </div>
           </motion.div>
@@ -175,8 +185,8 @@ export const TemplateHeritageTraditional: React.FC<{ invitation: InvitationData 
 
           {/* Dress Code */}
           {invitation.toggles.showDressCode && (
-            <div className="my-4 p-3 rounded-xl bg-amber-50 border border-amber-700/20 flex items-center justify-center gap-2 text-xs font-tajawal text-amber-900 max-w-sm mx-auto">
-              <Shirt className="w-4 h-4 text-amber-800 shrink-0" />
+            <div className="my-4 p-3 rounded-xl bg-black/50 border border-amber-600/40 flex items-center justify-center gap-2 text-xs font-tajawal text-amber-200 max-w-sm mx-auto">
+              <Shirt className="w-4 h-4 text-amber-400 shrink-0" />
               <span>{invitation.toggles.dressCodeText}</span>
             </div>
           )}
@@ -191,7 +201,7 @@ export const TemplateHeritageTraditional: React.FC<{ invitation: InvitationData 
 
           {/* One-tap RSVP Button */}
           {invitation.toggles.showRsvp && (
-            <div className="mt-7 pt-4 border-t border-amber-700/20">
+            <div className="mt-7 pt-4 border-t border-amber-600/40">
               <RsvpButton
                 invitationId={invitation.id}
                 slug={invitation.slug}
@@ -210,7 +220,7 @@ export const TemplateHeritageTraditional: React.FC<{ invitation: InvitationData 
             theme="heritage"
           />
 
-          <div className="mt-8 pt-4 border-t border-amber-700/10 text-center text-xs text-amber-800/80 font-tajawal">
+          <div className="mt-8 pt-4 border-t border-amber-700/30 text-center text-xs text-amber-300 font-tajawal font-medium">
             حياكم الله وبياكم في ديار الكرم والجود
           </div>
 

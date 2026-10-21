@@ -45,11 +45,11 @@ export const CalendarButtons: React.FC<CalendarButtonsProps> = ({
   };
 
   const themeClasses = {
-    gold: 'bg-neutral-900/80 hover:bg-neutral-800 text-amber-200 border-amber-500/30 hover:border-amber-400',
-    minimal: 'bg-stone-50 hover:bg-stone-100 text-stone-800 border-stone-200 hover:border-stone-400',
-    floral: 'bg-white/90 hover:bg-rose-50 text-rose-900 border-rose-200 hover:border-rose-300',
-    midnight: 'bg-slate-900/90 hover:bg-slate-800 text-amber-200 border-amber-400/30 hover:border-amber-300',
-    heritage: 'bg-amber-950/70 hover:bg-amber-900/80 text-amber-100 border-amber-700/50 hover:border-amber-600',
+    gold: 'bg-black/60 hover:bg-black/80 text-amber-200 border-amber-400/50 hover:border-amber-300 font-bold shadow-md',
+    minimal: 'bg-black/60 hover:bg-black/80 text-white border-stone-600/70 hover:border-stone-400 font-bold shadow-md',
+    floral: 'bg-black/60 hover:bg-black/80 text-rose-200 border-rose-400/50 hover:border-rose-300 font-bold shadow-md',
+    midnight: 'bg-black/60 hover:bg-black/80 text-amber-200 border-amber-400/50 hover:border-amber-300 font-bold shadow-md',
+    heritage: 'bg-black/60 hover:bg-black/80 text-amber-200 border-amber-600/50 hover:border-amber-400 font-bold shadow-md',
   }[theme];
 
   return (

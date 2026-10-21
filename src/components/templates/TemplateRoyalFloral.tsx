@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { InvitationData } from '@/types/invitation';
+import { BackgroundMediaLayer } from '../invitation/BackgroundMediaLayer';
 import { CountdownTimer } from '../invitation/CountdownTimer';
 import { RsvpButton } from '../invitation/RsvpButton';
 import { CalendarButtons } from '../invitation/CalendarButtons';
@@ -18,14 +19,21 @@ export const TemplateRoyalFloral: React.FC<{ invitation: InvitationData }> = ({ 
   const dateFormatted = formatArabicDateDisplay(invitation.eventDate);
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-[#fff5f6] via-[#fdf0f2] to-[#faf3eb] text-neutral-800 font-cairo overflow-hidden">
+    <div className="relative min-h-screen text-rose-100 font-cairo overflow-hidden">
       
+      {/* Slow-Motion Video Loop & AI Floral Background */}
+      <BackgroundMediaLayer
+        templateId="template-3"
+        customVideoUrl={invitation.customVideoUrl}
+        customImageUrl={invitation.customImageUrl}
+      />
+
       {/* Floating Animated Rose Petals */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {Array.from({ length: 12 }).map((_, i) => (
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
+        {Array.from({ length: 14 }).map((_, i) => (
           <div
             key={i}
-            className="absolute rounded-full opacity-60 animate-float-slow"
+            className="absolute rounded-full opacity-70 animate-float-slow"
             style={{
               width: `${(i % 3) * 6 + 10}px`,
               height: `${(i % 3) * 4 + 8}px`,
@@ -42,17 +50,17 @@ export const TemplateRoyalFloral: React.FC<{ invitation: InvitationData }> = ({ 
 
       <div className="relative max-w-lg mx-auto px-4 py-8 sm:py-12 z-10">
         
-        {/* Floral Framed Card */}
-        <div className="relative bg-white/90 border border-rose-200/80 rounded-3xl p-6 sm:p-9 shadow-xl shadow-rose-200/40 backdrop-blur-md text-center">
+        {/* High-Contrast Royal Floral Card - Deep Plum / Velvet Obsidian Glass */}
+        <div className="relative bg-[#15070f]/92 border-2 border-rose-400/50 rounded-3xl p-6 sm:p-9 shadow-2xl shadow-black/80 backdrop-blur-xl text-center">
           
           {/* Floral Botanical Wreath Header */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8 }}
-            className="w-16 h-16 mx-auto mb-2 rounded-full bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-500 shadow-sm"
+            className="w-16 h-16 mx-auto mb-2 rounded-full bg-black/60 border-2 border-rose-400/40 flex items-center justify-center text-rose-300 shadow-md"
           >
-            <Flower2 className="w-8 h-8 text-rose-400" />
+            <Flower2 className="w-8 h-8 text-rose-300" />
           </motion.div>
 
           {/* Bismillah Calligraphy */}
@@ -60,45 +68,45 @@ export const TemplateRoyalFloral: React.FC<{ invitation: InvitationData }> = ({ 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-rose-900 font-amiri text-lg font-bold tracking-wide my-2"
+            className="text-rose-200 font-amiri text-lg font-bold tracking-wide my-2 drop-shadow-md"
           >
             بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
           </motion.div>
 
-          {/* Romantic Quranic Verse / Poetry */}
+          {/* Romantic Quranic Verse / Poetry - High Contrast */}
           {invitation.headerVerse && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.2 }}
-              className="my-5 p-4 rounded-2xl bg-rose-50/60 border border-rose-200"
+              className="my-5 p-4 rounded-2xl bg-black/50 border border-rose-400/30 shadow-inner"
             >
-              <p className="text-xs sm:text-sm font-amiri text-rose-950 leading-relaxed italic">
+              <p className="text-xs sm:text-sm font-amiri text-rose-100 font-bold leading-relaxed italic text-contrast-dark">
                 &ldquo;{invitation.headerVerse}&rdquo;
               </p>
               {invitation.verseSource && (
-                <span className="text-[10px] text-rose-600 font-tajawal mt-1 block">
+                <span className="text-[10px] text-rose-300 font-tajawal font-semibold mt-1 block">
                   [{invitation.verseSource}]
                 </span>
               )}
             </motion.div>
           )}
 
-          {/* Parents Introduction */}
+          {/* Parents Introduction - Pure White for 100% Legibility */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3 }}
-            className="my-4 space-y-1"
+            className="my-4 space-y-2 text-contrast-dark"
           >
-            <p className="text-xs font-tajawal text-neutral-600">
+            <p className="text-xs sm:text-sm font-tajawal text-white font-bold">
               {invitation.groomParents}
             </p>
-            <span className="text-xs text-rose-400 font-bold block">• و •</span>
-            <p className="text-xs font-tajawal text-neutral-600">
+            <span className="text-xs text-rose-300 font-bold block">• و •</span>
+            <p className="text-xs sm:text-sm font-tajawal text-white font-bold">
               {invitation.brideParents}
             </p>
-            <p className="text-xs text-neutral-500 font-tajawal mt-2">
+            <p className="text-xs text-rose-200/90 font-tajawal mt-2 font-medium">
               {invitation.welcomeMessage}
             </p>
           </motion.div>
@@ -110,44 +118,44 @@ export const TemplateRoyalFloral: React.FC<{ invitation: InvitationData }> = ({ 
             transition={{ duration: 0.6, delay: 0.4 }}
             className="my-4"
           >
-            <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200">
-              <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
+            <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-200 border border-rose-400/40 shadow-sm">
+              <Heart className="w-3.5 h-3.5 text-rose-400 fill-rose-400" />
               <span>{invitation.eventTitle}</span>
             </span>
           </motion.div>
 
-          {/* Bride & Groom Romantic Typography */}
+          {/* Bride & Groom Romantic Typography - Bright Rose Gold */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5 }}
-            className="my-6 py-5 rounded-2xl bg-gradient-to-r from-rose-50/50 via-pink-50/80 to-rose-50/50 border border-rose-200"
+            className="my-6 py-5 rounded-2xl bg-black/40 border border-rose-400/30"
           >
-            <h1 className="text-3xl sm:text-4xl font-bold font-ruqaa text-rose-900 drop-shadow-sm">
+            <h1 className="text-3xl sm:text-5xl font-bold font-ruqaa text-rose-200 drop-shadow-lg">
               {invitation.groomName}
             </h1>
-            <div className="text-rose-400 font-amiri text-2xl font-bold my-1">
+            <div className="text-rose-300 font-amiri text-2xl font-bold my-1">
               &
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold font-ruqaa text-rose-900 drop-shadow-sm">
+            <h2 className="text-3xl sm:text-5xl font-bold font-ruqaa text-rose-200 drop-shadow-lg">
               {invitation.brideName}
             </h2>
           </motion.div>
 
-          {/* Date & Time */}
+          {/* Date & Time High-Contrast Card */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.6 }}
-            className="my-5 p-4 rounded-2xl bg-white border border-rose-200 text-center shadow-sm"
+            className="my-5 p-4 rounded-2xl bg-black/60 border border-rose-400/40 text-center shadow-md"
           >
-            <div className="text-rose-900 font-bold font-cairo text-base">
+            <div className="text-rose-200 font-bold font-cairo text-base">
               يوم {invitation.dayOfWeek} • {dateFormatted.dayNumber} {dateFormatted.monthName} {dateFormatted.year} م
             </div>
-            <div className="text-xs text-rose-700/80 font-tajawal mt-1">
+            <div className="text-xs text-rose-300 font-tajawal mt-1 font-medium">
               الموافق {invitation.eventDateHijri}
             </div>
-            <div className="text-xs font-bold text-rose-950 mt-2 font-cairo">
+            <div className="text-xs font-bold text-white mt-2 font-cairo">
               {invitation.timeFormatted}
             </div>
           </motion.div>
@@ -187,8 +195,8 @@ export const TemplateRoyalFloral: React.FC<{ invitation: InvitationData }> = ({ 
 
           {/* Dress Code */}
           {invitation.toggles.showDressCode && (
-            <div className="my-4 p-3 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center gap-2 text-xs font-tajawal text-rose-800 max-w-sm mx-auto">
-              <Shirt className="w-4 h-4 text-rose-500 shrink-0" />
+            <div className="my-4 p-3 rounded-xl bg-black/50 border border-rose-400/30 flex items-center justify-center gap-2 text-xs font-tajawal text-rose-200 max-w-sm mx-auto">
+              <Shirt className="w-4 h-4 text-rose-400 shrink-0" />
               <span>{invitation.toggles.dressCodeText}</span>
             </div>
           )}
@@ -203,7 +211,7 @@ export const TemplateRoyalFloral: React.FC<{ invitation: InvitationData }> = ({ 
 
           {/* One-tap RSVP Button */}
           {invitation.toggles.showRsvp && (
-            <div className="mt-7 pt-4 border-t border-rose-200">
+            <div className="mt-7 pt-4 border-t border-rose-400/30">
               <RsvpButton
                 invitationId={invitation.id}
                 slug={invitation.slug}
@@ -222,7 +230,7 @@ export const TemplateRoyalFloral: React.FC<{ invitation: InvitationData }> = ({ 
             theme="floral"
           />
 
-          <div className="mt-8 pt-4 border-t border-rose-100 text-center text-xs text-rose-500 font-tajawal">
+          <div className="mt-8 pt-4 border-t border-rose-400/20 text-center text-xs text-rose-300 font-tajawal font-medium">
             تزهو الأمسية بجميل حضوركم العطر 🌸
           </div>
 

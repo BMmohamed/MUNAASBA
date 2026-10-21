@@ -101,32 +101,32 @@ export const RsvpButton: React.FC<RsvpButtonProps> = ({
     }
   };
 
-  // Button styles based on theme
+  // Button styles based on theme (Ultra high contrast)
   const themeStyles = {
     gold: {
-      btnActive: 'bg-gradient-to-r from-amber-600 via-amber-500 to-yellow-500 hover:from-amber-500 hover:to-yellow-400 text-neutral-950 shadow-lg shadow-amber-500/25',
-      btnDone: 'bg-emerald-950/80 border border-emerald-500/50 text-emerald-300',
-      counterBadge: 'bg-neutral-900/90 text-amber-200 border-amber-500/30',
+      btnActive: 'bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-neutral-950 font-black shadow-lg shadow-amber-500/30',
+      btnDone: 'bg-emerald-950/90 border-2 border-emerald-400 text-emerald-300 font-bold',
+      counterBadge: 'bg-black/70 text-amber-200 border border-amber-400/50 shadow-md',
     },
     minimal: {
-      btnActive: 'bg-stone-900 hover:bg-stone-800 text-stone-50 shadow-md',
-      btnDone: 'bg-stone-100 border border-stone-300 text-stone-700',
-      counterBadge: 'bg-stone-100 text-stone-700 border-stone-200',
+      btnActive: 'bg-gradient-to-r from-stone-100 to-stone-300 hover:from-white hover:to-stone-200 text-stone-950 font-black shadow-lg shadow-black/50',
+      btnDone: 'bg-stone-900 border-2 border-stone-500 text-stone-200 font-bold',
+      counterBadge: 'bg-black/70 text-stone-200 border border-stone-600 shadow-md',
     },
     floral: {
-      btnActive: 'bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white shadow-lg shadow-rose-200',
-      btnDone: 'bg-rose-50 border border-rose-300 text-rose-800',
-      counterBadge: 'bg-rose-50 text-rose-900 border-rose-200',
+      btnActive: 'bg-gradient-to-r from-rose-500 via-pink-500 to-rose-400 hover:from-rose-400 hover:to-pink-400 text-white font-black shadow-lg shadow-rose-950/50',
+      btnDone: 'bg-rose-950/90 border-2 border-rose-400 text-rose-200 font-bold',
+      counterBadge: 'bg-black/70 text-rose-200 border border-rose-400/50 shadow-md',
     },
     midnight: {
-      btnActive: 'bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-200 hover:from-amber-300 hover:to-yellow-100 text-slate-950 shadow-lg shadow-amber-400/20',
-      btnDone: 'bg-slate-900/90 border border-amber-400/40 text-amber-300',
-      counterBadge: 'bg-slate-900/90 text-amber-200 border-amber-400/30',
+      btnActive: 'bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-300 hover:from-amber-300 hover:to-yellow-200 text-slate-950 font-black shadow-lg shadow-amber-400/30',
+      btnDone: 'bg-slate-900 border-2 border-amber-400 text-amber-200 font-bold',
+      counterBadge: 'bg-black/70 text-amber-200 border border-amber-400/50 shadow-md',
     },
     heritage: {
-      btnActive: 'bg-gradient-to-r from-amber-700 to-amber-600 hover:from-amber-600 hover:to-amber-500 text-amber-50 shadow-lg shadow-amber-900/30',
-      btnDone: 'bg-amber-950 border border-amber-700 text-amber-200',
-      counterBadge: 'bg-amber-950/80 text-amber-200 border-amber-800',
+      btnActive: 'bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-neutral-950 font-black shadow-lg shadow-amber-950/50',
+      btnDone: 'bg-amber-950/90 border-2 border-amber-500 text-amber-200 font-bold',
+      counterBadge: 'bg-black/70 text-amber-200 border border-amber-600/50 shadow-md',
     },
   }[theme];
 
