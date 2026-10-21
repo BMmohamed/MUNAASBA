@@ -27,57 +27,58 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
     const elem = domRef.current;
     if (!elem) return;
 
-    // Safety fallback: Ensure content is 100% visible on all mobile devices even if scroll/intersection fails
-    const safetyTimer = setTimeout(() => {
-      setIsVisible(true);
-    }, 1200);
+    let observer: IntersectionObserver | null = null;
 
-    // Scroll listener backup
-    const handleScrollBackup = () => {
-      if (!elem) return;
-      const rect = elem.getBoundingClientRect();
-      const windowHeight = window.innerHeight || document.documentElement.clientHeight;
-      if (rect.top <= windowHeight + 100) {
-        setIsVisible(true);
-        window.removeEventListener('scroll', handleScrollBackup);
+    const cleanup = () => {
+      window.removeEventListener('scroll', checkVisibility);
+      window.removeEventListener('touchmove', checkVisibility);
+      window.removeEventListener('resize', checkVisibility);
+      if (observer) {
+        observer.disconnect();
+        observer = null;
       }
     };
 
-    window.addEventListener('scroll', handleScrollBackup, { passive: true });
+    const checkVisibility = () => {
+      if (!elem) return;
+      const rect = elem.getBoundingClientRect();
+      const windowHeight = window.innerHeight || document.documentElement.clientHeight;
 
-    // Native IntersectionObserver
+      // Trigger animation when the element enters the viewport zone (top < 88% of screen and bottom > 0)
+      if (rect.top < windowHeight * 0.88 && rect.bottom > 0) {
+        setIsVisible(true);
+        cleanup();
+      }
+    };
+
+    // Passive event listeners for fluid mobile scrolling
+    window.addEventListener('scroll', checkVisibility, { passive: true });
+    window.addEventListener('touchmove', checkVisibility, { passive: true });
+    window.addEventListener('resize', checkVisibility, { passive: true });
+
+    // IntersectionObserver in tandem for modern browsers
     if (typeof IntersectionObserver !== 'undefined') {
-      const observer = new IntersectionObserver(
+      observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
-            if (entry.isIntersecting || entry.intersectionRatio > 0) {
+            if (entry.isIntersecting) {
               setIsVisible(true);
-              observer.unobserve(entry.target);
-              window.removeEventListener('scroll', handleScrollBackup);
+              cleanup();
             }
           });
         },
         {
-          rootMargin: '100px 0px 100px 0px',
+          rootMargin: '0px 0px -10% 0px',
           threshold: 0,
         }
       );
-
       observer.observe(elem);
-
-      return () => {
-        clearTimeout(safetyTimer);
-        window.removeEventListener('scroll', handleScrollBackup);
-        observer.disconnect();
-      };
-    } else {
-      setIsVisible(true);
     }
 
-    return () => {
-      clearTimeout(safetyTimer);
-      window.removeEventListener('scroll', handleScrollBackup);
-    };
+    // Initial check on mount in case already in viewport zone
+    checkVisibility();
+
+    return cleanup;
   }, [immediate]);
 
   if (immediate) {
@@ -94,13 +95,12 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
   return (
     <div
       ref={domRef}
-      className={`transition-all duration-700 ease-out will-change-[opacity,transform] ${
-        isVisible
-          ? 'opacity-100 translate-y-0'
-          : 'opacity-0 translate-y-6 pointer-events-none'
-      } ${className}`}
+      className={className}
       style={{
-        transitionDelay: isVisible && delay ? `${delay}s` : '0s',
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? 'translateY(0)' : 'translateY(28px)',
+        transition: `opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1) ${delay}s, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) ${delay}s`,
+        willChange: 'opacity, transform',
       }}
     >
       {children}
