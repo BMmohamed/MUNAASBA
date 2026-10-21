@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
 import { InvitationData } from '@/types/invitation';
 import { BackgroundMediaLayer } from '../invitation/BackgroundMediaLayer';
 import { CountdownTimer } from '../invitation/CountdownTimer';
@@ -12,6 +11,7 @@ import { TimelineSection } from '../invitation/TimelineSection';
 import { ChildrenAdvisory } from '../invitation/ChildrenAdvisory';
 import { ShareAction } from '../invitation/ShareAction';
 import { AmbientMusicPlayer } from '../invitation/AmbientMusicPlayer';
+import { ScrollReveal } from '../common/ScrollReveal';
 import { formatArabicDateDisplay } from '@/lib/date-utils';
 import { Shirt, Sparkles } from 'lucide-react';
 
@@ -28,195 +28,190 @@ export const TemplateModernMinimalist: React.FC<{ invitation: InvitationData }> 
         customImageUrl={invitation.customImageUrl}
       />
 
-      <div className="relative max-w-lg mx-auto px-4 py-8 sm:py-12 z-10">
+      <div className="relative max-w-lg mx-auto px-3 sm:px-4 py-8 sm:py-12 z-10">
         
-        {/* Modern Minimalist Editorial Card - High Contrast Deep Charcoal / Obsidian Glass */}
-        <div className="relative bg-[#090b0e]/92 border-2 border-stone-700/60 shadow-2xl shadow-black/80 rounded-3xl p-6 sm:p-9 text-center backdrop-blur-xl">
+        {/* Modern Minimalist Editorial Card - Frosted Glass Window */}
+        <div className="relative glass-window shadow-2xl rounded-3xl p-6 sm:p-9 text-center transition-all duration-300">
           
           {/* Hairline double inner frame */}
-          <div className="absolute inset-3 border border-stone-700/30 rounded-2xl pointer-events-none" />
+          <div className="absolute inset-3 border border-white/15 rounded-2xl pointer-events-none" />
 
           {/* Minimalist Botanical Monogram */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7 }}
-            className="w-16 h-16 mx-auto mb-4 rounded-full border-2 border-amber-400/50 flex items-center justify-center text-amber-200 bg-black/60 shadow-md"
-          >
-            <span className="font-amiri text-2xl font-bold text-amber-200">
-              {invitation.groomName.slice(0, 1)} & {invitation.brideName.slice(0, 1)}
-            </span>
-          </motion.div>
+          <ScrollReveal immediate delay={0.05}>
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full border-2 border-amber-400/50 flex items-center justify-center text-amber-200 bg-black/60 shadow-lg">
+              <span className="font-amiri text-2xl font-bold text-amber-200">
+                {invitation.groomName.slice(0, 1)} & {invitation.brideName.slice(0, 1)}
+              </span>
+            </div>
+          </ScrollReveal>
 
           {/* Bismillah high-contrast typography */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-amber-200 font-amiri text-lg font-bold tracking-widest my-2 drop-shadow-sm"
-          >
-            بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
-          </motion.div>
+          <ScrollReveal immediate delay={0.1}>
+            <div className="text-amber-200 font-amiri text-xl font-bold tracking-widest my-2 drop-shadow-md">
+              بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+            </div>
+          </ScrollReveal>
 
-          {/* Quranic Verse - Sharp readability */}
+          {/* Quranic Verse - Prominent Size & Sharp Readability */}
           {invitation.headerVerse && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              className="my-5 px-4 py-3.5 bg-black/50 border border-stone-700/60 rounded-xl"
-            >
-              <p className="text-xs sm:text-sm font-amiri text-amber-100 font-bold leading-relaxed italic text-contrast-dark">
-                &ldquo;{invitation.headerVerse}&rdquo;
-              </p>
-              {invitation.verseSource && (
-                <span className="text-[10px] text-amber-300 font-tajawal font-semibold mt-1 block">
-                  [{invitation.verseSource}]
-                </span>
-              )}
-            </motion.div>
+            <ScrollReveal immediate delay={0.15}>
+              <div className="my-6 px-5 py-4 bg-black/45 border border-stone-600/60 rounded-2xl glass-window-subtle">
+                <p className="text-sm sm:text-base font-amiri text-amber-100 font-bold leading-relaxed italic text-contrast-dark">
+                  &ldquo;{invitation.headerVerse}&rdquo;
+                </p>
+                {invitation.verseSource && (
+                  <span className="text-xs text-amber-300 font-tajawal font-bold mt-1.5 block">
+                    [{invitation.verseSource}]
+                  </span>
+                )}
+              </div>
+            </ScrollReveal>
           )}
 
-          {/* Invitation Intro - Bold White Text */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-            className="my-4 space-y-2 text-contrast-dark"
-          >
-            <p className="text-xs sm:text-sm font-tajawal text-white font-bold">
-              {invitation.groomParents}
-            </p>
-            <span className="text-xs text-amber-300 font-bold block">• مع •</span>
-            <p className="text-xs sm:text-sm font-tajawal text-white font-bold">
-              {invitation.brideParents}
-            </p>
-            <p className="text-xs text-stone-300 font-tajawal mt-2 font-medium">
-              {invitation.welcomeMessage}
-            </p>
-          </motion.div>
+          {/* Invitation Intro - Bold White Text with Generous Spacing */}
+          <ScrollReveal immediate delay={0.2}>
+            <div className="my-5 space-y-2.5 text-contrast-dark">
+              <p className="text-sm sm:text-base font-tajawal text-white font-bold leading-relaxed">
+                {invitation.groomParents}
+              </p>
+              <span className="text-xs sm:text-sm text-amber-300 font-black block">• مع •</span>
+              <p className="text-sm sm:text-base font-tajawal text-white font-bold leading-relaxed">
+                {invitation.brideParents}
+              </p>
+              <p className="text-xs sm:text-sm text-stone-200 font-tajawal mt-3 font-medium leading-relaxed">
+                {invitation.welcomeMessage}
+              </p>
+            </div>
+          </ScrollReveal>
 
           {/* Event Title Badge */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="my-4"
-          >
-            <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold tracking-wider bg-stone-800 text-amber-200 border border-amber-400/40 shadow-sm">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              <span>{invitation.eventTitle}</span>
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            </span>
-          </motion.div>
+          <ScrollReveal immediate delay={0.25}>
+            <div className="my-6">
+              <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs sm:text-sm font-extrabold tracking-wider bg-black/50 text-amber-200 border border-amber-400/50 shadow-md backdrop-blur-md">
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                <span>{invitation.eventTitle}</span>
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              </span>
+            </div>
+          </ScrollReveal>
 
           {/* Couple Names - Modern Editorial Serif in High Contrast White & Gold */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            className="my-6 py-5 border-y border-stone-800 bg-black/40 rounded-2xl"
-          >
-            <h1 className="text-3xl sm:text-5xl font-bold font-amiri text-white tracking-wide drop-shadow-md">
-              {invitation.groomName}
-            </h1>
-            <div className="text-amber-300 my-1 font-amiri text-2xl font-bold italic">
-              و
+          <ScrollReveal immediate delay={0.3}>
+            <div className="my-7 py-6 border-y border-stone-700/60 glass-window-subtle rounded-3xl">
+              <h1 className="text-4xl sm:text-6xl font-extrabold font-amiri text-white tracking-wide drop-shadow-xl">
+                {invitation.groomName}
+              </h1>
+              <div className="text-amber-300 my-2 font-amiri text-3xl font-black italic">
+                و
+              </div>
+              <h2 className="text-4xl sm:text-6xl font-extrabold font-amiri text-white tracking-wide drop-shadow-xl">
+                {invitation.brideName}
+              </h2>
             </div>
-            <h2 className="text-3xl sm:text-5xl font-bold font-amiri text-white tracking-wide drop-shadow-md">
-              {invitation.brideName}
-            </h2>
-          </motion.div>
+          </ScrollReveal>
 
           {/* Date & Time Clean High-Contrast Block */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.6 }}
-            className="my-5 p-4 rounded-xl bg-black/60 border border-stone-700/60 text-center shadow-md"
-          >
-            <div className="text-amber-200 font-bold font-cairo text-base">
-              يوم {invitation.dayOfWeek} • {dateFormatted.dayNumber} {dateFormatted.monthName} {dateFormatted.year} م
+          <ScrollReveal>
+            <div className="my-6 p-5 rounded-2xl glass-window-subtle border border-stone-600/60 text-center shadow-xl">
+              <div className="text-amber-200 font-extrabold font-cairo text-xl sm:text-2xl mb-1.5 drop-shadow-sm">
+                يوم {invitation.dayOfWeek} • {dateFormatted.dayNumber} {dateFormatted.monthName} {dateFormatted.year} م
+              </div>
+              <div className="text-xs sm:text-sm text-stone-200 font-tajawal mt-1 font-semibold">
+                الموافق {invitation.eventDateHijri}
+              </div>
+              <div className="text-sm sm:text-base font-extrabold text-amber-100 mt-2.5 font-cairo">
+                {invitation.timeFormatted}
+              </div>
             </div>
-            <div className="text-xs text-stone-300 font-tajawal mt-1 font-medium">
-              الموافق {invitation.eventDateHijri}
-            </div>
-            <div className="text-xs font-bold text-amber-100 mt-2 font-cairo">
-              {invitation.timeFormatted}
-            </div>
-          </motion.div>
+          </ScrollReveal>
 
           {/* Dynamic Countdown Timer */}
           {invitation.toggles.showCountdown && (
-            <CountdownTimer targetDate={invitation.eventDate} theme="gold" />
+            <ScrollReveal>
+              <CountdownTimer targetDate={invitation.eventDate} theme="minimal" />
+            </ScrollReveal>
           )}
 
           {/* Calendar Auto-add Buttons */}
           {invitation.toggles.showCalendar && (
-            <CalendarButtons
-              title={`${invitation.eventTitle} - ${invitation.groomName} & ${invitation.brideName}`}
-              description={`${invitation.welcomeMessage}\nالمكان: ${invitation.venueName}`}
-              location={`${invitation.venueName}, ${invitation.venueAddress}`}
-              startDate={invitation.eventDate}
-              theme="gold"
-            />
+            <ScrollReveal>
+              <CalendarButtons
+                title={`${invitation.eventTitle} - ${invitation.groomName} & ${invitation.brideName}`}
+                description={`${invitation.welcomeMessage}\nالمكان: ${invitation.venueName}`}
+                location={`${invitation.venueName}, ${invitation.venueAddress}`}
+                startDate={invitation.eventDate}
+                theme="minimal"
+              />
+            </ScrollReveal>
           )}
 
           {/* Location Details */}
           {invitation.toggles.showLocation && (
-            <LocationCard
-              venueName={invitation.venueName}
-              venueHall={invitation.venueHall}
-              venueCity={invitation.venueCity}
-              venueAddress={invitation.venueAddress}
-              googleMapsUrl={invitation.googleMapsUrl}
-              theme="gold"
-            />
+            <ScrollReveal>
+              <LocationCard
+                venueName={invitation.venueName}
+                venueHall={invitation.venueHall}
+                venueCity={invitation.venueCity}
+                venueAddress={invitation.venueAddress}
+                googleMapsUrl={invitation.googleMapsUrl}
+                theme="minimal"
+              />
+            </ScrollReveal>
           )}
 
           {/* Timeline */}
           {invitation.toggles.showTimeline && (
-            <TimelineSection items={invitation.timeline} theme="gold" />
+            <ScrollReveal>
+              <TimelineSection items={invitation.timeline} theme="minimal" />
+            </ScrollReveal>
           )}
 
           {/* Dress Code */}
           {invitation.toggles.showDressCode && (
-            <div className="my-4 p-3 rounded-xl bg-black/50 border border-stone-700 flex items-center justify-center gap-2 text-xs font-tajawal text-stone-200 max-w-sm mx-auto">
-              <Shirt className="w-4 h-4 text-amber-400 shrink-0" />
-              <span>{invitation.toggles.dressCodeText}</span>
-            </div>
+            <ScrollReveal>
+              <div className="my-5 p-3.5 rounded-xl glass-window-subtle border border-stone-600/50 flex items-center justify-center gap-2 text-xs sm:text-sm font-tajawal text-stone-100 max-w-sm mx-auto font-medium">
+                <Shirt className="w-4 h-4 text-amber-300 shrink-0" />
+                <span>{invitation.toggles.dressCodeText}</span>
+              </div>
+            </ScrollReveal>
           )}
 
           {/* Children Advisory */}
           {invitation.toggles.showChildrenAdvisory && (
-            <ChildrenAdvisory
-              text={invitation.toggles.childrenAdvisoryText}
-              theme="gold"
-            />
+            <ScrollReveal>
+              <ChildrenAdvisory
+                text={invitation.toggles.childrenAdvisoryText}
+                theme="minimal"
+              />
+            </ScrollReveal>
           )}
 
           {/* One-tap RSVP Button */}
           {invitation.toggles.showRsvp && (
-            <div className="mt-7 pt-4 border-t border-stone-800">
-              <RsvpButton
-                invitationId={invitation.id}
-                slug={invitation.slug}
-                initialCount={invitation.rsvpCount}
-                theme="gold"
-              />
-            </div>
+            <ScrollReveal>
+              <div className="mt-8 pt-4 border-t border-stone-700/50">
+                <RsvpButton
+                  invitationId={invitation.id}
+                  slug={invitation.slug}
+                  initialCount={invitation.rsvpCount}
+                  theme="minimal"
+                />
+              </div>
+            </ScrollReveal>
           )}
 
           {/* Share Action */}
-          <ShareAction
-            title={invitation.title}
-            slug={invitation.slug}
-            groomName={invitation.groomName}
-            brideName={invitation.brideName}
-            theme="gold"
-          />
+          <ScrollReveal>
+            <ShareAction
+              title={invitation.title}
+              slug={invitation.slug}
+              groomName={invitation.groomName}
+              brideName={invitation.brideName}
+              theme="minimal"
+            />
+          </ScrollReveal>
 
-          <div className="mt-8 pt-4 border-t border-stone-800/80 text-center text-xs text-amber-200/80 font-tajawal font-medium">
+          <div className="mt-8 pt-4 border-t border-stone-800/80 text-center text-xs text-amber-200/90 font-tajawal font-medium">
             حضوركم شرفٌ وفرحةٌ لقلوبنا
           </div>
 
@@ -224,7 +219,7 @@ export const TemplateModernMinimalist: React.FC<{ invitation: InvitationData }> 
       </div>
 
       {invitation.toggles.showMusic && (
-        <AmbientMusicPlayer musicUrl={invitation.toggles.musicUrl} theme="gold" />
+        <AmbientMusicPlayer musicUrl={invitation.toggles.musicUrl} theme="minimal" />
       )}
     </div>
   );

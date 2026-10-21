@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
 import { InvitationData } from '@/types/invitation';
 import { BackgroundMediaLayer } from '../invitation/BackgroundMediaLayer';
 import { CountdownTimer } from '../invitation/CountdownTimer';
@@ -12,6 +11,7 @@ import { TimelineSection } from '../invitation/TimelineSection';
 import { ChildrenAdvisory } from '../invitation/ChildrenAdvisory';
 import { ShareAction } from '../invitation/ShareAction';
 import { AmbientMusicPlayer } from '../invitation/AmbientMusicPlayer';
+import { ScrollReveal } from '../common/ScrollReveal';
 import { formatArabicDateDisplay } from '@/lib/date-utils';
 import { Flower2, Heart, Shirt } from 'lucide-react';
 
@@ -48,189 +48,184 @@ export const TemplateRoyalFloral: React.FC<{ invitation: InvitationData }> = ({ 
         ))}
       </div>
 
-      <div className="relative max-w-lg mx-auto px-4 py-8 sm:py-12 z-10">
+      <div className="relative max-w-lg mx-auto px-3 sm:px-4 py-8 sm:py-12 z-10">
         
-        {/* High-Contrast Royal Floral Card - Deep Plum / Velvet Obsidian Glass */}
-        <div className="relative bg-[#15070f]/92 border-2 border-rose-400/50 rounded-3xl p-6 sm:p-9 shadow-2xl shadow-black/80 backdrop-blur-xl text-center">
+        {/* High-Contrast Royal Floral Card - Semi-Transparent Frosted Glass Window */}
+        <div className="relative glass-window border-2 border-rose-400/40 rounded-3xl p-6 sm:p-9 shadow-2xl backdrop-blur-xl text-center transition-all duration-300">
           
           {/* Floral Botanical Wreath Header */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
-            className="w-16 h-16 mx-auto mb-2 rounded-full bg-black/60 border-2 border-rose-400/40 flex items-center justify-center text-rose-300 shadow-md"
-          >
-            <Flower2 className="w-8 h-8 text-rose-300" />
-          </motion.div>
+          <ScrollReveal immediate delay={0.05}>
+            <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-black/60 border-2 border-rose-400/50 flex items-center justify-center text-rose-300 shadow-lg">
+              <Flower2 className="w-8 h-8 text-rose-300" />
+            </div>
+          </ScrollReveal>
 
           {/* Bismillah Calligraphy */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-rose-200 font-amiri text-lg font-bold tracking-wide my-2 drop-shadow-md"
-          >
-            بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
-          </motion.div>
+          <ScrollReveal immediate delay={0.1}>
+            <div className="text-rose-200 font-amiri text-xl font-bold tracking-wide my-2 drop-shadow-md">
+              بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+            </div>
+          </ScrollReveal>
 
-          {/* Romantic Quranic Verse / Poetry - High Contrast */}
+          {/* Romantic Quranic Verse / Poetry - High Contrast & Larger Font */}
           {invitation.headerVerse && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              className="my-5 p-4 rounded-2xl bg-black/50 border border-rose-400/30 shadow-inner"
-            >
-              <p className="text-xs sm:text-sm font-amiri text-rose-100 font-bold leading-relaxed italic text-contrast-dark">
-                &ldquo;{invitation.headerVerse}&rdquo;
-              </p>
-              {invitation.verseSource && (
-                <span className="text-[10px] text-rose-300 font-tajawal font-semibold mt-1 block">
-                  [{invitation.verseSource}]
-                </span>
-              )}
-            </motion.div>
+            <ScrollReveal immediate delay={0.15}>
+              <div className="my-6 p-5 rounded-2xl glass-window-subtle border border-rose-400/35">
+                <p className="text-sm sm:text-base font-amiri text-rose-100 font-bold leading-relaxed italic text-contrast-dark">
+                  &ldquo;{invitation.headerVerse}&rdquo;
+                </p>
+                {invitation.verseSource && (
+                  <span className="text-xs text-rose-300 font-tajawal font-bold mt-1.5 block">
+                    [{invitation.verseSource}]
+                  </span>
+                )}
+              </div>
+            </ScrollReveal>
           )}
 
-          {/* Parents Introduction - Pure White for 100% Legibility */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-            className="my-4 space-y-2 text-contrast-dark"
-          >
-            <p className="text-xs sm:text-sm font-tajawal text-white font-bold">
-              {invitation.groomParents}
-            </p>
-            <span className="text-xs text-rose-300 font-bold block">• و •</span>
-            <p className="text-xs sm:text-sm font-tajawal text-white font-bold">
-              {invitation.brideParents}
-            </p>
-            <p className="text-xs text-rose-200/90 font-tajawal mt-2 font-medium">
-              {invitation.welcomeMessage}
-            </p>
-          </motion.div>
+          {/* Parents Introduction - Pure White for 100% Legibility with Generous Line-height */}
+          <ScrollReveal immediate delay={0.2}>
+            <div className="my-5 space-y-2.5 text-contrast-dark">
+              <p className="text-sm sm:text-base font-tajawal text-white font-bold leading-relaxed">
+                {invitation.groomParents}
+              </p>
+              <span className="text-xs sm:text-sm text-rose-300 font-black block">• و •</span>
+              <p className="text-sm sm:text-base font-tajawal text-white font-bold leading-relaxed">
+                {invitation.brideParents}
+              </p>
+              <p className="text-xs sm:text-sm text-rose-100 font-tajawal mt-3 font-medium leading-relaxed">
+                {invitation.welcomeMessage}
+              </p>
+            </div>
+          </ScrollReveal>
 
           {/* Event Badge */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="my-4"
-          >
-            <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-200 border border-rose-400/40 shadow-sm">
-              <Heart className="w-3.5 h-3.5 text-rose-400 fill-rose-400" />
-              <span>{invitation.eventTitle}</span>
-            </span>
-          </motion.div>
+          <ScrollReveal immediate delay={0.25}>
+            <div className="my-6">
+              <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs sm:text-sm font-extrabold bg-rose-500/25 text-rose-100 border border-rose-400/40 shadow-md backdrop-blur-md">
+                <Heart className="w-3.5 h-3.5 text-rose-300 fill-rose-300" />
+                <span>{invitation.eventTitle}</span>
+              </span>
+            </div>
+          </ScrollReveal>
 
-          {/* Bride & Groom Romantic Typography - Bright Rose Gold */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            className="my-6 py-5 rounded-2xl bg-black/40 border border-rose-400/30"
-          >
-            <h1 className="text-3xl sm:text-5xl font-bold font-ruqaa text-rose-200 drop-shadow-lg">
-              {invitation.groomName}
-            </h1>
-            <div className="text-rose-300 font-amiri text-2xl font-bold my-1">
-              &
+          {/* Bride & Groom Romantic Typography - Bright Rose Gold Calligraphy */}
+          <ScrollReveal immediate delay={0.3}>
+            <div className="my-7 py-6 rounded-3xl glass-window-subtle border border-rose-400/35">
+              <h1 className="text-4xl sm:text-6xl font-extrabold font-ruqaa text-rose-200 drop-shadow-xl tracking-wide">
+                {invitation.groomName}
+              </h1>
+              <div className="text-rose-300 font-amiri text-3xl font-black my-2">
+                &
+              </div>
+              <h2 className="text-4xl sm:text-6xl font-extrabold font-ruqaa text-rose-200 drop-shadow-xl tracking-wide">
+                {invitation.brideName}
+              </h2>
             </div>
-            <h2 className="text-3xl sm:text-5xl font-bold font-ruqaa text-rose-200 drop-shadow-lg">
-              {invitation.brideName}
-            </h2>
-          </motion.div>
+          </ScrollReveal>
 
-          {/* Date & Time High-Contrast Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.6 }}
-            className="my-5 p-4 rounded-2xl bg-black/60 border border-rose-400/40 text-center shadow-md"
-          >
-            <div className="text-rose-200 font-bold font-cairo text-base">
-              يوم {invitation.dayOfWeek} • {dateFormatted.dayNumber} {dateFormatted.monthName} {dateFormatted.year} م
+          {/* Date & Time High-Contrast Glass Card */}
+          <ScrollReveal>
+            <div className="my-6 p-5 rounded-2xl glass-window-subtle border border-rose-400/40 text-center shadow-xl">
+              <div className="text-rose-200 font-extrabold font-cairo text-xl sm:text-2xl mb-1.5 drop-shadow-sm">
+                يوم {invitation.dayOfWeek} • {dateFormatted.dayNumber} {dateFormatted.monthName} {dateFormatted.year} م
+              </div>
+              <div className="text-xs sm:text-sm text-rose-200 font-tajawal mt-1 font-semibold">
+                الموافق {invitation.eventDateHijri}
+              </div>
+              <div className="text-sm sm:text-base font-extrabold text-white mt-2.5 font-cairo">
+                {invitation.timeFormatted}
+              </div>
             </div>
-            <div className="text-xs text-rose-300 font-tajawal mt-1 font-medium">
-              الموافق {invitation.eventDateHijri}
-            </div>
-            <div className="text-xs font-bold text-white mt-2 font-cairo">
-              {invitation.timeFormatted}
-            </div>
-          </motion.div>
+          </ScrollReveal>
 
           {/* Countdown Timer */}
           {invitation.toggles.showCountdown && (
-            <CountdownTimer targetDate={invitation.eventDate} theme="floral" />
+            <ScrollReveal>
+              <CountdownTimer targetDate={invitation.eventDate} theme="floral" />
+            </ScrollReveal>
           )}
 
           {/* Calendar Auto-add Buttons */}
           {invitation.toggles.showCalendar && (
-            <CalendarButtons
-              title={`${invitation.eventTitle} - ${invitation.groomName} & ${invitation.brideName}`}
-              description={`${invitation.welcomeMessage}\nالمكان: ${invitation.venueName}`}
-              location={`${invitation.venueName}, ${invitation.venueAddress}`}
-              startDate={invitation.eventDate}
-              theme="floral"
-            />
+            <ScrollReveal>
+              <CalendarButtons
+                title={`${invitation.eventTitle} - ${invitation.groomName} & ${invitation.brideName}`}
+                description={`${invitation.welcomeMessage}\nالمكان: ${invitation.venueName}`}
+                location={`${invitation.venueName}, ${invitation.venueAddress}`}
+                startDate={invitation.eventDate}
+                theme="floral"
+              />
+            </ScrollReveal>
           )}
 
           {/* Location Details */}
           {invitation.toggles.showLocation && (
-            <LocationCard
-              venueName={invitation.venueName}
-              venueHall={invitation.venueHall}
-              venueCity={invitation.venueCity}
-              venueAddress={invitation.venueAddress}
-              googleMapsUrl={invitation.googleMapsUrl}
-              theme="floral"
-            />
+            <ScrollReveal>
+              <LocationCard
+                venueName={invitation.venueName}
+                venueHall={invitation.venueHall}
+                venueCity={invitation.venueCity}
+                venueAddress={invitation.venueAddress}
+                googleMapsUrl={invitation.googleMapsUrl}
+                theme="floral"
+              />
+            </ScrollReveal>
           )}
 
           {/* Event Timeline */}
           {invitation.toggles.showTimeline && (
-            <TimelineSection items={invitation.timeline} theme="floral" />
+            <ScrollReveal>
+              <TimelineSection items={invitation.timeline} theme="floral" />
+            </ScrollReveal>
           )}
 
           {/* Dress Code */}
           {invitation.toggles.showDressCode && (
-            <div className="my-4 p-3 rounded-xl bg-black/50 border border-rose-400/30 flex items-center justify-center gap-2 text-xs font-tajawal text-rose-200 max-w-sm mx-auto">
-              <Shirt className="w-4 h-4 text-rose-400 shrink-0" />
-              <span>{invitation.toggles.dressCodeText}</span>
-            </div>
+            <ScrollReveal>
+              <div className="my-5 p-3.5 rounded-xl glass-window-subtle border border-rose-400/30 flex items-center justify-center gap-2 text-xs sm:text-sm font-tajawal text-rose-100 max-w-sm mx-auto font-medium">
+                <Shirt className="w-4 h-4 text-rose-300 shrink-0" />
+                <span>{invitation.toggles.dressCodeText}</span>
+              </div>
+            </ScrollReveal>
           )}
 
           {/* Children Advisory */}
           {invitation.toggles.showChildrenAdvisory && (
-            <ChildrenAdvisory
-              text={invitation.toggles.childrenAdvisoryText}
-              theme="floral"
-            />
+            <ScrollReveal>
+              <ChildrenAdvisory
+                text={invitation.toggles.childrenAdvisoryText}
+                theme="floral"
+              />
+            </ScrollReveal>
           )}
 
           {/* One-tap RSVP Button */}
           {invitation.toggles.showRsvp && (
-            <div className="mt-7 pt-4 border-t border-rose-400/30">
-              <RsvpButton
-                invitationId={invitation.id}
-                slug={invitation.slug}
-                initialCount={invitation.rsvpCount}
-                theme="floral"
-              />
-            </div>
+            <ScrollReveal>
+              <div className="mt-8 pt-4 border-t border-rose-400/30">
+                <RsvpButton
+                  invitationId={invitation.id}
+                  slug={invitation.slug}
+                  initialCount={invitation.rsvpCount}
+                  theme="floral"
+                />
+              </div>
+            </ScrollReveal>
           )}
 
           {/* Share Action */}
-          <ShareAction
-            title={invitation.title}
-            slug={invitation.slug}
-            groomName={invitation.groomName}
-            brideName={invitation.brideName}
-            theme="floral"
-          />
+          <ScrollReveal>
+            <ShareAction
+              title={invitation.title}
+              slug={invitation.slug}
+              groomName={invitation.groomName}
+              brideName={invitation.brideName}
+              theme="floral"
+            />
+          </ScrollReveal>
 
-          <div className="mt-8 pt-4 border-t border-rose-400/20 text-center text-xs text-rose-300 font-tajawal font-medium">
+          <div className="mt-8 pt-4 border-t border-rose-400/20 text-center text-xs sm:text-sm text-rose-200 font-tajawal font-medium">
             تزهو الأمسية بجميل حضوركم العطر 🌸
           </div>
 
