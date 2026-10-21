@@ -36,7 +36,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
   }
 
   // Theme-specific glass styles
-  const themeStyles = {
+  const themeStylesMap = {
     gold: {
       box: 'bg-black/40 border-amber-400/40 text-amber-200 shadow-xl shadow-black/40',
       label: 'text-amber-300 font-bold',
@@ -62,7 +62,8 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
       label: 'text-amber-300 font-bold',
       accent: 'text-amber-50 font-extrabold',
     },
-  }[theme];
+  };
+  const themeStyles = themeStylesMap[theme as keyof typeof themeStylesMap] || themeStylesMap.gold;
 
   const timeBlocks = [
     { label: 'يوم', value: countdown.days },
