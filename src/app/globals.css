@@ -201,4 +201,22 @@ body {
   animation: slideUpFade 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Staggered Luxury Timed Entrance for all Invitation Elements */
+@keyframes luxuryEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-luxury-reveal {
+  animation: luxuryEntrance 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity, transform;
+}
+
+
 

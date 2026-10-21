@@ -38,14 +38,14 @@ export const TemplateLuxuryNight: React.FC<{ invitation: InvitationData }> = ({ 
         <div className="relative glass-window border-2 border-amber-400/40 rounded-3xl p-6 sm:p-9 shadow-2xl backdrop-blur-xl text-center transition-all duration-300">
           
           {/* Subtle Starry Crest */}
-          <ScrollReveal immediate delay={0.05}>
+          <ScrollReveal delay={0.1}>
             <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-black/60 border-2 border-amber-400/50 flex items-center justify-center text-amber-300 shadow-xl shadow-amber-400/20">
               <Moon className="w-8 h-8 text-amber-300" />
             </div>
           </ScrollReveal>
 
           {/* Bismillah Calligraphy */}
-          <ScrollReveal immediate delay={0.1}>
+          <ScrollReveal delay={0.5}>
             <div className="text-amber-200 font-amiri text-xl font-bold tracking-widest my-2 drop-shadow-md">
               بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
             </div>
@@ -53,7 +53,7 @@ export const TemplateLuxuryNight: React.FC<{ invitation: InvitationData }> = ({ 
 
           {/* Quranic Verse - High Contrast & Larger Font */}
           {invitation.headerVerse && (
-            <ScrollReveal immediate delay={0.15}>
+            <ScrollReveal delay={0.9}>
               <div className="my-6 p-5 rounded-2xl glass-window-subtle border border-amber-400/35">
                 <p className="text-sm sm:text-base font-amiri text-amber-100 font-bold leading-relaxed italic text-contrast-dark">
                   &ldquo;{invitation.headerVerse}&rdquo;
@@ -68,7 +68,7 @@ export const TemplateLuxuryNight: React.FC<{ invitation: InvitationData }> = ({ 
           )}
 
           {/* Parents Introduction - Pure White Text with Generous Line-height */}
-          <ScrollReveal immediate delay={0.2}>
+          <ScrollReveal delay={1.4}>
             <div className="my-5 space-y-2.5 text-contrast-dark">
               <p className="text-sm sm:text-base font-tajawal text-white font-bold leading-relaxed">
                 {invitation.groomParents}
@@ -77,14 +77,14 @@ export const TemplateLuxuryNight: React.FC<{ invitation: InvitationData }> = ({ 
               <p className="text-sm sm:text-base font-tajawal text-white font-bold leading-relaxed">
                 {invitation.brideParents}
               </p>
-              <p className="text-xs sm:text-sm text-slate-200 font-tajawal mt-3 font-medium leading-relaxed">
+              <p className="text-xs sm:text-slate-200 font-tajawal mt-3 font-medium leading-relaxed">
                 {invitation.welcomeMessage}
               </p>
             </div>
           </ScrollReveal>
 
           {/* Event Title Badge */}
-          <ScrollReveal immediate delay={0.25}>
+          <ScrollReveal delay={1.9}>
             <div className="my-6">
               <span className="inline-flex items-center gap-2 px-6 py-2 rounded-full text-xs sm:text-sm font-extrabold bg-amber-400/25 text-amber-100 border border-amber-400/50 shadow-md backdrop-blur-md">
                 <Sparkles className="w-4 h-4 text-amber-300" />
@@ -95,7 +95,7 @@ export const TemplateLuxuryNight: React.FC<{ invitation: InvitationData }> = ({ 
           </ScrollReveal>
 
           {/* Names in Gold Metallic Shimmer - Large Calligraphy */}
-          <ScrollReveal immediate delay={0.3}>
+          <ScrollReveal delay={2.4}>
             <div className="my-7 py-6 rounded-3xl glass-window-subtle border border-amber-400/35">
               <h1 className="text-4xl sm:text-6xl font-extrabold font-ruqaa gold-text-shimmer drop-shadow-2xl text-amber-200 tracking-wide">
                 {invitation.groomName}
@@ -110,7 +110,7 @@ export const TemplateLuxuryNight: React.FC<{ invitation: InvitationData }> = ({ 
           </ScrollReveal>
 
           {/* Date & Time */}
-          <ScrollReveal>
+          <ScrollReveal delay={2.9}>
             <div className="my-6 p-5 rounded-2xl glass-window-subtle border border-amber-400/40 text-center shadow-xl">
               <div className="text-amber-200 font-extrabold font-cairo text-xl sm:text-2xl mb-1.5 drop-shadow-sm">
                 يوم {invitation.dayOfWeek} • {dateFormatted.dayNumber} {dateFormatted.monthName} {dateFormatted.year} م
@@ -126,14 +126,14 @@ export const TemplateLuxuryNight: React.FC<{ invitation: InvitationData }> = ({ 
 
           {/* Countdown Timer */}
           {invitation.toggles.showCountdown && (
-            <ScrollReveal>
+            <ScrollReveal delay={3.4}>
               <CountdownTimer targetDate={invitation.eventDate} theme="midnight" />
             </ScrollReveal>
           )}
 
           {/* Calendar Auto-add Buttons */}
           {invitation.toggles.showCalendar && (
-            <ScrollReveal>
+            <ScrollReveal delay={3.8}>
               <CalendarButtons
                 title={`${invitation.eventTitle} - ${invitation.groomName} & ${invitation.brideName}`}
                 description={`${invitation.welcomeMessage}\nالمكان: ${invitation.venueName}`}
@@ -146,7 +146,7 @@ export const TemplateLuxuryNight: React.FC<{ invitation: InvitationData }> = ({ 
 
           {/* Location Details */}
           {invitation.toggles.showLocation && (
-            <ScrollReveal>
+            <ScrollReveal delay={4.2}>
               <LocationCard
                 venueName={invitation.venueName}
                 venueHall={invitation.venueHall}
@@ -160,14 +160,14 @@ export const TemplateLuxuryNight: React.FC<{ invitation: InvitationData }> = ({ 
 
           {/* Event Timeline */}
           {invitation.toggles.showTimeline && (
-            <ScrollReveal>
+            <ScrollReveal delay={4.6}>
               <TimelineSection items={invitation.timeline} theme="midnight" />
             </ScrollReveal>
           )}
 
           {/* Dress Code */}
           {invitation.toggles.showDressCode && (
-            <ScrollReveal>
+            <ScrollReveal delay={5.0}>
               <div className="my-5 p-3.5 rounded-xl glass-window-subtle border border-amber-400/30 flex items-center justify-center gap-2 text-xs sm:text-sm font-tajawal text-slate-200 max-w-sm mx-auto font-medium">
                 <Shirt className="w-4 h-4 text-amber-300 shrink-0" />
                 <span>{invitation.toggles.dressCodeText}</span>
@@ -177,7 +177,7 @@ export const TemplateLuxuryNight: React.FC<{ invitation: InvitationData }> = ({ 
 
           {/* Children Advisory */}
           {invitation.toggles.showChildrenAdvisory && (
-            <ScrollReveal>
+            <ScrollReveal delay={5.3}>
               <ChildrenAdvisory
                 text={invitation.toggles.childrenAdvisoryText}
                 theme="midnight"
@@ -187,7 +187,7 @@ export const TemplateLuxuryNight: React.FC<{ invitation: InvitationData }> = ({ 
 
           {/* One-tap RSVP Button */}
           {invitation.toggles.showRsvp && (
-            <ScrollReveal>
+            <ScrollReveal delay={5.6}>
               <div className="mt-8 pt-4 border-t border-amber-400/30">
                 <RsvpButton
                   invitationId={invitation.id}
@@ -200,7 +200,7 @@ export const TemplateLuxuryNight: React.FC<{ invitation: InvitationData }> = ({ 
           )}
 
           {/* Share Action */}
-          <ScrollReveal>
+          <ScrollReveal delay={6.0}>
             <ShareAction
               title={invitation.title}
               slug={invitation.slug}

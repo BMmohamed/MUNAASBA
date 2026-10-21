@@ -43,7 +43,7 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ 
           <div className="relative border border-amber-400/35 rounded-t-[145px] rounded-b-2xl p-4 sm:p-6 text-center">
 
             {/* Arch Crown Finial Ornament */}
-            <ScrollReveal immediate delay={0.05}>
+            <ScrollReveal delay={0.1}>
               <div className="w-14 h-14 mx-auto -mt-2 mb-3 flex items-center justify-center text-amber-400">
                 <svg viewBox="0 0 40 40" fill="none" className="w-12 h-12 drop-shadow-md">
                   <path d="M20 0 L24 14 L38 14 L26 22 L30 36 L20 28 L10 36 L14 22 L2 14 L16 14 Z" fill="#fde047" />
@@ -53,13 +53,13 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ 
             </ScrollReveal>
 
             {/* Bismillah Calligraphy */}
-            <ScrollReveal immediate delay={0.1}>
+            <ScrollReveal delay={0.5}>
               <BismillahCalligraphy color="#fde047" className="w-64 sm:w-72 h-auto mx-auto my-3 drop-shadow-lg" />
             </ScrollReveal>
 
             {/* Quranic Verse - Prominent Size & High Readability */}
             {invitation.headerVerse && (
-              <ScrollReveal immediate delay={0.15}>
+              <ScrollReveal delay={0.9}>
                 <div className="my-6 px-5 py-4 rounded-2xl glass-window-subtle border border-amber-400/35">
                   <p className="text-sm sm:text-base font-amiri leading-loose text-amber-100 font-bold italic text-contrast-dark">
                     &ldquo;{invitation.headerVerse}&rdquo;
@@ -76,7 +76,7 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ 
             <GoldFlourishDivider color="#d4af37" className="w-40 h-6 mx-auto my-4" />
 
             {/* Parents Announcement - Larger Font & Clear Line Spacing */}
-            <ScrollReveal immediate delay={0.2}>
+            <ScrollReveal delay={1.4}>
               <div className="my-5 space-y-2.5 text-contrast-dark">
                 <p className="text-sm sm:text-base font-tajawal text-white font-bold leading-relaxed">
                   {invitation.groomParents}
@@ -94,7 +94,7 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ 
             </ScrollReveal>
 
             {/* Event Title Badge */}
-            <ScrollReveal immediate delay={0.25}>
+            <ScrollReveal delay={1.9}>
               <div className="my-6">
                 <div className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-amber-500/25 border border-amber-400/50 text-amber-100 text-sm sm:text-base font-extrabold tracking-wide shadow-lg backdrop-blur-md">
                   <Sparkles className="w-4 h-4 text-amber-300" />
@@ -105,7 +105,7 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ 
             </ScrollReveal>
 
             {/* Groom & Bride Names - Large Royal Calligraphic Typography */}
-            <ScrollReveal immediate delay={0.3}>
+            <ScrollReveal delay={2.4}>
               <div className="my-7 py-6 border-y border-amber-400/40 glass-window-subtle rounded-3xl">
                 <div className="flex flex-col items-center justify-center gap-2">
                   <h1 className="text-4xl sm:text-6xl font-extrabold font-ruqaa text-amber-200 gold-text-shimmer drop-shadow-xl tracking-wide">
@@ -122,7 +122,7 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ 
             </ScrollReveal>
 
             {/* Date & Day Details Card - Scroll Reveal */}
-            <ScrollReveal>
+            <ScrollReveal delay={2.9}>
               <div className="my-6 p-5 rounded-2xl glass-window-subtle border border-amber-400/40 text-center shadow-xl">
                 <div className="text-amber-200 font-extrabold font-cairo text-xl sm:text-2xl mb-1.5 drop-shadow-sm">
                   يوم {invitation.dayOfWeek}
@@ -141,14 +141,14 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ 
 
             {/* Dynamic Countdown Timer - Instant Glass View */}
             {invitation.toggles.showCountdown && (
-              <ScrollReveal>
+              <ScrollReveal delay={3.4}>
                 <CountdownTimer targetDate={invitation.eventDate} theme="gold" />
               </ScrollReveal>
             )}
 
             {/* Calendar Auto-add Buttons */}
             {invitation.toggles.showCalendar && (
-              <ScrollReveal>
+              <ScrollReveal delay={3.8}>
                 <CalendarButtons
                   title={`${invitation.eventTitle} - ${invitation.groomName} & ${invitation.brideName}`}
                   description={`${invitation.welcomeMessage}\nالمكان: ${invitation.venueName}`}
@@ -161,7 +161,7 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ 
 
             {/* Google Maps Venue Card */}
             {invitation.toggles.showLocation && (
-              <ScrollReveal>
+              <ScrollReveal delay={4.2}>
                 <LocationCard
                   venueName={invitation.venueName}
                   venueHall={invitation.venueHall}
@@ -175,14 +175,14 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ 
 
             {/* Event Timeline */}
             {invitation.toggles.showTimeline && (
-              <ScrollReveal>
+              <ScrollReveal delay={4.6}>
                 <TimelineSection items={invitation.timeline} theme="gold" />
               </ScrollReveal>
             )}
 
             {/* Dress Code Notice */}
             {invitation.toggles.showDressCode && (
-              <ScrollReveal>
+              <ScrollReveal delay={5.0}>
                 <div className="my-5 p-3.5 rounded-xl glass-window-subtle border border-amber-400/30 flex items-center justify-center gap-2 text-xs sm:text-sm font-tajawal text-neutral-100 max-w-sm mx-auto font-medium">
                   <Shirt className="w-4 h-4 text-amber-300 shrink-0" />
                   <span>{invitation.toggles.dressCodeText}</span>
@@ -192,7 +192,7 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ 
 
             {/* Children Advisory ("جنة الأطفال منازلهم") */}
             {invitation.toggles.showChildrenAdvisory && (
-              <ScrollReveal>
+              <ScrollReveal delay={5.3}>
                 <ChildrenAdvisory
                   text={invitation.toggles.childrenAdvisoryText}
                   theme="gold"
@@ -202,7 +202,7 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ 
 
             {/* Single-tap RSVP Button with Device Locking */}
             {invitation.toggles.showRsvp && (
-              <ScrollReveal>
+              <ScrollReveal delay={5.6}>
                 <div className="mt-8 pt-4 border-t border-amber-400/35">
                   <RsvpButton
                     invitationId={invitation.id}
@@ -215,7 +215,7 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ 
             )}
 
             {/* Share to WhatsApp & Copy Link */}
-            <ScrollReveal>
+            <ScrollReveal delay={6.0}>
               <ShareAction
                 title={invitation.title}
                 slug={invitation.slug}
