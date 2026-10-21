@@ -20,7 +20,7 @@ export const TemplateHeritageTraditional: React.FC<{ invitation: InvitationData 
   const dateFormatted = formatArabicDateDisplay(invitation.eventDate);
 
   return (
-    <div className="relative min-h-screen text-amber-100 font-cairo overflow-hidden">
+    <div className="relative min-h-screen text-amber-100 font-cairo overflow-x-clip">
       
       {/* Slow-Motion Video Loop & AI Background */}
       <BackgroundMediaLayer

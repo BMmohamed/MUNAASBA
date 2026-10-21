@@ -98,7 +98,7 @@ export const DesktopFrameWrapper: React.FC<{ invitation: InvitationData }> = ({ 
       {/* Content Container */}
       <main className="w-full flex justify-center items-start">
         {viewMode === 'phone' ? (
-          <div className="w-full max-w-md my-0 md:my-6 md:rounded-[40px] md:border-[10px] md:border-neutral-900 md:shadow-2xl md:shadow-black/70 overflow-hidden relative">
+          <div className="w-full max-w-md my-0 md:my-6 md:rounded-[40px] md:border-[10px] md:border-neutral-900 md:shadow-2xl md:shadow-black/70 overflow-x-clip md:overflow-hidden relative">
             <TemplateRenderer invitation={invitation} />
           </div>
         ) : (

@@ -19,7 +19,7 @@ export const TemplateRoyalFloral: React.FC<{ invitation: InvitationData }> = ({ 
   const dateFormatted = formatArabicDateDisplay(invitation.eventDate);
 
   return (
-    <div className="relative min-h-screen text-rose-100 font-cairo overflow-hidden">
+    <div className="relative min-h-screen text-rose-100 font-cairo overflow-x-clip">
       
       {/* Slow-Motion Video Loop & AI Floral Background */}
       <BackgroundMediaLayer

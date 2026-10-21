@@ -20,7 +20,7 @@ export const TemplateLuxuryNight: React.FC<{ invitation: InvitationData }> = ({ 
   const dateFormatted = formatArabicDateDisplay(invitation.eventDate);
 
   return (
-    <div className="relative min-h-screen text-slate-100 font-cairo overflow-hidden">
+    <div className="relative min-h-screen text-slate-100 font-cairo overflow-x-clip">
       
       {/* Slow-Motion Ambient Loop Video & Starry Sky Background */}
       <BackgroundMediaLayer

@@ -1,7 +1,6 @@
 'use client';
 
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface ScrollRevealProps {
   children: React.ReactNode;
@@ -16,6 +15,71 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
   className = '',
   immediate = false,
 }) => {
+  const [isVisible, setIsVisible] = useState(immediate);
+  const domRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (immediate) {
+      setIsVisible(true);
+      return;
+    }
+
+    const elem = domRef.current;
+    if (!elem) return;
+
+    // Safety fallback: Ensure content is 100% visible on all mobile devices even if scroll/intersection fails
+    const safetyTimer = setTimeout(() => {
+      setIsVisible(true);
+    }, 1200);
+
+    // Scroll listener backup
+    const handleScrollBackup = () => {
+      if (!elem) return;
+      const rect = elem.getBoundingClientRect();
+      const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+      if (rect.top <= windowHeight + 100) {
+        setIsVisible(true);
+        window.removeEventListener('scroll', handleScrollBackup);
+      }
+    };
+
+    window.addEventListener('scroll', handleScrollBackup, { passive: true });
+
+    // Native IntersectionObserver
+    if (typeof IntersectionObserver !== 'undefined') {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting || entry.intersectionRatio > 0) {
+              setIsVisible(true);
+              observer.unobserve(entry.target);
+              window.removeEventListener('scroll', handleScrollBackup);
+            }
+          });
+        },
+        {
+          rootMargin: '100px 0px 100px 0px',
+          threshold: 0,
+        }
+      );
+
+      observer.observe(elem);
+
+      return () => {
+        clearTimeout(safetyTimer);
+        window.removeEventListener('scroll', handleScrollBackup);
+        observer.disconnect();
+      };
+    } else {
+      setIsVisible(true);
+    }
+
+    return () => {
+      clearTimeout(safetyTimer);
+      window.removeEventListener('scroll', handleScrollBackup);
+    };
+  }, [immediate]);
+
   if (immediate) {
     return (
       <div
@@ -28,14 +92,18 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.05 }}
-      transition={{ duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] }}
-      className={className}
+    <div
+      ref={domRef}
+      className={`transition-all duration-700 ease-out will-change-[opacity,transform] ${
+        isVisible
+          ? 'opacity-100 translate-y-0'
+          : 'opacity-0 translate-y-6 pointer-events-none'
+      } ${className}`}
+      style={{
+        transitionDelay: isVisible && delay ? `${delay}s` : '0s',
+      }}
     >
       {children}
-    </motion.div>
+    </div>
   );
 };
