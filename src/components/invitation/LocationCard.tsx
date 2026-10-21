@@ -54,7 +54,7 @@ export const LocationCard: React.FC<LocationCardProps> = ({
   }[theme];
 
   return (
-    <div className={`p-5 rounded-2xl border backdrop-blur-sm transition-all duration-300 max-w-sm mx-auto my-5 ${themeStyles.card}`}>
+    <div className={`p-5 rounded-2xl border transition-all duration-300 max-w-sm mx-auto my-5 ${themeStyles.card}`}>
       <div className="flex items-start gap-3.5">
         <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 shadow-md ${themeStyles.pin}`}>
           <MapPin className="w-6 h-6" />

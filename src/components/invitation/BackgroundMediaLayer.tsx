@@ -45,8 +45,10 @@ export const BackgroundMediaLayer: React.FC<BackgroundMediaLayerProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 w-full h-full pointer-events-none overflow-hidden z-0">
-      
+    <div
+      className="fixed inset-0 w-screen h-screen min-h-[100dvh] pointer-events-none overflow-hidden z-0"
+      style={{ transform: 'translate3d(0, 0, 0)', backfaceVisibility: 'hidden' }}
+    >
       {/* 1. Slow-Motion Ambient Loop Video */}
       {videoSrc && (
         <video
@@ -55,22 +57,27 @@ export const BackgroundMediaLayer: React.FC<BackgroundMediaLayerProps> = ({
           muted
           playsInline
           poster={imageSrc}
-          className="absolute inset-0 w-full h-full object-cover opacity-35 scale-105 filter blur-[0.5px] transition-opacity duration-1000"
+          className="absolute inset-0 w-full h-full object-cover opacity-35 scale-105 pointer-events-none"
+          style={{ transform: 'translate3d(0, 0, 0)' }}
         >
           <source src={videoSrc} type="video/mp4" />
         </video>
       )}
 
-      {/* 2. Fallback / Complementary Slow-Motion Ken Burns AI Image */}
+      {/* 2. Slow-Motion Ken Burns AI Image - Independent Zoom In & Zoom Out */}
       {imageSrc && (
         <div
-          className="absolute inset-0 w-full h-full bg-cover bg-center opacity-40 animate-slow-kenburns transform will-change-transform"
-          style={{ backgroundImage: `url('${imageSrc}')` }}
+          className="absolute inset-0 w-full h-full bg-cover bg-center opacity-40 animate-slow-kenburns pointer-events-none"
+          style={{
+            backgroundImage: `url('${imageSrc}')`,
+            transform: 'translate3d(0, 0, 0)',
+            backfaceVisibility: 'hidden',
+          }}
         />
       )}
 
-      {/* 3. Deep Cinematic Protective Contrast Overlay (Protects text legibility) */}
-      <div className={`absolute inset-0 bg-gradient-to-b ${overlayGradients[templateId]} backdrop-blur-[1px]`} />
+      {/* 3. Deep Cinematic Protective Contrast Overlay (Protects text legibility without GPU lag) */}
+      <div className={`absolute inset-0 bg-gradient-to-b ${overlayGradients[templateId]} pointer-events-none`} />
 
       {/* 4. Fine Vignette around edges */}
       <div className="absolute inset-0 bg-radial from-transparent via-black/20 to-black/60 pointer-events-none" />

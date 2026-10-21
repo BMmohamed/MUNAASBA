@@ -24,7 +24,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
 
   if (countdown.isExpired) {
     return (
-      <div className="my-6 p-4 rounded-2xl bg-amber-500/20 border border-amber-400/50 backdrop-blur-md text-center">
+      <div className="my-6 p-4 rounded-2xl bg-amber-500/20 border border-amber-400/50 text-center">
         <div className="text-xl font-bold text-amber-200 font-amiri mb-1 drop-shadow-md">
           ✨ حانت الليلة المباركة ✨
         </div>
@@ -83,7 +83,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
         {timeBlocks.map((block, idx) => (
           <div
             key={idx}
-            className={`flex flex-col items-center justify-center p-3 rounded-2xl border backdrop-blur-md transition-all duration-300 ${themeStyles.box}`}
+            className={`flex flex-col items-center justify-center p-3 rounded-2xl border transition-all duration-300 ${themeStyles.box}`}
           >
             <span className={`text-2xl sm:text-3xl font-extrabold font-cairo ${themeStyles.accent}`}>
               {toArabicNumerals(block.value.toString().padStart(2, '0'))}

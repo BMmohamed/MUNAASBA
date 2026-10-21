@@ -165,7 +165,7 @@ export const RsvpButton: React.FC<RsvpButtonProps> = ({
 
         {/* Guest Counter Badge */}
         <div
-          className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-tajawal border backdrop-blur-sm ${themeStyles.counterBadge}`}
+          className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-tajawal border ${themeStyles.counterBadge}`}
         >
           <Users className="w-3.5 h-3.5 opacity-80" />
           <span>عدد الحضور المؤكدين:</span>

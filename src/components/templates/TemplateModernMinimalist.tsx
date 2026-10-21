@@ -46,7 +46,7 @@ export const TemplateModernMinimalist: React.FC<{ invitation: InvitationData }> 
           </ScrollReveal>
 
           {/* Bismillah high-contrast typography */}
-          <ScrollReveal delay={0.5}>
+          <ScrollReveal delay={0.7}>
             <div className="text-amber-200 font-amiri text-xl font-bold tracking-widest my-2 drop-shadow-md">
               بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
             </div>
@@ -54,7 +54,7 @@ export const TemplateModernMinimalist: React.FC<{ invitation: InvitationData }> 
 
           {/* Quranic Verse - Prominent Size & Sharp Readability */}
           {invitation.headerVerse && (
-            <ScrollReveal delay={0.9}>
+            <ScrollReveal delay={1.5}>
               <div className="my-6 px-5 py-4 bg-black/45 border border-stone-600/60 rounded-2xl glass-window-subtle">
                 <p className="text-sm sm:text-base font-amiri text-amber-100 font-bold leading-relaxed italic text-contrast-dark">
                   &ldquo;{invitation.headerVerse}&rdquo;
@@ -69,7 +69,7 @@ export const TemplateModernMinimalist: React.FC<{ invitation: InvitationData }> 
           )}
 
           {/* Invitation Intro - Bold White Text with Generous Spacing */}
-          <ScrollReveal delay={1.4}>
+          <ScrollReveal delay={2.3}>
             <div className="my-5 space-y-2.5 text-contrast-dark">
               <p className="text-sm sm:text-base font-tajawal text-white font-bold leading-relaxed">
                 {invitation.groomParents}
@@ -85,9 +85,9 @@ export const TemplateModernMinimalist: React.FC<{ invitation: InvitationData }> 
           </ScrollReveal>
 
           {/* Event Title Badge */}
-          <ScrollReveal delay={1.9}>
+          <ScrollReveal delay={3.1}>
             <div className="my-6">
-              <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs sm:text-sm font-extrabold tracking-wider bg-black/50 text-amber-200 border border-amber-400/50 shadow-md backdrop-blur-md">
+              <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs sm:text-sm font-extrabold tracking-wider bg-black/50 text-amber-200 border border-amber-400/50 shadow-md">
                 <Sparkles className="w-3.5 h-3.5 text-amber-400" />
                 <span>{invitation.eventTitle}</span>
                 <Sparkles className="w-3.5 h-3.5 text-amber-400" />
@@ -96,7 +96,7 @@ export const TemplateModernMinimalist: React.FC<{ invitation: InvitationData }> 
           </ScrollReveal>
 
           {/* Couple Names - Modern Editorial Serif in High Contrast White & Gold */}
-          <ScrollReveal delay={2.4}>
+          <ScrollReveal delay={3.9}>
             <div className="my-7 py-6 border-y border-stone-700/60 glass-window-subtle rounded-3xl">
               <h1 className="text-4xl sm:text-6xl font-extrabold font-amiri text-white tracking-wide drop-shadow-xl">
                 {invitation.groomName}
@@ -111,7 +111,7 @@ export const TemplateModernMinimalist: React.FC<{ invitation: InvitationData }> 
           </ScrollReveal>
 
           {/* Date & Time Clean High-Contrast Block */}
-          <ScrollReveal delay={2.9}>
+          <ScrollReveal delay={4.7}>
             <div className="my-6 p-5 rounded-2xl glass-window-subtle border border-stone-600/60 text-center shadow-xl">
               <div className="text-amber-200 font-extrabold font-cairo text-xl sm:text-2xl mb-1.5 drop-shadow-sm">
                 يوم {invitation.dayOfWeek} • {dateFormatted.dayNumber} {dateFormatted.monthName} {dateFormatted.year} م
@@ -127,14 +127,14 @@ export const TemplateModernMinimalist: React.FC<{ invitation: InvitationData }> 
 
           {/* Dynamic Countdown Timer */}
           {invitation.toggles.showCountdown && (
-            <ScrollReveal delay={3.4}>
+            <ScrollReveal delay={5.5}>
               <CountdownTimer targetDate={invitation.eventDate} theme="minimal" />
             </ScrollReveal>
           )}
 
           {/* Calendar Auto-add Buttons */}
           {invitation.toggles.showCalendar && (
-            <ScrollReveal delay={3.8}>
+            <ScrollReveal delay={6.2}>
               <CalendarButtons
                 title={`${invitation.eventTitle} - ${invitation.groomName} & ${invitation.brideName}`}
                 description={`${invitation.welcomeMessage}\nالمكان: ${invitation.venueName}`}
@@ -147,7 +147,7 @@ export const TemplateModernMinimalist: React.FC<{ invitation: InvitationData }> 
 
           {/* Location Details */}
           {invitation.toggles.showLocation && (
-            <ScrollReveal delay={4.2}>
+            <ScrollReveal delay={6.9}>
               <LocationCard
                 venueName={invitation.venueName}
                 venueHall={invitation.venueHall}
@@ -161,14 +161,14 @@ export const TemplateModernMinimalist: React.FC<{ invitation: InvitationData }> 
 
           {/* Timeline */}
           {invitation.toggles.showTimeline && (
-            <ScrollReveal delay={4.6}>
+            <ScrollReveal delay={7.6}>
               <TimelineSection items={invitation.timeline} theme="minimal" />
             </ScrollReveal>
           )}
 
           {/* Dress Code */}
           {invitation.toggles.showDressCode && (
-            <ScrollReveal delay={5.0}>
+            <ScrollReveal delay={8.2}>
               <div className="my-5 p-3.5 rounded-xl glass-window-subtle border border-stone-600/50 flex items-center justify-center gap-2 text-xs sm:text-sm font-tajawal text-stone-100 max-w-sm mx-auto font-medium">
                 <Shirt className="w-4 h-4 text-amber-300 shrink-0" />
                 <span>{invitation.toggles.dressCodeText}</span>
@@ -178,7 +178,7 @@ export const TemplateModernMinimalist: React.FC<{ invitation: InvitationData }> 
 
           {/* Children Advisory */}
           {invitation.toggles.showChildrenAdvisory && (
-            <ScrollReveal delay={5.3}>
+            <ScrollReveal delay={8.7}>
               <ChildrenAdvisory
                 text={invitation.toggles.childrenAdvisoryText}
                 theme="minimal"
@@ -188,7 +188,7 @@ export const TemplateModernMinimalist: React.FC<{ invitation: InvitationData }> 
 
           {/* One-tap RSVP Button */}
           {invitation.toggles.showRsvp && (
-            <ScrollReveal delay={5.6}>
+            <ScrollReveal delay={9.2}>
               <div className="mt-8 pt-4 border-t border-stone-700/50">
                 <RsvpButton
                   invitationId={invitation.id}
@@ -201,7 +201,7 @@ export const TemplateModernMinimalist: React.FC<{ invitation: InvitationData }> 
           )}
 
           {/* Share Action */}
-          <ScrollReveal delay={6.0}>
+          <ScrollReveal delay={9.7}>
             <ShareAction
               title={invitation.title}
               slug={invitation.slug}

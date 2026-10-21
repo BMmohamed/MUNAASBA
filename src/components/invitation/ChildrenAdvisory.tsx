@@ -22,7 +22,7 @@ export const ChildrenAdvisory: React.FC<ChildrenAdvisoryProps> = ({
 
   return (
     <div
-      className={`my-6 p-4 rounded-xl border text-center max-w-sm mx-auto backdrop-blur-sm transition-all ${themeStyles}`}
+      className={`my-6 p-4 rounded-xl border text-center max-w-sm mx-auto transition-all ${themeStyles}`}
     >
       <div className="flex items-center justify-center gap-1.5 mb-1 text-amber-400">
         <Baby className="w-4 h-4" />

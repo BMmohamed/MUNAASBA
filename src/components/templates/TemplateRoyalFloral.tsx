@@ -51,7 +51,7 @@ export const TemplateRoyalFloral: React.FC<{ invitation: InvitationData }> = ({ 
       <div className="relative max-w-lg mx-auto px-3 sm:px-4 py-8 sm:py-12 z-10">
         
         {/* High-Contrast Royal Floral Card - Semi-Transparent Frosted Glass Window */}
-        <div className="relative glass-window border-2 border-rose-400/40 rounded-3xl p-6 sm:p-9 shadow-2xl backdrop-blur-xl text-center transition-all duration-300">
+        <div className="relative glass-window border-2 border-rose-400/40 rounded-3xl p-6 sm:p-9 shadow-2xl text-center transition-all duration-300">
           
           {/* Floral Botanical Wreath Header */}
           <ScrollReveal delay={0.1}>
@@ -61,7 +61,7 @@ export const TemplateRoyalFloral: React.FC<{ invitation: InvitationData }> = ({ 
           </ScrollReveal>
 
           {/* Bismillah Calligraphy */}
-          <ScrollReveal delay={0.5}>
+          <ScrollReveal delay={0.7}>
             <div className="text-rose-200 font-amiri text-xl font-bold tracking-wide my-2 drop-shadow-md">
               بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
             </div>
@@ -69,7 +69,7 @@ export const TemplateRoyalFloral: React.FC<{ invitation: InvitationData }> = ({ 
 
           {/* Romantic Quranic Verse / Poetry - High Contrast & Larger Font */}
           {invitation.headerVerse && (
-            <ScrollReveal delay={0.9}>
+            <ScrollReveal delay={1.5}>
               <div className="my-6 p-5 rounded-2xl glass-window-subtle border border-rose-400/35">
                 <p className="text-sm sm:text-base font-amiri text-rose-100 font-bold leading-relaxed italic text-contrast-dark">
                   &ldquo;{invitation.headerVerse}&rdquo;
@@ -84,7 +84,7 @@ export const TemplateRoyalFloral: React.FC<{ invitation: InvitationData }> = ({ 
           )}
 
           {/* Parents Introduction - Pure White for 100% Legibility with Generous Line-height */}
-          <ScrollReveal delay={1.4}>
+          <ScrollReveal delay={2.3}>
             <div className="my-5 space-y-2.5 text-contrast-dark">
               <p className="text-sm sm:text-base font-tajawal text-white font-bold leading-relaxed">
                 {invitation.groomParents}
@@ -100,9 +100,9 @@ export const TemplateRoyalFloral: React.FC<{ invitation: InvitationData }> = ({ 
           </ScrollReveal>
 
           {/* Event Badge */}
-          <ScrollReveal delay={1.9}>
+          <ScrollReveal delay={3.1}>
             <div className="my-6">
-              <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs sm:text-sm font-extrabold bg-rose-500/25 text-rose-100 border border-rose-400/40 shadow-md backdrop-blur-md">
+              <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs sm:text-sm font-extrabold bg-rose-500/25 text-rose-100 border border-rose-400/40 shadow-md">
                 <Heart className="w-3.5 h-3.5 text-rose-300 fill-rose-300" />
                 <span>{invitation.eventTitle}</span>
               </span>
@@ -110,7 +110,7 @@ export const TemplateRoyalFloral: React.FC<{ invitation: InvitationData }> = ({ 
           </ScrollReveal>
 
           {/* Bride & Groom Romantic Typography - Bright Rose Gold Calligraphy */}
-          <ScrollReveal delay={2.4}>
+          <ScrollReveal delay={3.9}>
             <div className="my-7 py-6 rounded-3xl glass-window-subtle border border-rose-400/35">
               <h1 className="text-4xl sm:text-6xl font-extrabold font-ruqaa text-rose-200 drop-shadow-xl tracking-wide">
                 {invitation.groomName}
@@ -125,7 +125,7 @@ export const TemplateRoyalFloral: React.FC<{ invitation: InvitationData }> = ({ 
           </ScrollReveal>
 
           {/* Date & Time High-Contrast Glass Card */}
-          <ScrollReveal delay={2.9}>
+          <ScrollReveal delay={4.7}>
             <div className="my-6 p-5 rounded-2xl glass-window-subtle border border-rose-400/40 text-center shadow-xl">
               <div className="text-rose-200 font-extrabold font-cairo text-xl sm:text-2xl mb-1.5 drop-shadow-sm">
                 يوم {invitation.dayOfWeek} • {dateFormatted.dayNumber} {dateFormatted.monthName} {dateFormatted.year} م
@@ -141,14 +141,14 @@ export const TemplateRoyalFloral: React.FC<{ invitation: InvitationData }> = ({ 
 
           {/* Countdown Timer */}
           {invitation.toggles.showCountdown && (
-            <ScrollReveal delay={3.4}>
+            <ScrollReveal delay={5.5}>
               <CountdownTimer targetDate={invitation.eventDate} theme="floral" />
             </ScrollReveal>
           )}
 
           {/* Calendar Auto-add Buttons */}
           {invitation.toggles.showCalendar && (
-            <ScrollReveal delay={3.8}>
+            <ScrollReveal delay={6.2}>
               <CalendarButtons
                 title={`${invitation.eventTitle} - ${invitation.groomName} & ${invitation.brideName}`}
                 description={`${invitation.welcomeMessage}\nالمكان: ${invitation.venueName}`}
@@ -161,7 +161,7 @@ export const TemplateRoyalFloral: React.FC<{ invitation: InvitationData }> = ({ 
 
           {/* Location Details */}
           {invitation.toggles.showLocation && (
-            <ScrollReveal delay={4.2}>
+            <ScrollReveal delay={6.9}>
               <LocationCard
                 venueName={invitation.venueName}
                 venueHall={invitation.venueHall}
@@ -175,14 +175,14 @@ export const TemplateRoyalFloral: React.FC<{ invitation: InvitationData }> = ({ 
 
           {/* Event Timeline */}
           {invitation.toggles.showTimeline && (
-            <ScrollReveal delay={4.6}>
+            <ScrollReveal delay={7.6}>
               <TimelineSection items={invitation.timeline} theme="floral" />
             </ScrollReveal>
           )}
 
           {/* Dress Code */}
           {invitation.toggles.showDressCode && (
-            <ScrollReveal delay={5.0}>
+            <ScrollReveal delay={8.2}>
               <div className="my-5 p-3.5 rounded-xl glass-window-subtle border border-rose-400/30 flex items-center justify-center gap-2 text-xs sm:text-sm font-tajawal text-rose-100 max-w-sm mx-auto font-medium">
                 <Shirt className="w-4 h-4 text-rose-300 shrink-0" />
                 <span>{invitation.toggles.dressCodeText}</span>
@@ -192,7 +192,7 @@ export const TemplateRoyalFloral: React.FC<{ invitation: InvitationData }> = ({ 
 
           {/* Children Advisory */}
           {invitation.toggles.showChildrenAdvisory && (
-            <ScrollReveal delay={5.3}>
+            <ScrollReveal delay={8.7}>
               <ChildrenAdvisory
                 text={invitation.toggles.childrenAdvisoryText}
                 theme="floral"
@@ -202,7 +202,7 @@ export const TemplateRoyalFloral: React.FC<{ invitation: InvitationData }> = ({ 
 
           {/* One-tap RSVP Button */}
           {invitation.toggles.showRsvp && (
-            <ScrollReveal delay={5.6}>
+            <ScrollReveal delay={9.2}>
               <div className="mt-8 pt-4 border-t border-rose-400/30">
                 <RsvpButton
                   invitationId={invitation.id}
@@ -215,7 +215,7 @@ export const TemplateRoyalFloral: React.FC<{ invitation: InvitationData }> = ({ 
           )}
 
           {/* Share Action */}
-          <ScrollReveal delay={6.0}>
+          <ScrollReveal delay={9.7}>
             <ShareAction
               title={invitation.title}
               slug={invitation.slug}
