@@ -1,9 +1,8 @@
 import { InvitationData, RsvpResponse } from '@/types/invitation';
 import { INITIAL_INVITATIONS } from './constants';
+import { getSupabaseAdmin, getSupabase, isSupabaseConfigured } from './supabase';
 
-// In-memory store for server runtime (retained during server lifetime)
-// When deployed on Vercel or locally, this provides immediate operational data.
-// It also has an easy pluggable interface for Supabase or SQLite.
+// In-memory store fallback for server runtime (when Supabase credentials are not set)
 declare global {
   // eslint-disable-next-line no-var
   var __INVITATIONS_CACHE__: Map<string, InvitationData> | undefined;
@@ -30,9 +29,111 @@ function getDeviceSet(): Set<string> {
   return global.__DEVICE_RSVP_SET__;
 }
 
+// Map Supabase snake_case table row to TypeScript camelCase model
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapDbToInvitation(row: any): InvitationData {
+  return {
+    id: row.id,
+    slug: row.slug,
+    templateId: row.template_id || 'template-1',
+    title: row.title || '',
+    eventTitle: row.event_title || 'حفل الزفاف المبارك',
+    groomName: row.groom_name || '',
+    brideName: row.bride_name || '',
+    groomParents: row.groom_parents || '',
+    brideParents: row.bride_parents || '',
+    eventDate: row.event_date || '',
+    eventDateHijri: row.event_date_hijri || '',
+    dayOfWeek: row.day_of_week || '',
+    timeFormatted: row.time_formatted || '',
+    venueName: row.venue_name || '',
+    venueHall: row.venue_hall || '',
+    venueCity: row.venue_city || '',
+    venueAddress: row.venue_address || '',
+    googleMapsUrl: row.google_maps_url || '',
+    headerVerse: row.header_verse || '',
+    verseSource: row.verse_source || '',
+    welcomeMessage: row.welcome_message || '',
+    rsvpCount: typeof row.rsvp_count === 'number' ? row.rsvp_count : 0,
+    rsvpDeviceList: Array.isArray(row.rsvp_device_list) ? row.rsvp_device_list : [],
+    toggles: row.toggles || {},
+    timeline: Array.isArray(row.timeline) ? row.timeline : [],
+    typography: row.typography || {},
+    themeAccentColor: row.theme_accent_color || '#d4af37',
+    coverMusicTrack: row.cover_music_track || '',
+    customVideoUrl: row.custom_video_url || '',
+    customImageUrl: row.custom_image_url || '',
+    createdAt: row.created_at || new Date().toISOString(),
+    updatedAt: row.updated_at || new Date().toISOString(),
+  };
+}
+
+// Map TypeScript camelCase model to Supabase snake_case table row
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapInvitationToDb(inv: Partial<InvitationData>): any {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const dbRow: any = {};
+  if (inv.id !== undefined) dbRow.id = inv.id;
+  if (inv.slug !== undefined) dbRow.slug = inv.slug;
+  if (inv.templateId !== undefined) dbRow.template_id = inv.templateId;
+  if (inv.title !== undefined) dbRow.title = inv.title;
+  if (inv.eventTitle !== undefined) dbRow.event_title = inv.eventTitle;
+  if (inv.groomName !== undefined) dbRow.groom_name = inv.groomName;
+  if (inv.brideName !== undefined) dbRow.bride_name = inv.brideName;
+  if (inv.groomParents !== undefined) dbRow.groom_parents = inv.groomParents;
+  if (inv.brideParents !== undefined) dbRow.bride_parents = inv.brideParents;
+  if (inv.eventDate !== undefined) dbRow.event_date = inv.eventDate;
+  if (inv.eventDateHijri !== undefined) dbRow.event_date_hijri = inv.eventDateHijri;
+  if (inv.dayOfWeek !== undefined) dbRow.day_of_week = inv.dayOfWeek;
+  if (inv.timeFormatted !== undefined) dbRow.time_formatted = inv.timeFormatted;
+  if (inv.venueName !== undefined) dbRow.venue_name = inv.venueName;
+  if (inv.venueHall !== undefined) dbRow.venue_hall = inv.venueHall;
+  if (inv.venueCity !== undefined) dbRow.venue_city = inv.venueCity;
+  if (inv.venueAddress !== undefined) dbRow.venue_address = inv.venueAddress;
+  if (inv.googleMapsUrl !== undefined) dbRow.google_maps_url = inv.googleMapsUrl;
+  if (inv.headerVerse !== undefined) dbRow.header_verse = inv.headerVerse;
+  if (inv.verseSource !== undefined) dbRow.verse_source = inv.verseSource;
+  if (inv.welcomeMessage !== undefined) dbRow.welcome_message = inv.welcomeMessage;
+  if (inv.rsvpCount !== undefined) dbRow.rsvp_count = inv.rsvpCount;
+  if (inv.rsvpDeviceList !== undefined) dbRow.rsvp_device_list = inv.rsvpDeviceList;
+  if (inv.toggles !== undefined) dbRow.toggles = inv.toggles;
+  if (inv.timeline !== undefined) dbRow.timeline = inv.timeline;
+  if (inv.typography !== undefined) dbRow.typography = inv.typography;
+  if (inv.themeAccentColor !== undefined) dbRow.theme_accent_color = inv.themeAccentColor;
+  if (inv.coverMusicTrack !== undefined) dbRow.cover_music_track = inv.coverMusicTrack;
+  if (inv.customVideoUrl !== undefined) dbRow.custom_video_url = inv.customVideoUrl;
+  if (inv.customImageUrl !== undefined) dbRow.custom_image_url = inv.customImageUrl;
+  if (inv.createdAt !== undefined) dbRow.created_at = inv.createdAt;
+  if (inv.updatedAt !== undefined) dbRow.updated_at = inv.updatedAt;
+  return dbRow;
+}
+
 export async function getAllInvitations(): Promise<InvitationData[]> {
+  if (isSupabaseConfigured()) {
+    try {
+      const client = getSupabaseAdmin() || getSupabase();
+      if (client) {
+        const { data, error } = await client
+          .from('invitations')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.warn('[Supabase] Warning fetching invitations:', error.message);
+        } else if (data && data.length > 0) {
+          return data.map(mapDbToInvitation);
+        } else {
+          // If table exists but empty, return default seeds
+          return INITIAL_INVITATIONS;
+        }
+      }
+    } catch (err) {
+      console.warn('[Supabase] Falling back to local store due to error:', err);
+    }
+  }
+
+  // Fallback in-memory store
   const store = getStore();
-  // Return distinct by id
   const seen = new Set<string>();
   const list: InvitationData[] = [];
   store.forEach((inv) => {
@@ -45,12 +146,33 @@ export async function getAllInvitations(): Promise<InvitationData[]> {
 }
 
 export async function getInvitationBySlug(slug: string): Promise<InvitationData | null> {
+  if (isSupabaseConfigured()) {
+    try {
+      const client = getSupabaseAdmin() || getSupabase();
+      if (client) {
+        const { data, error } = await client
+          .from('invitations')
+          .select('*')
+          .or(`slug.eq.${slug},id.eq.${slug}`)
+          .maybeSingle();
+
+        if (error) {
+          console.warn('[Supabase] Warning fetching invitation by slug:', error.message);
+        } else if (data) {
+          return mapDbToInvitation(data);
+        }
+      }
+    } catch (err) {
+      console.warn('[Supabase] Falling back to local store for slug:', err);
+    }
+  }
+
+  // Fallback in-memory store
   const store = getStore();
   const inv = store.get(slug);
   if (inv) {
     return { ...inv };
   }
-  // Try searching by id
   for (const item of store.values()) {
     if (item.slug === slug || item.id === slug) {
       return { ...item };
@@ -131,6 +253,23 @@ export async function createInvitation(data: Partial<InvitationData>): Promise<I
     updatedAt: new Date().toISOString(),
   };
 
+  // Sync with Supabase if configured
+  if (isSupabaseConfigured()) {
+    try {
+      const client = getSupabaseAdmin() || getSupabase();
+      if (client) {
+        const row = mapInvitationToDb(newInvitation);
+        const { error } = await client.from('invitations').insert(row);
+        if (error) {
+          console.error('[Supabase] Error creating invitation in DB:', error.message);
+        }
+      }
+    } catch (err) {
+      console.error('[Supabase] Exception creating invitation in DB:', err);
+    }
+  }
+
+  // Always keep memory cache in sync
   store.set(slug, newInvitation);
   store.set(id, newInvitation);
   return newInvitation;
@@ -138,7 +277,7 @@ export async function createInvitation(data: Partial<InvitationData>): Promise<I
 
 export async function updateInvitation(id: string, data: Partial<InvitationData>): Promise<InvitationData | null> {
   const store = getStore();
-  const existing = store.get(id);
+  const existing = await getInvitationBySlug(id) || store.get(id);
   if (!existing) {
     return null;
   }
@@ -157,7 +296,23 @@ export async function updateInvitation(id: string, data: Partial<InvitationData>
     updatedAt: new Date().toISOString(),
   };
 
-  // If slug changed, delete old mapping
+  // Sync with Supabase if configured
+  if (isSupabaseConfigured()) {
+    try {
+      const client = getSupabaseAdmin() || getSupabase();
+      if (client) {
+        const row = mapInvitationToDb(updated);
+        const { error } = await client.from('invitations').update(row).eq('id', id);
+        if (error) {
+          console.error('[Supabase] Error updating invitation:', error.message);
+        }
+      }
+    } catch (err) {
+      console.error('[Supabase] Exception updating invitation:', err);
+    }
+  }
+
+  // Update memory cache
   if (data.slug && data.slug !== existing.slug) {
     store.delete(existing.slug);
     store.set(data.slug, updated);
@@ -172,12 +327,17 @@ export async function registerRsvp(slugOrId: string, deviceFingerprint: string):
   const store = getStore();
   const deviceSet = getDeviceSet();
 
-  let target: InvitationData | undefined = store.get(slugOrId);
-  if (!target) {
-    for (const item of store.values()) {
-      if (item.slug === slugOrId || item.id === slugOrId) {
-        target = item;
-        break;
+  let target: InvitationData | null = null;
+  if (isSupabaseConfigured()) {
+    target = await getInvitationBySlug(slugOrId);
+  } else {
+    target = store.get(slugOrId) || null;
+    if (!target) {
+      for (const item of store.values()) {
+        if (item.slug === slugOrId || item.id === slugOrId) {
+          target = item;
+          break;
+        }
       }
     }
   }
@@ -192,7 +352,70 @@ export async function registerRsvp(slugOrId: string, deviceFingerprint: string):
 
   const lockKey = `${target.id}:${deviceFingerprint}`;
 
-  // Check if device already RSVPed
+  // If Supabase is connected, check rsvp_logs table
+  if (isSupabaseConfigured()) {
+    try {
+      const client = getSupabaseAdmin() || getSupabase();
+      if (client) {
+        // 1. Check if device already logged
+        const { data: existingLog } = await client
+          .from('rsvp_logs')
+          .select('id')
+          .eq('invitation_id', target.id)
+          .eq('device_fingerprint', deviceFingerprint)
+          .maybeSingle();
+
+        if (existingLog) {
+          return {
+            success: true,
+            message: 'لقد قمت بتأكيد حضورك مسبقاً من هذا الجهاز. نسعد بلقائكم!',
+            newCount: target.rsvpCount,
+            alreadyRsvped: true,
+          };
+        }
+
+        // 2. Insert new rsvp_log
+        await client.from('rsvp_logs').insert({
+          invitation_id: target.id,
+          invitation_slug: target.slug,
+          device_fingerprint: deviceFingerprint,
+        });
+
+        // 3. Update rsvp_count in invitations table
+        const newCount = target.rsvpCount + 1;
+        const updatedList = Array.isArray(target.rsvpDeviceList)
+          ? [...target.rsvpDeviceList, deviceFingerprint]
+          : [deviceFingerprint];
+
+        await client
+          .from('invitations')
+          .update({
+            rsvp_count: newCount,
+            rsvp_device_list: updatedList,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', target.id);
+
+        // Update local memory cache too
+        target.rsvpCount = newCount;
+        target.rsvpDeviceList = updatedList;
+        store.set(target.slug, { ...target });
+        store.set(target.id, { ...target });
+        deviceSet.add(lockKey);
+
+        return {
+          success: true,
+          message: 'تم تأكيد حضورك بنجاح! نتشرف بوجودكم معنا.',
+          newCount,
+          alreadyRsvped: false,
+        };
+      }
+    } catch (err) {
+      console.warn('[Supabase] Error during RSVP sync, falling back to memory store:', err);
+    }
+  }
+
+  // Memory fallback logic
   if (deviceSet.has(lockKey) || (target.rsvpDeviceList && target.rsvpDeviceList.includes(deviceFingerprint))) {
     return {
       success: true,
@@ -202,7 +425,6 @@ export async function registerRsvp(slugOrId: string, deviceFingerprint: string):
     };
   }
 
-  // Increment counter and mark device
   target.rsvpCount += 1;
   if (!target.rsvpDeviceList) {
     target.rsvpDeviceList = [];
@@ -210,7 +432,6 @@ export async function registerRsvp(slugOrId: string, deviceFingerprint: string):
   target.rsvpDeviceList.push(deviceFingerprint);
   deviceSet.add(lockKey);
 
-  // Sync both keys in store
   store.set(target.slug, { ...target });
   store.set(target.id, { ...target });
 
@@ -226,22 +447,48 @@ export async function resetRsvpCount(idOrSlug: string): Promise<boolean> {
   const store = getStore();
   const deviceSet = getDeviceSet();
 
-  let target: InvitationData | undefined = store.get(idOrSlug);
-  if (!target) {
-    for (const item of store.values()) {
-      if (item.slug === idOrSlug || item.id === idOrSlug) {
-        target = item;
-        break;
+  let target: InvitationData | null = null;
+  if (isSupabaseConfigured()) {
+    target = await getInvitationBySlug(idOrSlug);
+  } else {
+    target = store.get(idOrSlug) || null;
+    if (!target) {
+      for (const item of store.values()) {
+        if (item.slug === idOrSlug || item.id === idOrSlug) {
+          target = item;
+          break;
+        }
       }
     }
   }
 
   if (!target) return false;
 
+  // Sync reset with Supabase if configured
+  if (isSupabaseConfigured()) {
+    try {
+      const client = getSupabaseAdmin() || getSupabase();
+      if (client) {
+        await client
+          .from('invitations')
+          .update({
+            rsvp_count: 0,
+            rsvp_device_list: [],
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', target.id);
+
+        await client.from('rsvp_logs').delete().eq('invitation_id', target.id);
+      }
+    } catch (err) {
+      console.error('[Supabase] Error resetting RSVP in database:', err);
+    }
+  }
+
+  // Reset in-memory cache
   target.rsvpCount = 0;
   target.rsvpDeviceList = [];
 
-  // Remove corresponding device keys
   for (const key of Array.from(deviceSet.keys())) {
     if (key.startsWith(`${target.id}:`)) {
       deviceSet.delete(key);

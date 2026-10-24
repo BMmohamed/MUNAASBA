@@ -26,6 +26,7 @@ import {
   Type,
   Palette,
   Smartphone,
+  Database,
 } from 'lucide-react';
 import { InvitationData, InvitationTemplateId, TimelineItem } from '@/types/invitation';
 import { TemplateRenderer } from '@/components/templates/TemplateRenderer';
@@ -48,6 +49,16 @@ export default function AdminDashboardPage() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [editorTab, setEditorTab] = useState<'editor' | 'preview'>('editor');
 
+  // Supabase Database Connection State
+  const [dbStatus, setDbStatus] = useState<{
+    configured: boolean;
+    connected: boolean;
+    message: string;
+    invitationsCount?: number;
+  } | null>(null);
+  const [isCheckingDb, setIsCheckingDb] = useState<boolean>(false);
+  const [isDbModalOpen, setIsDbModalOpen] = useState<boolean>(false);
+
   // Load passcode from sessionStorage if already unlocked
   useEffect(() => {
     const saved = sessionStorage.getItem('munaasaba_admin_pass');
@@ -55,6 +66,23 @@ export default function AdminDashboardPage() {
       setIsAuthenticated(true);
     }
   }, []);
+
+  const checkDbStatus = async () => {
+    setIsCheckingDb(true);
+    try {
+      const res = await fetch('/api/supabase/status');
+      const data = await res.json();
+      setDbStatus(data);
+    } catch {
+      setDbStatus({
+        configured: false,
+        connected: false,
+        message: 'تعذر الاتصال بمسار فحص قاعدة البيانات',
+      });
+    } finally {
+      setIsCheckingDb(false);
+    }
+  };
 
   // Fetch invitations
   const fetchInvitations = async () => {
@@ -75,6 +103,7 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     if (isAuthenticated) {
       fetchInvitations();
+      checkDbStatus();
     }
   }, [isAuthenticated]);
 
@@ -446,6 +475,29 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setIsDbModalOpen(true)}
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-tajawal transition-all cursor-pointer ${
+                dbStatus?.connected
+                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20'
+                  : 'bg-amber-500/10 border-amber-500/30 text-amber-400 hover:bg-amber-500/20'
+              }`}
+              title="إعدادات وقاعدة بيانات Supabase"
+            >
+              <Database className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">
+                {dbStatus?.connected
+                  ? 'متصل بـ Supabase 🟢'
+                  : dbStatus?.configured
+                  ? 'فحص اتصال Supabase 🟡'
+                  : 'الربط بـ Supabase ⚪'}
+              </span>
+              <span className="sm:hidden">
+                {dbStatus?.connected ? '🟢 متصل' : '⚪ Supabase'}
+              </span>
+            </button>
+
             <button
               type="button"
               onClick={openCreateModal}
@@ -1770,6 +1822,122 @@ export default function AdminDashboardPage() {
               </p>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* Supabase Database Connection Modal */}
+      {isDbModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="w-full max-w-2xl bg-neutral-900 border border-neutral-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button
+              type="button"
+              onClick={() => setIsDbModalOpen(false)}
+              className="absolute top-6 left-6 p-2 rounded-xl bg-neutral-800 text-neutral-400 hover:text-white transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                <Database className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-neutral-100">
+                  ربط قاعدة بيانات Supabase
+                </h3>
+                <p className="text-xs text-neutral-400 font-tajawal">
+                  تخزين بطاقات الدعوة وسجلات الحضور بشكل دائم وسحابي
+                </p>
+              </div>
+            </div>
+
+            {/* Status Card */}
+            <div
+              className={`p-4 rounded-2xl border flex items-start gap-3 ${
+                dbStatus?.connected
+                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                  : dbStatus?.configured
+                  ? 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+                  : 'bg-neutral-800/80 border-neutral-700 text-neutral-300'
+              }`}
+            >
+              <div className="mt-0.5">
+                {dbStatus?.connected ? (
+                  <Check className="w-5 h-5 text-emerald-400" />
+                ) : (
+                  <Database className="w-5 h-5 text-amber-400" />
+                )}
+              </div>
+              <div className="flex-1 text-xs font-tajawal space-y-1">
+                <div className="font-bold text-sm">
+                  {dbStatus?.connected
+                    ? 'قاعدة البيانات متصلة وجاهزة للعمل!'
+                    : dbStatus?.configured
+                    ? 'المفاتيح مدخلة، ولكن الاتصال تعثر'
+                    : 'قيد العمل على الذاكرة المؤقتة (لم يتم إدخال مفاتيح Supabase)'}
+                </div>
+                <p className="opacity-90">{dbStatus?.message}</p>
+                {dbStatus?.connected && typeof dbStatus?.invitationsCount === 'number' && (
+                  <p className="text-emerald-400 font-bold">
+                    عدد الدعوات المسجلة في Supabase: {toArabicNumerals(dbStatus.invitationsCount)}
+                  </p>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={checkDbStatus}
+                disabled={isCheckingDb}
+                className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-tajawal flex items-center gap-1 transition-all disabled:opacity-50"
+              >
+                <RotateCcw className={`w-3.5 h-3.5 ${isCheckingDb ? 'animate-spin' : ''}`} />
+                <span>إعادة الفحص</span>
+              </button>
+            </div>
+
+            {/* Quick Setup Instructions */}
+            <div className="space-y-4">
+              <h4 className="text-sm font-bold text-neutral-200">
+                خطوات الربط السريع في دقيقتين:
+              </h4>
+
+              <div className="space-y-3 font-tajawal text-xs text-neutral-300">
+                <div className="p-3.5 rounded-xl bg-neutral-950/60 border border-neutral-800 space-y-1.5">
+                  <span className="font-bold text-amber-400">١. تشغيل كود إنشاء الجداول (SQL Script):</span>
+                  <p className="text-neutral-400">
+                    تم إنشاء ملف جاهز في مشروعك باسم <code className="text-amber-300 font-mono">supabase/schema.sql</code>. افتح لوحة تحكم Supabase ثم اضغط على <b>SQL Editor</b> والصق محتواه واضغط <b>Run</b>.
+                  </p>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-neutral-950/60 border border-neutral-800 space-y-1.5">
+                  <span className="font-bold text-amber-400">٢. نسخ المفاتيح إلى ملف .env.local:</span>
+                  <p className="text-neutral-400">
+                    من لوحة تحكم Supabase اذهب إلى <code className="text-amber-300">Project Settings → API</code> وانسخ:
+                  </p>
+                  <pre className="p-2.5 rounded-lg bg-neutral-900 border border-neutral-800 text-[11px] font-mono text-neutral-300 overflow-x-auto text-left" dir="ltr">
+NEXT_PUBLIC_SUPABASE_URL=https://your-id.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+                  </pre>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-neutral-950/60 border border-neutral-800 space-y-1.5">
+                  <span className="font-bold text-amber-400">٣. المزامنة الفورية:</span>
+                  <p className="text-neutral-400">
+                    بمجرد حفظ ملف <code className="text-amber-300 font-mono">.env.local</code> وإعادة تشغيل السيرفر، ستعمل جميع عمليات إضافة وتعديل بطاقات الدعوة وتسجيل تأكيدات الحضور (RSVP) مباشرة على Supabase.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <button
+                type="button"
+                onClick={() => setIsDbModalOpen(false)}
+                className="px-5 py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white font-bold text-xs transition-colors"
+              >
+                إغلاق
+              </button>
+            </div>
           </div>
         </div>
       )}
