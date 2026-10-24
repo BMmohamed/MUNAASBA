@@ -69,14 +69,16 @@ export const LocationCard: React.FC<LocationCardProps> = ({
           <h3 className="font-bold text-base sm:text-lg font-cairo truncate">
             {venueName}
           </h3>
-          {venueHall && (
+          {venueHall && venueHall.trim().length > 0 && (
             <p className="text-xs font-tajawal text-amber-300/90 mt-0.5">
-              {venueHall}
+              {venueHall.trim()}
             </p>
           )}
-          <p className={`text-xs font-tajawal mt-1 line-clamp-2 ${themeStyles.subtext}`}>
-            {venueAddress}
-          </p>
+          {venueAddress && venueAddress.trim().length > 0 && (
+            <p className={`text-xs font-tajawal mt-1 line-clamp-2 ${themeStyles.subtext}`}>
+              {venueAddress.trim()}
+            </p>
+          )}
         </div>
       </div>
 

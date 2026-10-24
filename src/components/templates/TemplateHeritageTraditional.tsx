@@ -179,7 +179,7 @@ export const TemplateHeritageTraditional: React.FC<{ invitation: InvitationData;
           <ScrollReveal delay={4.7}>
             <div className="my-6 p-5 rounded-2xl glass-window-subtle border border-amber-600/40 text-center shadow-xl">
               <div className="text-amber-200 font-extrabold font-cairo text-xl sm:text-2xl mb-1.5 drop-shadow-sm">
-                يوم {invitation.dayOfWeek} • {dateFormatted.dayNumber} {dateFormatted.monthName} {dateFormatted.year} م
+                يوم {invitation.dayOfWeek} • {dateFormatted.numericDate}
               </div>
               <div className="text-xs sm:text-sm text-amber-200 font-tajawal mt-1 font-semibold">
                 الموافق {invitation.eventDateHijri}

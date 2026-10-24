@@ -331,6 +331,8 @@ ${url}`;
     if (cloned.toggles.showParents === undefined) cloned.toggles.showParents = true;
     if (cloned.toggles.showShare === undefined) cloned.toggles.showShare = true;
     if (cloned.isPublic === undefined) cloned.isPublic = true;
+    if (cloned.venueAddress === undefined) cloned.venueAddress = '';
+    if (cloned.venueHall === undefined) cloned.venueHall = '';
     setEditingInv(cloned);
     setIsEditorOpen(true);
   };
@@ -477,9 +479,9 @@ ${url}`;
         dayOfWeek: editingInv.dayOfWeek || 'الجمعة',
         timeFormatted: editingInv.timeFormatted || 'الساعة ٨:٠٠ مساءً',
         venueName: editingInv.venueName || 'قصر الاحتفالات الملكي',
-        venueHall: editingInv.venueHall || 'القاعة الكبرى',
+        venueHall: editingInv.venueHall !== undefined ? editingInv.venueHall : '',
         venueCity: editingInv.venueCity || 'الرياض',
-        venueAddress: editingInv.venueAddress || 'الرياض، المملكة العربية السعودية',
+        venueAddress: editingInv.venueAddress !== undefined ? editingInv.venueAddress : '',
         googleMapsUrl: editingInv.googleMapsUrl || 'https://maps.google.com',
         headerVerse:
           editingInv.headerVerse ||
@@ -1250,17 +1252,46 @@ ${url}`;
                       type="text"
                       value={editingInv.venueName || ''}
                       onChange={(e) => setEditingInv({ ...editingInv, venueName: e.target.value })}
-                      placeholder="قصر الثريا"
-                      className="px-3 py-2 rounded-xl bg-neutral-950 border border-neutral-800 text-xs text-neutral-200 focus:outline-none"
+                      placeholder="قصر الاحتفالات"
+                      className="px-3 py-2 rounded-xl bg-neutral-950 border border-neutral-800 text-xs text-neutral-200 focus:outline-none focus:border-amber-500"
                     />
                     <input
                       type="text"
                       value={editingInv.venueCity || ''}
                       onChange={(e) => setEditingInv({ ...editingInv, venueCity: e.target.value })}
                       placeholder="الرياض"
-                      className="px-3 py-2 rounded-xl bg-neutral-950 border border-neutral-800 text-xs text-neutral-200 focus:outline-none"
+                      className="px-3 py-2 rounded-xl bg-neutral-950 border border-neutral-800 text-xs text-neutral-200 focus:outline-none focus:border-amber-500"
                     />
                   </div>
+                </div>
+              </div>
+
+              {/* Sub-hall and Street / Detailed Address */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-neutral-300 mb-1">
+                    اسم الصالة / القاعة الفرعية (اختياري)
+                  </label>
+                  <input
+                    type="text"
+                    value={editingInv.venueHall !== undefined ? editingInv.venueHall : ''}
+                    onChange={(e) => setEditingInv({ ...editingInv, venueHall: e.target.value })}
+                    placeholder="مثال: القاعة الكبرى (امسحه لحذفه)"
+                    className="w-full px-3 py-2 rounded-xl bg-neutral-950 border border-neutral-800 text-xs text-neutral-200 focus:outline-none focus:border-amber-500 font-tajawal"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-neutral-300 mb-1">
+                    العنوان التفصيلي / الشارع (مثل: طريق الملك فهد - امسحه لحذفه)
+                  </label>
+                  <input
+                    type="text"
+                    value={editingInv.venueAddress !== undefined ? editingInv.venueAddress : ''}
+                    onChange={(e) => setEditingInv({ ...editingInv, venueAddress: e.target.value })}
+                    placeholder="مثال: طريق الملك فهد (امسح الحقل بالكامل لإخفائه نهائياً)"
+                    className="w-full px-3 py-2 rounded-xl bg-neutral-950 border border-neutral-800 text-xs text-neutral-200 focus:outline-none focus:border-amber-500 font-tajawal"
+                  />
                 </div>
               </div>
 
