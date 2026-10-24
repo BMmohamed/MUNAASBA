@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAllInvitations, createInvitation } from '@/lib/invitation-service';
+import { getAllInvitations, createInvitation, updateInvitation } from '@/lib/invitation-service';
 
 export async function GET() {
   try {
@@ -14,10 +14,16 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    if (body.id) {
+      const updated = await updateInvitation(body.id, body);
+      if (updated) {
+        return NextResponse.json({ success: true, invitation: updated });
+      }
+    }
     const created = await createInvitation(body);
     return NextResponse.json({ success: true, invitation: created });
   } catch (error) {
-    console.error('Error creating invitation:', error);
-    return NextResponse.json({ error: 'فشل في إنشاء الدعوة' }, { status: 500 });
+    console.error('Error saving invitation:', error);
+    return NextResponse.json({ error: 'فشل في حفظ الدعوة' }, { status: 500 });
   }
 }

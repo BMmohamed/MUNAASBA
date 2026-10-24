@@ -7,6 +7,7 @@ import { TimelineItem } from '@/types/invitation';
 interface TimelineSectionProps {
   items: TimelineItem[];
   theme?: 'gold' | 'minimal' | 'floral' | 'midnight' | 'heritage';
+  textColor?: string;
 }
 
 const getIcon = (iconName?: string) => {
@@ -29,6 +30,7 @@ const getIcon = (iconName?: string) => {
 export const TimelineSection: React.FC<TimelineSectionProps> = ({
   items,
   theme = 'gold',
+  textColor,
 }) => {
   if (!items || items.length === 0) return null;
 
@@ -68,26 +70,37 @@ export const TimelineSection: React.FC<TimelineSectionProps> = ({
   return (
     <div className="my-8 max-w-sm mx-auto px-2">
       <div className="text-center mb-5">
-        <span className="text-xs tracking-wider opacity-75 font-tajawal">
+        <span
+          className="text-xs tracking-wider opacity-75 font-tajawal transition-colors"
+          style={textColor ? { color: textColor } : undefined}
+        >
           برنامج ومراسم الحفل
         </span>
       </div>
-      <div className="relative border-r-2 pr-4 space-y-6" style={{ borderColor: 'rgba(212, 175, 55, 0.25)' }}>
+      <div
+        className="relative border-r-2 pr-4 space-y-6"
+        style={{ borderColor: textColor ? `${textColor}40` : 'rgba(212, 175, 55, 0.25)' }}
+      >
         {items.map((item) => (
           <div key={item.id} className="relative flex items-center justify-between group">
             {/* Timeline bullet icon */}
             <div
               className={`absolute -right-[27px] w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs shadow-md ${themeStyles.node}`}
+              style={textColor ? { color: textColor, borderColor: `${textColor}70` } : undefined}
             >
               {getIcon(item.icon)}
             </div>
 
-            <div className="flex-1 pr-3 flex items-center justify-between">
-              <span className={`text-sm font-semibold font-cairo ${themeStyles.label}`}>
+            <div className="flex-1 pr-3 flex items-center justify-between gap-2">
+              <span
+                className={`text-sm font-semibold font-cairo ${themeStyles.label}`}
+                style={textColor ? { color: textColor } : undefined}
+              >
                 {item.label}
               </span>
               <span
-                className={`text-xs px-2.5 py-1 rounded-full font-cairo font-bold border ${themeStyles.timeBadge}`}
+                className={`text-xs px-2.5 py-1 rounded-full font-cairo font-bold border shrink-0 ${themeStyles.timeBadge}`}
+                style={textColor ? { color: textColor, borderColor: `${textColor}50` } : undefined}
               >
                 {item.time}
               </span>

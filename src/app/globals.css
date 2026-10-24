@@ -17,19 +17,19 @@ body {
 }
 
 .font-amiri {
-  font-family: var(--font-amiri), serif;
+  font-family: 'Amiri', var(--font-amiri), serif !important;
 }
 
 .font-cairo {
-  font-family: var(--font-cairo), sans-serif;
+  font-family: 'Cairo', var(--font-cairo), sans-serif !important;
 }
 
 .font-tajawal {
-  font-family: var(--font-tajawal), sans-serif;
+  font-family: 'Tajawal', var(--font-tajawal), sans-serif !important;
 }
 
 .font-ruqaa {
-  font-family: var(--font-ruqaa), serif;
+  font-family: 'Aref Ruqaa', var(--font-ruqaa), serif !important;
 }
 
 /* Luxury Gold Foil Text & Gradient */

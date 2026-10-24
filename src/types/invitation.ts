@@ -25,6 +25,28 @@ export interface InvitationToggles {
   showMusic: boolean;
   musicUrl?: string;
   allowGuestNameInRsvp?: boolean;
+  showVerse?: boolean;
+  showParents?: boolean;
+  showShare?: boolean;
+}
+
+export interface TypographySettings {
+  // Font Families
+  namesFontFamily?: 'ruqaa' | 'amiri' | 'cairo' | 'tajawal';
+  verseFontFamily?: 'amiri' | 'ruqaa' | 'cairo' | 'tajawal';
+  parentsFontFamily?: 'tajawal' | 'cairo' | 'amiri' | 'ruqaa';
+
+  // Font Sizes
+  namesSize?: 'normal' | 'large' | 'xlarge' | 'huge';
+  verseSize?: 'small' | 'medium' | 'large';
+  parentsSize?: 'small' | 'medium' | 'large';
+
+  // Font Colors
+  namesColor?: string;
+  verseColor?: string;
+  parentsColor?: string;
+  welcomeColor?: string;
+  timelineColor?: string;
 }
 
 export interface InvitationData {
@@ -53,6 +75,7 @@ export interface InvitationData {
   rsvpDeviceList?: string[]; // stored device fingerprints that already RSVPed
   toggles: InvitationToggles;
   timeline: TimelineItem[];
+  typography?: TypographySettings;
   themeAccentColor?: string;
   coverMusicTrack?: string;
   customVideoUrl?: string;

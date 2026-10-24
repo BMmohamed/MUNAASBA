@@ -15,9 +15,25 @@ import { AmbientMusicPlayer } from '../invitation/AmbientMusicPlayer';
 import { ScrollReveal } from '../common/ScrollReveal';
 import { Sparkles, Shirt } from 'lucide-react';
 import { formatArabicDateDisplay } from '@/lib/date-utils';
+import {
+  getFontFamilyClass,
+  getFontFamilyStyle,
+  getNamesSizeClass,
+  getVerseSizeClass,
+  getParentsSizeClass,
+} from '@/lib/typography-utils';
 
 export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ invitation }) => {
   const dateFormatted = formatArabicDateDisplay(invitation.eventDate);
+  const typo = invitation.typography;
+
+  const namesFont = getFontFamilyClass(typo?.namesFontFamily, 'font-ruqaa');
+  const verseFont = getFontFamilyClass(typo?.verseFontFamily, 'font-amiri');
+  const parentsFont = getFontFamilyClass(typo?.parentsFontFamily, 'font-tajawal');
+
+  const namesSize = getNamesSizeClass(typo?.namesSize);
+  const verseSize = getVerseSizeClass(typo?.verseSize);
+  const parentsSize = getParentsSizeClass(typo?.parentsSize);
 
   return (
     <div className="relative min-h-screen text-neutral-100 overflow-x-clip font-cairo">
@@ -58,14 +74,20 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ 
             </ScrollReveal>
 
             {/* Quranic Verse - Prominent Size & High Readability */}
-            {invitation.headerVerse && (
+            {invitation.toggles.showVerse !== false && invitation.headerVerse && (
               <ScrollReveal delay={1.5}>
-                <div className="my-6 px-5 py-4 rounded-2xl glass-window-subtle border border-amber-400/35">
-                  <p className="text-sm sm:text-base font-amiri leading-loose text-amber-100 font-bold italic text-contrast-dark">
+                <div className="my-6 px-5 py-5 rounded-2xl glass-window-subtle border border-amber-400/35">
+                  <p
+                    className={`${verseSize} ${verseFont} leading-[2.5] [word-spacing:0.35rem] whitespace-pre-line font-bold italic text-contrast-dark`}
+                    style={{
+                      color: typo?.verseColor || '#fef3c7',
+                      ...getFontFamilyStyle(typo?.verseFontFamily),
+                    }}
+                  >
                     &ldquo;{invitation.headerVerse}&rdquo;
                   </p>
                   {invitation.verseSource && (
-                    <span className="block text-xs font-tajawal text-amber-300 font-bold mt-1.5">
+                    <span className="block text-xs font-tajawal text-amber-300 font-bold mt-2.5 [word-spacing:0.15rem]">
                       [{invitation.verseSource}]
                     </span>
                   )}
@@ -76,22 +98,39 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ 
             <GoldFlourishDivider color="#d4af37" className="w-40 h-6 mx-auto my-4" />
 
             {/* Parents Announcement - Larger Font & Clear Line Spacing */}
-            <ScrollReveal delay={2.3}>
-              <div className="my-5 space-y-2.5 text-contrast-dark">
-                <p className="text-sm sm:text-base font-tajawal text-white font-bold leading-relaxed">
-                  {invitation.groomParents}
-                </p>
-                <span className="inline-block text-xs sm:text-sm text-amber-300 font-black px-2 py-0.5 rounded-full bg-black/40 border border-amber-400/30">
-                  • مع •
-                </span>
-                <p className="text-sm sm:text-base font-tajawal text-white font-bold leading-relaxed">
-                  {invitation.brideParents}
-                </p>
-                <p className="text-xs sm:text-sm text-amber-100/95 font-tajawal mt-3 leading-relaxed font-medium">
-                  {invitation.welcomeMessage}
-                </p>
-              </div>
-            </ScrollReveal>
+            {invitation.toggles.showParents !== false && (
+              <ScrollReveal delay={2.3}>
+                <div className="my-5 space-y-3 text-contrast-dark">
+                  <p
+                    className={`${parentsSize} ${parentsFont} font-bold leading-[2.3] [word-spacing:0.25rem]`}
+                    style={{
+                      color: typo?.parentsColor || '#ffffff',
+                      ...getFontFamilyStyle(typo?.parentsFontFamily),
+                    }}
+                  >
+                    {invitation.groomParents}
+                  </p>
+                  <span className="inline-block text-xs sm:text-sm text-amber-300 font-black px-2.5 py-0.5 rounded-full bg-black/40 border border-amber-400/30">
+                    • مع •
+                  </span>
+                  <p
+                    className={`${parentsSize} ${parentsFont} font-bold leading-[2.3] [word-spacing:0.25rem]`}
+                    style={{
+                      color: typo?.parentsColor || '#ffffff',
+                      ...getFontFamilyStyle(typo?.parentsFontFamily),
+                    }}
+                  >
+                    {invitation.brideParents}
+                  </p>
+                  <p
+                    className="text-xs sm:text-sm font-tajawal mt-3.5 leading-[2.3] [word-spacing:0.22rem] font-medium"
+                    style={{ color: typo?.welcomeColor || '#fef3c7' }}
+                  >
+                    {invitation.welcomeMessage}
+                  </p>
+                </div>
+              </ScrollReveal>
+            )}
 
             {/* Event Title Badge */}
             <ScrollReveal delay={3.1}>
@@ -108,13 +147,25 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ 
             <ScrollReveal delay={3.9}>
               <div className="my-7 py-6 border-y border-amber-400/40 glass-window-subtle rounded-3xl">
                 <div className="flex flex-col items-center justify-center gap-2">
-                  <h1 className="text-4xl sm:text-6xl font-extrabold font-ruqaa text-amber-200 gold-text-shimmer drop-shadow-xl tracking-wide">
+                  <h1
+                    className={`${namesSize} ${namesFont} font-extrabold gold-text-shimmer drop-shadow-xl tracking-wide`}
+                    style={{
+                      color: typo?.namesColor || '#fde047',
+                      ...getFontFamilyStyle(typo?.namesFontFamily),
+                    }}
+                  >
                     {invitation.groomName}
                   </h1>
                   <div className="w-12 h-12 my-1 rounded-full border-2 border-amber-400/60 flex items-center justify-center text-amber-200 font-amiri text-2xl font-black bg-black/70 shadow-lg">
                     &
                   </div>
-                  <h2 className="text-4xl sm:text-6xl font-extrabold font-ruqaa text-amber-200 gold-text-shimmer drop-shadow-xl tracking-wide">
+                  <h2
+                    className={`${namesSize} ${namesFont} font-extrabold gold-text-shimmer drop-shadow-xl tracking-wide`}
+                    style={{
+                      color: typo?.namesColor || '#fde047',
+                      ...getFontFamilyStyle(typo?.namesFontFamily),
+                    }}
+                  >
                     {invitation.brideName}
                   </h2>
                 </div>
@@ -176,7 +227,7 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ 
             {/* Event Timeline */}
             {invitation.toggles.showTimeline && (
               <ScrollReveal delay={7.6}>
-                <TimelineSection items={invitation.timeline} theme="gold" />
+                <TimelineSection items={invitation.timeline} theme="gold" textColor={typo?.timelineColor} />
               </ScrollReveal>
             )}
 
@@ -215,15 +266,17 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ 
             )}
 
             {/* Share to WhatsApp & Copy Link */}
-            <ScrollReveal delay={9.7}>
-              <ShareAction
-                title={invitation.title}
-                slug={invitation.slug}
-                groomName={invitation.groomName}
-                brideName={invitation.brideName}
-                theme="gold"
-              />
-            </ScrollReveal>
+            {invitation.toggles.showShare !== false && (
+              <ScrollReveal delay={9.7}>
+                <ShareAction
+                  title={invitation.title}
+                  slug={invitation.slug}
+                  groomName={invitation.groomName}
+                  brideName={invitation.brideName}
+                  theme="gold"
+                />
+              </ScrollReveal>
+            )}
 
             {/* Footer Closing Gratitude */}
             <div className="mt-8 pt-4 border-t border-amber-500/20 text-center">

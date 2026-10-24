@@ -22,9 +22,13 @@ import {
   ShieldCheck,
   ChevronLeft,
   Video,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Type,
+  Palette,
+  Smartphone,
 } from 'lucide-react';
 import { InvitationData, InvitationTemplateId, TimelineItem } from '@/types/invitation';
+import { TemplateRenderer } from '@/components/templates/TemplateRenderer';
 import { QURANIC_AND_POETIC_PRESETS } from '@/lib/constants';
 import { toArabicNumerals } from '@/lib/date-utils';
 
@@ -42,6 +46,7 @@ export default function AdminDashboardPage() {
   const [editingInv, setEditingInv] = useState<Partial<InvitationData> | null>(null);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [editorTab, setEditorTab] = useState<'editor' | 'preview'>('editor');
 
   // Load passcode from sessionStorage if already unlocked
   useEffect(() => {
@@ -149,7 +154,23 @@ export default function AdminDashboardPage() {
         dressCodeText: 'الزي الرسمي السعودي (ثوب وبشت)',
         showTimeline: true,
         showMusic: true,
+        showVerse: true,
+        showParents: true,
+        showShare: true,
         musicUrl: 'https://assets.mixkit.co/music/preview/mixkit-serene-view-443.mp3',
+      },
+      typography: {
+        namesFontFamily: 'ruqaa',
+        verseFontFamily: 'amiri',
+        parentsFontFamily: 'tajawal',
+        namesSize: 'xlarge',
+        verseSize: 'medium',
+        parentsSize: 'medium',
+        namesColor: '#fde047',
+        verseColor: '#fef3c7',
+        parentsColor: '#ffffff',
+        welcomeColor: '#fef3c7',
+        timelineColor: '#fef3c7',
       },
       timeline: [
         { id: 't1', time: '٠٨:٠٠ م', label: 'استقبال الضيوف الكرام', icon: 'coffee' },
@@ -162,7 +183,32 @@ export default function AdminDashboardPage() {
   };
 
   const openEditModal = (inv: InvitationData) => {
-    setEditingInv(JSON.parse(JSON.stringify(inv)));
+    const cloned = JSON.parse(JSON.stringify(inv));
+    if (!cloned.typography) {
+      cloned.typography = {
+        namesFontFamily: 'ruqaa',
+        verseFontFamily: 'amiri',
+        parentsFontFamily: 'tajawal',
+        namesSize: 'xlarge',
+        verseSize: 'medium',
+        parentsSize: 'medium',
+        namesColor: '#fde047',
+        verseColor: '#fef3c7',
+        parentsColor: '#ffffff',
+        welcomeColor: '#fef3c7',
+        timelineColor: '#fef3c7',
+      };
+    }
+    if (!cloned.typography.timelineColor) {
+      cloned.typography.timelineColor = '#fef3c7';
+    }
+    if (!cloned.typography.namesFontFamily) cloned.typography.namesFontFamily = 'ruqaa';
+    if (!cloned.typography.verseFontFamily) cloned.typography.verseFontFamily = 'amiri';
+    if (!cloned.typography.parentsFontFamily) cloned.typography.parentsFontFamily = 'tajawal';
+    if (cloned.toggles.showVerse === undefined) cloned.toggles.showVerse = true;
+    if (cloned.toggles.showParents === undefined) cloned.toggles.showParents = true;
+    if (cloned.toggles.showShare === undefined) cloned.toggles.showShare = true;
+    setEditingInv(cloned);
     setIsEditorOpen(true);
   };
 
@@ -290,6 +336,83 @@ export default function AdminDashboardPage() {
   }
 
   const totalRsvps = invitations.reduce((acc, curr) => acc + (curr.rsvpCount || 0), 0);
+
+  // Real-time complete invitation object for live preview card
+  const previewInvitation: InvitationData | null = editingInv
+    ? {
+        id: editingInv.id || 'preview-id',
+        slug: editingInv.slug || 'preview-slug',
+        templateId: (editingInv.templateId as InvitationTemplateId) || 'template-1',
+        title: editingInv.title || 'معاينة الدعوة',
+        eventTitle: editingInv.eventTitle || 'حفل زفاف مبارك',
+        groomName: editingInv.groomName || 'اسم العريس',
+        brideName: editingInv.brideName || 'اسم العروس',
+        groomParents: editingInv.groomParents || 'أهل العريس الكرام',
+        brideParents: editingInv.brideParents || 'أهل العروس الكرام',
+        eventDate: editingInv.eventDate || '2026-12-01T20:00:00',
+        eventDateHijri: editingInv.eventDateHijri || '١ رجب ١٤٤٨ هـ',
+        dayOfWeek: editingInv.dayOfWeek || 'الجمعة',
+        timeFormatted: editingInv.timeFormatted || 'الساعة ٨:٠٠ مساءً',
+        venueName: editingInv.venueName || 'قصر الاحتفالات الملكي',
+        venueHall: editingInv.venueHall || 'القاعة الكبرى',
+        venueCity: editingInv.venueCity || 'الرياض',
+        venueAddress: editingInv.venueAddress || 'الرياض، المملكة العربية السعودية',
+        googleMapsUrl: editingInv.googleMapsUrl || 'https://maps.google.com',
+        headerVerse:
+          editingInv.headerVerse ||
+          'وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً',
+        verseSource: editingInv.verseSource || 'سورة الروم',
+        welcomeMessage:
+          editingInv.welcomeMessage ||
+          'يتشرفون بدعوتكم لحضور حفل الزفاف المبارك ومشاركتهم الفرحة والسرور.',
+        rsvpCount: editingInv.rsvpCount ?? 0,
+        rsvpDeviceList: editingInv.rsvpDeviceList || [],
+        toggles: {
+          showCountdown: editingInv.toggles?.showCountdown ?? true,
+          showCalendar: editingInv.toggles?.showCalendar ?? true,
+          showLocation: editingInv.toggles?.showLocation ?? true,
+          showRsvp: editingInv.toggles?.showRsvp ?? true,
+          showChildrenAdvisory: editingInv.toggles?.showChildrenAdvisory ?? true,
+          childrenAdvisoryText:
+            editingInv.toggles?.childrenAdvisoryText ||
+            'جنة الأطفال منازلهم.. نعتذر عن استقبال الأطفال لمشاركتنا فرحة هادئة.',
+          showDressCode: editingInv.toggles?.showDressCode ?? true,
+          dressCodeText: editingInv.toggles?.dressCodeText || 'الزي الرسمي السعودي (ثوب وبشت)',
+          showTimeline: editingInv.toggles?.showTimeline ?? true,
+          showMusic: editingInv.toggles?.showMusic ?? true,
+          musicUrl: editingInv.toggles?.musicUrl || '',
+          showVerse: editingInv.toggles?.showVerse ?? true,
+          showParents: editingInv.toggles?.showParents ?? true,
+          showShare: editingInv.toggles?.showShare ?? true,
+        },
+        timeline:
+          editingInv.timeline && editingInv.timeline.length > 0
+            ? editingInv.timeline
+            : [
+                { id: 't1', time: '٠٨:٠٠ م', label: 'استقبال الضيوف الكرام', icon: 'coffee' },
+                { id: 't2', time: '٠٩:٣٠ م', label: 'مراسم الزفة المباركة', icon: 'ring' },
+                { id: 't3', time: '١٠:٣٠ م', label: 'تناول طعام العشاء الفاخر', icon: 'dinner' },
+              ],
+        typography: {
+          namesFontFamily: editingInv.typography?.namesFontFamily || 'ruqaa',
+          verseFontFamily: editingInv.typography?.verseFontFamily || 'amiri',
+          parentsFontFamily: editingInv.typography?.parentsFontFamily || 'tajawal',
+          namesSize: editingInv.typography?.namesSize || 'xlarge',
+          verseSize: editingInv.typography?.verseSize || 'medium',
+          parentsSize: editingInv.typography?.parentsSize || 'medium',
+          namesColor: editingInv.typography?.namesColor || '#fde047',
+          verseColor: editingInv.typography?.verseColor || '#fef3c7',
+          parentsColor: editingInv.typography?.parentsColor || '#ffffff',
+          welcomeColor: editingInv.typography?.welcomeColor || '#fef3c7',
+          timelineColor: editingInv.typography?.timelineColor || '#fef3c7',
+        },
+        themeAccentColor: editingInv.themeAccentColor || '#d4af37',
+        customImageUrl: editingInv.customImageUrl || '',
+        customVideoUrl: editingInv.customVideoUrl || '',
+        createdAt: editingInv.createdAt || new Date().toISOString(),
+        updatedAt: editingInv.updatedAt || new Date().toISOString(),
+      }
+    : null;
 
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100 font-cairo selection:bg-amber-500/30">
@@ -526,31 +649,101 @@ export default function AdminDashboardPage() {
         </div>
       </main>
 
-      {/* Create / Edit Drawer Modal */}
-      {isEditorOpen && editingInv && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex justify-end animate-fadeIn">
-          <div className="w-full max-w-2xl bg-neutral-900 border-r border-neutral-800 h-full overflow-y-auto p-6 sm:p-8 flex flex-col justify-between">
-            
-            <div className="space-y-6">
-              
-              {/* Drawer Header */}
-              <div className="flex items-center justify-between border-b border-neutral-800 pb-4">
-                <div>
-                  <h3 className="text-lg font-bold text-neutral-100">
-                    {editingInv.id ? 'تعديل بيانات الدعوة' : 'إنشاء بطاقة دعوة جديدة'}
-                  </h3>
-                  <p className="text-xs text-neutral-400 font-tajawal">
-                    خصص القالب والأسماء والنصوص ومفاتيح الأقسام التفاعلية.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setIsEditorOpen(false)}
-                  className="p-2 rounded-xl bg-neutral-800 text-neutral-400 hover:text-neutral-200"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+      {/* Create / Edit Customizer Studio Modal with Live Center Card Preview */}
+      {isEditorOpen && editingInv && previewInvitation && (
+        <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col animate-fadeIn overflow-hidden">
+          
+          {/* Studio Top Header Bar */}
+          <header className="h-16 px-4 sm:px-6 bg-neutral-950/95 border-b border-neutral-800 flex items-center justify-between shrink-0 z-30 shadow-lg" dir="rtl">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                <Sparkles className="w-5 h-5" />
               </div>
+              <div>
+                <h3 className="text-sm sm:text-base font-bold text-neutral-100 font-cairo flex items-center gap-2">
+                  <span>{editingInv.id ? 'استوديو تخصيص الدعوة' : 'استوديو تصميم دعوة جديدة'}</span>
+                  <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[11px] font-tajawal bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                    {editingInv.templateId === 'template-1' && 'قالب باب الفرح الملكي'}
+                    {editingInv.templateId === 'template-2' && 'قالب المودرن البسيط'}
+                    {editingInv.templateId === 'template-3' && 'قالب الورود الملكية'}
+                    {editingInv.templateId === 'template-4' && 'قالب ليلة العمر'}
+                    {editingInv.templateId === 'template-5' && 'قالب التراث الأصيل'}
+                  </span>
+                </h3>
+                <p className="text-[11px] text-neutral-400 font-tajawal hidden md:block">
+                  عدّل خيارات الدعوة على اليسار، وتنعكس مباشرة على الكارت التفاعلي في المنتصف
+                </p>
+              </div>
+            </div>
+
+            {/* Mobile / Tablet View Switcher (Under xl screens) */}
+            <div className="flex xl:hidden items-center bg-neutral-900 p-1 rounded-xl border border-neutral-800">
+              <button
+                type="button"
+                onClick={() => setEditorTab('editor')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-cairo font-bold transition-all ${
+                  editorTab === 'editor'
+                    ? 'bg-amber-500 text-neutral-950 shadow'
+                    : 'text-neutral-400 hover:text-neutral-200'
+                }`}
+              >
+                <Sliders className="w-3.5 h-3.5" />
+                <span>البيانات والتعديل</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setEditorTab('preview')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-cairo font-bold transition-all ${
+                  editorTab === 'preview'
+                    ? 'bg-amber-500 text-neutral-950 shadow'
+                    : 'text-neutral-400 hover:text-neutral-200'
+                }`}
+              >
+                <Eye className="w-3.5 h-3.5" />
+                <span>معاينة الكارت</span>
+              </button>
+            </div>
+
+            {/* Studio Header Actions */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              <button
+                type="button"
+                onClick={() => setIsEditorOpen(false)}
+                className="px-3.5 py-2 rounded-xl bg-neutral-900 border border-neutral-800 hover:bg-neutral-800 text-neutral-400 hover:text-neutral-200 text-xs font-cairo font-medium transition-colors"
+              >
+                إلغاء
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveInvitation}
+                disabled={isSaving}
+                className="flex items-center gap-2 px-4 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-neutral-950 text-xs sm:text-sm font-bold font-cairo shadow-lg shadow-amber-500/20 disabled:opacity-60 transition-all"
+              >
+                <Check className="w-4 h-4" />
+                <span>{isSaving ? 'جاري الحفظ...' : 'حفظ ونشر الدعوة'}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsEditorOpen(false)}
+                className="p-2 rounded-xl bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800 transition-colors"
+                title="إغلاق"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </header>
+
+          {/* Main Studio Split Layout: Form on Left + Preview Card in Center/Right */}
+          <div className="flex-1 flex flex-col xl:flex-row overflow-hidden relative" dir="ltr">
+            
+            {/* Form Settings Panel (On the Left) */}
+            <div
+              className={`w-full xl:w-[540px] 2xl:w-[600px] shrink-0 border-r border-neutral-800 bg-neutral-900/95 overflow-y-auto p-5 sm:p-7 space-y-6 transition-all shadow-xl z-10 ${
+                editorTab === 'editor' ? 'block' : 'hidden xl:block'
+              }`}
+              dir="rtl"
+            >
+              <div className="space-y-6">
 
               {/* 1. Template Selection */}
               <div>
@@ -819,10 +1012,13 @@ export default function AdminDashboardPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2">
                   {[
+                    { key: 'showVerse', label: 'الآية القرآنية أو النص الشعري' },
+                    { key: 'showParents', label: 'إعلان الداعين (الأبوين والترحيب)' },
                     { key: 'showCountdown', label: 'العداد التنازلي المباشر' },
                     { key: 'showCalendar', label: 'أزرار حفظ التقويم (Google / Apple)' },
                     { key: 'showLocation', label: 'بطاقة المكان وخريطة Google' },
                     { key: 'showRsvp', label: 'زر تأكيد الحضور (RSVP) والعداد' },
+                    { key: 'showShare', label: 'زر مشاركة الدعوة (WhatsApp / رابط)' },
                     { key: 'showChildrenAdvisory', label: 'تنويه الأطفال ("جنة الأطفال منازلهم")' },
                     { key: 'showDressCode', label: 'الزي المعتمد (Dress Code)' },
                     { key: 'showTimeline', label: 'برنامج ومراسم الحفل (Timeline)' },
@@ -897,6 +1093,494 @@ export default function AdminDashboardPage() {
                 )}
               </div>
 
+              {/* 8. Typography, Font Sizes & Colors Control */}
+              <div className="p-4 rounded-2xl bg-neutral-950/70 border border-neutral-800 space-y-4">
+                <div className="text-xs font-bold text-amber-300 font-cairo flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <Type className="w-4 h-4 text-amber-400" />
+                    <span>تخصيص الخطوط والأحجام والألوان (Typography & Colors)</span>
+                  </div>
+                  <span className="text-[10px] font-tajawal text-neutral-400">تحكم كامل بالنصوص والخطوط</span>
+                </div>
+
+                {/* Sub-section A: Font Families */}
+                <div className="space-y-3 pt-1">
+                  <div className="text-[11px] font-bold text-neutral-300 font-cairo">
+                    ١. نوع الخطوط العربية (Font Families)
+                  </div>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {/* Groom & Bride Font */}
+                    <div>
+                      <label className="block text-[11px] text-neutral-400 mb-1">
+                        خط أسماء العروسين:
+                      </label>
+                      <select
+                        value={editingInv.typography?.namesFontFamily || 'ruqaa'}
+                        onChange={(e) =>
+                          setEditingInv({
+                            ...editingInv,
+                            typography: {
+                              ...editingInv.typography,
+                              namesFontFamily: e.target.value as any,
+                            },
+                          })
+                        }
+                        className="w-full px-2.5 py-2 rounded-xl bg-neutral-900 border border-neutral-800 text-xs text-neutral-200 focus:outline-none focus:border-amber-500 font-cairo"
+                      >
+                        <option value="ruqaa">خط الرقعة الفاخر (ملكي أصيل)</option>
+                        <option value="amiri">خط الأميري (النسخي الكلاسيكي)</option>
+                        <option value="cairo">خط كايرو (عصري بارز)</option>
+                        <option value="tajawal">خط تجوال (هادئ وناعم)</option>
+                      </select>
+                    </div>
+
+                    {/* Verse Font */}
+                    <div>
+                      <label className="block text-[11px] text-neutral-400 mb-1">
+                        خط الآية / النص الشعري:
+                      </label>
+                      <select
+                        value={editingInv.typography?.verseFontFamily || 'amiri'}
+                        onChange={(e) =>
+                          setEditingInv({
+                            ...editingInv,
+                            typography: {
+                              ...editingInv.typography,
+                              verseFontFamily: e.target.value as any,
+                            },
+                          })
+                        }
+                        className="w-full px-2.5 py-2 rounded-xl bg-neutral-900 border border-neutral-800 text-xs text-neutral-200 focus:outline-none focus:border-amber-500 font-cairo"
+                      >
+                        <option value="amiri">خط الأميري القرآني</option>
+                        <option value="ruqaa">خط الرقعة العربي</option>
+                        <option value="cairo">خط كايرو العصري</option>
+                        <option value="tajawal">خط تجوال الأنيق</option>
+                      </select>
+                    </div>
+
+                    {/* Parents Font */}
+                    <div>
+                      <label className="block text-[11px] text-neutral-400 mb-1">
+                        خط إعلان الأبوين والترحيب:
+                      </label>
+                      <select
+                        value={editingInv.typography?.parentsFontFamily || 'tajawal'}
+                        onChange={(e) =>
+                          setEditingInv({
+                            ...editingInv,
+                            typography: {
+                              ...editingInv.typography,
+                              parentsFontFamily: e.target.value as any,
+                            },
+                          })
+                        }
+                        className="w-full px-2.5 py-2 rounded-xl bg-neutral-900 border border-neutral-800 text-xs text-neutral-200 focus:outline-none focus:border-amber-500 font-cairo"
+                      >
+                        <option value="tajawal">خط تجوال الواضح</option>
+                        <option value="cairo">خط كايرو البارز</option>
+                        <option value="amiri">خط الأميري الكلاسيكي</option>
+                        <option value="ruqaa">خط الرقعة</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Sub-section B: Font Sizes */}
+                <div className="space-y-3 pt-2 border-t border-neutral-800/80">
+                  <div className="text-[11px] font-bold text-neutral-300 font-cairo">
+                    ٢. أحجام الخطوط (Font Sizes)
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {/* Names Size */}
+                    <div>
+                      <label className="block text-[11px] text-neutral-400 mb-1">
+                        حجم أسماء العروسين:
+                      </label>
+                      <div className="grid grid-cols-4 gap-1">
+                        {[
+                          { id: 'normal', label: 'عادي' },
+                          { id: 'large', label: 'كبير' },
+                          { id: 'xlarge', label: 'كبير جداً' },
+                          { id: 'huge', label: 'ضخم' },
+                        ].map((sz) => (
+                          <button
+                            type="button"
+                            key={sz.id}
+                            onClick={() =>
+                              setEditingInv({
+                                ...editingInv,
+                                typography: {
+                                  ...editingInv.typography,
+                                  namesSize: sz.id as any,
+                                },
+                              })
+                            }
+                            className={`py-1.5 rounded-lg text-[11px] font-cairo border transition-all ${
+                              (editingInv.typography?.namesSize || 'xlarge') === sz.id
+                                ? 'bg-amber-500 text-neutral-950 font-bold border-amber-400'
+                                : 'bg-neutral-900 text-neutral-300 border-neutral-800 hover:border-neutral-700'
+                            }`}
+                          >
+                            {sz.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Verse Size */}
+                    <div>
+                      <label className="block text-[11px] text-neutral-400 mb-1">
+                        حجم الآية / الشعر:
+                      </label>
+                      <div className="grid grid-cols-3 gap-1">
+                        {[
+                          { id: 'small', label: 'صغير' },
+                          { id: 'medium', label: 'متوسط' },
+                          { id: 'large', label: 'كبير' },
+                        ].map((sz) => (
+                          <button
+                            type="button"
+                            key={sz.id}
+                            onClick={() =>
+                              setEditingInv({
+                                ...editingInv,
+                                typography: {
+                                  ...editingInv.typography,
+                                  verseSize: sz.id as any,
+                                },
+                              })
+                            }
+                            className={`py-1.5 rounded-lg text-[11px] font-cairo border transition-all ${
+                              (editingInv.typography?.verseSize || 'medium') === sz.id
+                                ? 'bg-amber-500 text-neutral-950 font-bold border-amber-400'
+                                : 'bg-neutral-900 text-neutral-300 border-neutral-800 hover:border-neutral-700'
+                            }`}
+                          >
+                            {sz.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Parents Size */}
+                    <div>
+                      <label className="block text-[11px] text-neutral-400 mb-1">
+                        حجم إعلان الأبوين:
+                      </label>
+                      <div className="grid grid-cols-3 gap-1">
+                        {[
+                          { id: 'small', label: 'صغير' },
+                          { id: 'medium', label: 'متوسط' },
+                          { id: 'large', label: 'كبير' },
+                        ].map((sz) => (
+                          <button
+                            type="button"
+                            key={sz.id}
+                            onClick={() =>
+                              setEditingInv({
+                                ...editingInv,
+                                typography: {
+                                  ...editingInv.typography,
+                                  parentsSize: sz.id as any,
+                                },
+                              })
+                            }
+                            className={`py-1.5 rounded-lg text-[11px] font-cairo border transition-all ${
+                              (editingInv.typography?.parentsSize || 'medium') === sz.id
+                                ? 'bg-amber-500 text-neutral-950 font-bold border-amber-400'
+                                : 'bg-neutral-900 text-neutral-300 border-neutral-800 hover:border-neutral-700'
+                            }`}
+                          >
+                            {sz.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Sub-section C: Colors */}
+                <div className="space-y-3 pt-2 border-t border-neutral-800/80">
+                  <div className="text-[11px] font-bold text-neutral-300 font-cairo flex items-center justify-between">
+                    <span>٣. ألوان النصوص والخطوط (Text Colors)</span>
+                    <span className="text-[10px] text-neutral-500 font-tajawal">حدد بالقطارة أو اختر لوناً جاهزاً</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {/* Names Color */}
+                    <div className="p-2.5 rounded-xl bg-neutral-900 border border-neutral-800 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[11px] text-neutral-300 font-medium">لون أسماء العروسين:</label>
+                        <div className="flex items-center gap-1.5">
+                          <input
+                            type="color"
+                            value={editingInv.typography?.namesColor || '#fde047'}
+                            onChange={(e) =>
+                              setEditingInv({
+                                ...editingInv,
+                                typography: {
+                                  ...editingInv.typography,
+                                  namesColor: e.target.value,
+                                },
+                              })
+                            }
+                            className="w-6 h-6 rounded-md cursor-pointer bg-transparent border-0"
+                          />
+                          <span className="text-[11px] font-mono text-neutral-400">
+                            {editingInv.typography?.namesColor || '#fde047'}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] text-neutral-500">سريع:</span>
+                        {[
+                          { c: '#fde047', label: 'ذهبي' },
+                          { c: '#ffffff', label: 'أبيض' },
+                          { c: '#f472b6', label: 'وردي' },
+                          { c: '#34d399', label: 'زمردي' },
+                          { c: '#fb923c', label: 'برونزي' },
+                          { c: '#e2e8f0', label: 'فضي' },
+                        ].map((p) => (
+                          <button
+                            key={p.c}
+                            type="button"
+                            title={p.label}
+                            onClick={() =>
+                              setEditingInv({
+                                ...editingInv,
+                                typography: {
+                                  ...editingInv.typography,
+                                  namesColor: p.c,
+                                },
+                              })
+                            }
+                            className="w-4 h-4 rounded-full border border-neutral-700 hover:scale-125 transition-transform"
+                            style={{ backgroundColor: p.c }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Verse Color */}
+                    <div className="p-2.5 rounded-xl bg-neutral-900 border border-neutral-800 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[11px] text-neutral-300 font-medium">لون الآية / النص الشعري:</label>
+                        <div className="flex items-center gap-1.5">
+                          <input
+                            type="color"
+                            value={editingInv.typography?.verseColor || '#fef3c7'}
+                            onChange={(e) =>
+                              setEditingInv({
+                                ...editingInv,
+                                typography: {
+                                  ...editingInv.typography,
+                                  verseColor: e.target.value,
+                                },
+                              })
+                            }
+                            className="w-6 h-6 rounded-md cursor-pointer bg-transparent border-0"
+                          />
+                          <span className="text-[11px] font-mono text-neutral-400">
+                            {editingInv.typography?.verseColor || '#fef3c7'}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] text-neutral-500">سريع:</span>
+                        {[
+                          { c: '#fef3c7', label: 'عاجي ذهبي' },
+                          { c: '#ffffff', label: 'أبيض' },
+                          { c: '#fde047', label: 'أصفر ذهبي' },
+                          { c: '#ffe4e6', label: 'وردي ناعم' },
+                          { c: '#ffedd5', label: 'ترابي دافئ' },
+                        ].map((p) => (
+                          <button
+                            key={p.c}
+                            type="button"
+                            title={p.label}
+                            onClick={() =>
+                              setEditingInv({
+                                ...editingInv,
+                                typography: {
+                                  ...editingInv.typography,
+                                  verseColor: p.c,
+                                },
+                              })
+                            }
+                            className="w-4 h-4 rounded-full border border-neutral-700 hover:scale-125 transition-transform"
+                            style={{ backgroundColor: p.c }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Parents Color */}
+                    <div className="p-2.5 rounded-xl bg-neutral-900 border border-neutral-800 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[11px] text-neutral-300 font-medium">لون أسماء الأبوين:</label>
+                        <div className="flex items-center gap-1.5">
+                          <input
+                            type="color"
+                            value={editingInv.typography?.parentsColor || '#ffffff'}
+                            onChange={(e) =>
+                              setEditingInv({
+                                ...editingInv,
+                                typography: {
+                                  ...editingInv.typography,
+                                  parentsColor: e.target.value,
+                                },
+                              })
+                            }
+                            className="w-6 h-6 rounded-md cursor-pointer bg-transparent border-0"
+                          />
+                          <span className="text-[11px] font-mono text-neutral-400">
+                            {editingInv.typography?.parentsColor || '#ffffff'}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] text-neutral-500">سريع:</span>
+                        {[
+                          { c: '#ffffff', label: 'أبيض ناصع' },
+                          { c: '#fef3c7', label: 'عاجي' },
+                          { c: '#fde047', label: 'ذهبي' },
+                          { c: '#fecdd3', label: 'وردي' },
+                          { c: '#fed7aa', label: 'أندلسي' },
+                        ].map((p) => (
+                          <button
+                            key={p.c}
+                            type="button"
+                            title={p.label}
+                            onClick={() =>
+                              setEditingInv({
+                                ...editingInv,
+                                typography: {
+                                  ...editingInv.typography,
+                                  parentsColor: p.c,
+                                },
+                              })
+                            }
+                            className="w-4 h-4 rounded-full border border-neutral-700 hover:scale-125 transition-transform"
+                            style={{ backgroundColor: p.c }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Welcome Message Color */}
+                    <div className="p-2.5 rounded-xl bg-neutral-900 border border-neutral-800 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[11px] text-neutral-300 font-medium">لون نص رسالة الترحيب:</label>
+                        <div className="flex items-center gap-1.5">
+                          <input
+                            type="color"
+                            value={editingInv.typography?.welcomeColor || '#fef3c7'}
+                            onChange={(e) =>
+                              setEditingInv({
+                                ...editingInv,
+                                typography: {
+                                  ...editingInv.typography,
+                                  welcomeColor: e.target.value,
+                                },
+                              })
+                            }
+                            className="w-6 h-6 rounded-md cursor-pointer bg-transparent border-0"
+                          />
+                          <span className="text-[11px] font-mono text-neutral-400">
+                            {editingInv.typography?.welcomeColor || '#fef3c7'}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] text-neutral-500">سريع:</span>
+                        {[
+                          { c: '#fef3c7', label: 'عاجي' },
+                          { c: '#ffffff', label: 'أبيض' },
+                          { c: '#fde047', label: 'ذهبي' },
+                          { c: '#fecdd3', label: 'وردي' },
+                          { c: '#e2e8f0', label: 'فضي' },
+                        ].map((p) => (
+                          <button
+                            key={p.c}
+                            type="button"
+                            title={p.label}
+                            onClick={() =>
+                              setEditingInv({
+                                ...editingInv,
+                                typography: {
+                                  ...editingInv.typography,
+                                  welcomeColor: p.c,
+                                },
+                              })
+                            }
+                            className="w-4 h-4 rounded-full border border-neutral-700 hover:scale-125 transition-transform"
+                            style={{ backgroundColor: p.c }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Timeline / Programs Color */}
+                    <div className="p-2.5 rounded-xl bg-neutral-900 border border-neutral-800 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[11px] text-neutral-300 font-medium">لون خط برنامج وفقرات الحفل:</label>
+                        <div className="flex items-center gap-1.5">
+                          <input
+                            type="color"
+                            value={editingInv.typography?.timelineColor || '#fef3c7'}
+                            onChange={(e) =>
+                              setEditingInv({
+                                ...editingInv,
+                                typography: {
+                                  ...editingInv.typography,
+                                  timelineColor: e.target.value,
+                                },
+                              })
+                            }
+                            className="w-6 h-6 rounded-md cursor-pointer bg-transparent border-0"
+                          />
+                          <span className="text-[11px] font-mono text-neutral-400">
+                            {editingInv.typography?.timelineColor || '#fef3c7'}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] text-neutral-500">سريع:</span>
+                        {[
+                          { c: '#fef3c7', label: 'عاجي' },
+                          { c: '#fde047', label: 'ذهبي' },
+                          { c: '#ffffff', label: 'أبيض' },
+                          { c: '#fbcfe8', label: 'وردي' },
+                          { c: '#fed7aa', label: 'أندلسي' },
+                          { c: '#93c5fd', label: 'سماوي' },
+                        ].map((p) => (
+                          <button
+                            key={p.c}
+                            type="button"
+                            title={p.label}
+                            onClick={() =>
+                              setEditingInv({
+                                ...editingInv,
+                                typography: {
+                                  ...editingInv.typography,
+                                  timelineColor: p.c,
+                                },
+                              })
+                            }
+                            className="w-4 h-4 rounded-full border border-neutral-700 hover:scale-125 transition-transform"
+                            style={{ backgroundColor: p.c }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
               {/* 8. Background Media Customization (AI Image / Slow-Motion Loop Video) */}
               <div className="p-4 rounded-2xl bg-neutral-950/70 border border-neutral-800 space-y-3">
                 <div className="text-xs font-bold text-amber-300 font-cairo flex items-center gap-1.5">
@@ -938,10 +1622,33 @@ export default function AdminDashboardPage() {
 
               {/* 9. Event Timeline Items Manager */}
               <div className="p-4 rounded-2xl bg-neutral-950/70 border border-neutral-800 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-amber-300 font-cairo">
-                    مراسم وبرنامج الحفل (Timeline)
-                  </span>
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-bold text-amber-300 font-cairo">
+                      مراسم وبرنامج الحفل (Timeline)
+                    </span>
+                    <div className="flex items-center gap-1.5 px-2 py-1 bg-neutral-900 border border-neutral-800 rounded-lg">
+                      <span className="text-[10px] text-neutral-400 font-tajawal">لون خط البرامج:</span>
+                      <input
+                        type="color"
+                        value={editingInv.typography?.timelineColor || '#fef3c7'}
+                        onChange={(e) =>
+                          setEditingInv({
+                            ...editingInv,
+                            typography: {
+                              ...editingInv.typography,
+                              timelineColor: e.target.value,
+                            },
+                          })
+                        }
+                        className="w-5 h-5 rounded cursor-pointer bg-transparent border-0"
+                        title="تغيير لون خط برنامج الحفل"
+                      />
+                      <span className="text-[10px] font-mono text-neutral-300">
+                        {editingInv.typography?.timelineColor || '#fef3c7'}
+                      </span>
+                    </div>
+                  </div>
                   <button
                     type="button"
                     onClick={handleAddTimelineItem}
@@ -989,25 +1696,78 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
 
+              </div>
+
+              {/* Form Bottom Save / Cancel Actions */}
+              <div className="pt-6 border-t border-neutral-800 flex items-center justify-end gap-3 mt-6">
+                <button
+                  type="button"
+                  onClick={() => setIsEditorOpen(false)}
+                  className="px-5 py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-xs sm:text-sm font-bold font-cairo"
+                >
+                  إلغاء
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveInvitation}
+                  disabled={isSaving}
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-neutral-950 text-xs sm:text-sm font-bold font-cairo shadow-lg shadow-amber-500/20"
+                >
+                  {isSaving ? 'جاري الحفظ...' : 'حفظ ونشر الدعوة'}
+                </button>
+              </div>
+
             </div>
 
-            {/* Drawer Actions */}
-            <div className="pt-6 border-t border-neutral-800 flex items-center justify-end gap-3 mt-6">
-              <button
-                type="button"
-                onClick={() => setIsEditorOpen(false)}
-                className="px-5 py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-xs sm:text-sm font-bold font-cairo"
-              >
-                إلغاء
-              </button>
-              <button
-                type="button"
-                onClick={handleSaveInvitation}
-                disabled={isSaving}
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-neutral-950 text-xs sm:text-sm font-bold font-cairo shadow-lg shadow-amber-500/20"
-              >
-                {isSaving ? 'جاري الحفظ...' : 'حفظ ونشر الدعوة'}
-              </button>
+            {/* LIVE PREVIEW CANVAS (In Center / Middle of Screen) */}
+            <div
+              className={`flex-1 bg-[#05070a] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-500/10 via-neutral-950 to-neutral-950 relative flex flex-col items-center justify-start overflow-y-auto p-4 sm:p-7 transition-all ${
+                editorTab === 'preview' ? 'flex' : 'hidden xl:flex'
+              }`}
+              dir="rtl"
+            >
+              {/* Preview Status Bar Badge */}
+              <div className="w-full max-w-[420px] flex items-center justify-between py-2 px-3.5 mb-3 rounded-2xl bg-neutral-900/90 border border-neutral-800/80 backdrop-blur-md shadow-md">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-sm shadow-emerald-400/50" />
+                  <span className="text-xs font-bold text-neutral-200 font-cairo">
+                    معاينة حية ومباشرة للكارت
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 text-[11px] text-amber-300 font-tajawal bg-amber-500/10 px-2.5 py-0.5 rounded-lg border border-amber-500/20">
+                  <Smartphone className="w-3.5 h-3.5" />
+                  <span>شاشة الجوال الفعلية</span>
+                </div>
+              </div>
+
+              {/* Realistic Mobile Device Card Mockup */}
+              <div className="w-full max-w-[420px] my-auto bg-neutral-950 rounded-[48px] border-[9px] border-neutral-800 shadow-[0_30px_90px_rgba(0,0,0,0.95),0_0_50px_rgba(212,175,55,0.12)] ring-1 ring-white/10 overflow-hidden flex flex-col relative shrink-0">
+                {/* Phone Speaker & Camera Notch */}
+                <div className="w-full pt-2 pb-1 bg-neutral-900/90 flex justify-center items-center z-20 border-b border-white/5">
+                  <div className="w-24 h-3.5 bg-neutral-950 rounded-full flex items-center justify-center gap-2 px-2 border border-neutral-800">
+                    <div className="w-8 h-1 bg-neutral-700 rounded-full" />
+                    <div className="w-1.5 h-1.5 bg-neutral-700 rounded-full" />
+                  </div>
+                </div>
+
+                {/* Inner Screen Scroll Container with Template Live Render */}
+                <div className="overflow-y-auto max-h-[calc(100vh-170px)] min-h-[640px] scrollbar-thin scrollbar-thumb-neutral-700 scrollbar-track-neutral-900 bg-neutral-950">
+                  <TemplateRenderer
+                    key={`${previewInvitation.templateId}-${previewInvitation.typography?.namesFontFamily}-${previewInvitation.typography?.verseFontFamily}-${previewInvitation.typography?.parentsFontFamily}-${previewInvitation.typography?.namesSize}-${previewInvitation.typography?.verseSize}-${previewInvitation.typography?.parentsSize}`}
+                    invitation={previewInvitation}
+                  />
+                </div>
+
+                {/* Phone bottom home indicator bar */}
+                <div className="w-full py-1.5 bg-neutral-900/90 flex justify-center items-center z-20 border-t border-white/5">
+                  <div className="w-28 h-1 bg-neutral-600 rounded-full" />
+                </div>
+              </div>
+
+              {/* Interactive Hint */}
+              <p className="text-[11px] text-neutral-400 font-tajawal mt-3 text-center">
+                مرّر داخل شاشة الكارت للأعلى والأسفل لمعاينة كافة الفقرات والعد التنازلي وتأكيد الحضور
+              </p>
             </div>
 
           </div>

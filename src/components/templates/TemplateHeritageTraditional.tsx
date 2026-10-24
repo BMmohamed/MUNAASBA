@@ -15,9 +15,25 @@ import { AmbientMusicPlayer } from '../invitation/AmbientMusicPlayer';
 import { ScrollReveal } from '../common/ScrollReveal';
 import { formatArabicDateDisplay } from '@/lib/date-utils';
 import { Compass, Shirt, Sparkles } from 'lucide-react';
+import {
+  getFontFamilyClass,
+  getFontFamilyStyle,
+  getNamesSizeClass,
+  getVerseSizeClass,
+  getParentsSizeClass,
+} from '@/lib/typography-utils';
 
 export const TemplateHeritageTraditional: React.FC<{ invitation: InvitationData }> = ({ invitation }) => {
   const dateFormatted = formatArabicDateDisplay(invitation.eventDate);
+  const typo = invitation.typography;
+
+  const namesFont = getFontFamilyClass(typo?.namesFontFamily, 'font-ruqaa');
+  const verseFont = getFontFamilyClass(typo?.verseFontFamily, 'font-amiri');
+  const parentsFont = getFontFamilyClass(typo?.parentsFontFamily, 'font-tajawal');
+
+  const namesSize = getNamesSizeClass(typo?.namesSize);
+  const verseSize = getVerseSizeClass(typo?.verseSize);
+  const parentsSize = getParentsSizeClass(typo?.parentsSize);
 
   return (
     <div className="relative min-h-screen text-amber-100 font-cairo overflow-x-clip">
@@ -55,14 +71,20 @@ export const TemplateHeritageTraditional: React.FC<{ invitation: InvitationData 
           </ScrollReveal>
 
           {/* Poetic Line / Verse - High Contrast & Larger Font */}
-          {invitation.headerVerse && (
+          {invitation.toggles.showVerse !== false && invitation.headerVerse && (
             <ScrollReveal delay={1.5}>
               <div className="my-6 p-5 rounded-2xl glass-window-subtle border border-amber-600/40">
-                <p className="text-sm sm:text-base font-amiri text-amber-100 font-bold leading-relaxed italic whitespace-pre-line text-contrast-dark">
+                <p
+                  className={`${verseSize} ${verseFont} font-bold leading-[2.5] [word-spacing:0.35rem] italic whitespace-pre-line text-contrast-dark`}
+                  style={{
+                    color: typo?.verseColor || '#ffedd5',
+                    ...getFontFamilyStyle(typo?.verseFontFamily),
+                  }}
+                >
                   &ldquo;{invitation.headerVerse}&rdquo;
                 </p>
                 {invitation.verseSource && (
-                  <span className="text-xs text-amber-300 font-tajawal font-bold mt-1.5 block">
+                  <span className="text-xs text-amber-300 font-tajawal font-bold mt-2.5 block [word-spacing:0.15rem]">
                     [{invitation.verseSource}]
                   </span>
                 )}
@@ -73,20 +95,37 @@ export const TemplateHeritageTraditional: React.FC<{ invitation: InvitationData 
           <GoldFlourishDivider color="#d4af37" className="w-40 h-6 mx-auto my-4" />
 
           {/* Parents Introduction - Pure White for 100% Readability */}
-          <ScrollReveal delay={2.3}>
-            <div className="my-5 space-y-2.5 text-contrast-dark">
-              <p className="text-sm sm:text-base font-tajawal text-white font-bold leading-relaxed">
-                {invitation.groomParents}
-              </p>
-              <span className="text-xs sm:text-sm text-amber-300 font-black block">• مع •</span>
-              <p className="text-sm sm:text-base font-tajawal text-white font-bold leading-relaxed">
-                {invitation.brideParents}
-              </p>
-              <p className="text-xs sm:text-sm text-amber-100 font-tajawal mt-3 font-medium leading-relaxed">
-                {invitation.welcomeMessage}
-              </p>
-            </div>
-          </ScrollReveal>
+          {invitation.toggles.showParents !== false && (
+            <ScrollReveal delay={2.3}>
+              <div className="my-5 space-y-3 text-contrast-dark">
+                <p
+                  className={`${parentsSize} ${parentsFont} font-bold leading-[2.3] [word-spacing:0.25rem]`}
+                  style={{
+                    color: typo?.parentsColor || '#ffffff',
+                    ...getFontFamilyStyle(typo?.parentsFontFamily),
+                  }}
+                >
+                  {invitation.groomParents}
+                </p>
+                <span className="text-xs sm:text-sm text-amber-300 font-black block">• مع •</span>
+                <p
+                  className={`${parentsSize} ${parentsFont} font-bold leading-[2.3] [word-spacing:0.25rem]`}
+                  style={{
+                    color: typo?.parentsColor || '#ffffff',
+                    ...getFontFamilyStyle(typo?.parentsFontFamily),
+                  }}
+                >
+                  {invitation.brideParents}
+                </p>
+                <p
+                  className="text-xs sm:text-sm font-tajawal mt-3.5 font-medium leading-[2.3] [word-spacing:0.22rem]"
+                  style={{ color: typo?.welcomeColor || '#fed7aa' }}
+                >
+                  {invitation.welcomeMessage}
+                </p>
+              </div>
+            </ScrollReveal>
+          )}
 
           {/* Event Title Badge */}
           <ScrollReveal delay={3.1}>
@@ -102,13 +141,25 @@ export const TemplateHeritageTraditional: React.FC<{ invitation: InvitationData 
           {/* Couple Names in Heritage Arabic Calligraphy - Large Amber Gold */}
           <ScrollReveal delay={3.9}>
             <div className="my-7 py-6 rounded-3xl glass-window-subtle border border-amber-600/40">
-              <h1 className="text-4xl sm:text-6xl font-extrabold font-ruqaa text-amber-200 drop-shadow-xl tracking-wide">
+              <h1
+                className={`${namesSize} ${namesFont} font-extrabold drop-shadow-xl tracking-wide`}
+                style={{
+                  color: typo?.namesColor || '#fed7aa',
+                  ...getFontFamilyStyle(typo?.namesFontFamily),
+                }}
+              >
                 {invitation.groomName}
               </h1>
               <div className="text-amber-300 font-amiri text-3xl font-black my-2">
                 &
               </div>
-              <h2 className="text-4xl sm:text-6xl font-extrabold font-ruqaa text-amber-200 drop-shadow-xl tracking-wide">
+              <h2
+                className={`${namesSize} ${namesFont} font-extrabold drop-shadow-xl tracking-wide`}
+                style={{
+                  color: typo?.namesColor || '#fed7aa',
+                  ...getFontFamilyStyle(typo?.namesFontFamily),
+                }}
+              >
                 {invitation.brideName}
               </h2>
             </div>
@@ -166,7 +217,7 @@ export const TemplateHeritageTraditional: React.FC<{ invitation: InvitationData 
           {/* Event Timeline */}
           {invitation.toggles.showTimeline && (
             <ScrollReveal delay={7.6}>
-              <TimelineSection items={invitation.timeline} theme="heritage" />
+              <TimelineSection items={invitation.timeline} theme="heritage" textColor={typo?.timelineColor} />
             </ScrollReveal>
           )}
 
@@ -205,15 +256,17 @@ export const TemplateHeritageTraditional: React.FC<{ invitation: InvitationData 
           )}
 
           {/* Share Action */}
-          <ScrollReveal delay={9.7}>
-            <ShareAction
-              title={invitation.title}
-              slug={invitation.slug}
-              groomName={invitation.groomName}
-              brideName={invitation.brideName}
-              theme="heritage"
-            />
-          </ScrollReveal>
+          {invitation.toggles.showShare !== false && (
+            <ScrollReveal delay={9.7}>
+              <ShareAction
+                title={invitation.title}
+                slug={invitation.slug}
+                groomName={invitation.groomName}
+                brideName={invitation.brideName}
+                theme="heritage"
+              />
+            </ScrollReveal>
+          )}
 
           <div className="mt-8 pt-4 border-t border-amber-700/30 text-center text-xs sm:text-sm text-amber-200 font-tajawal font-medium">
             حياكم الله وبياكم في ديار الكرم والجود

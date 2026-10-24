@@ -103,7 +103,23 @@ export async function createInvitation(data: Partial<InvitationData>): Promise<I
       dressCodeText: data.toggles?.dressCodeText || 'الزي الرسمي السعودي',
       showTimeline: data.toggles?.showTimeline ?? true,
       showMusic: data.toggles?.showMusic ?? true,
+      showVerse: data.toggles?.showVerse ?? true,
+      showParents: data.toggles?.showParents ?? true,
+      showShare: data.toggles?.showShare ?? true,
       musicUrl: data.toggles?.musicUrl || 'https://assets.mixkit.co/music/preview/mixkit-serene-view-443.mp3',
+    },
+    typography: data.typography || {
+      namesFontFamily: 'ruqaa',
+      verseFontFamily: 'amiri',
+      parentsFontFamily: 'tajawal',
+      namesSize: 'xlarge',
+      verseSize: 'medium',
+      parentsSize: 'medium',
+      namesColor: '#fde047',
+      verseColor: '#fef3c7',
+      parentsColor: '#ffffff',
+      welcomeColor: '#fef3c7',
+      timelineColor: '#fef3c7',
     },
     timeline: data.timeline || [
       { id: 't1', time: '٠٨:٠٠ م', label: 'استقبال الضيوف الكرام', icon: 'coffee' },
@@ -133,6 +149,10 @@ export async function updateInvitation(id: string, data: Partial<InvitationData>
     toggles: {
       ...existing.toggles,
       ...(data.toggles || {}),
+    },
+    typography: {
+      ...(existing.typography || {}),
+      ...(data.typography || {}),
     },
     updatedAt: new Date().toISOString(),
   };
