@@ -65,7 +65,7 @@ export default function AdminDashboardPage() {
   // Load passcode from sessionStorage if already unlocked
   useEffect(() => {
     const saved = sessionStorage.getItem('munaasaba_admin_pass');
-    if (saved === 'admin123') {
+    if (saved === 'Noor1234') {
       setIsAuthenticated(true);
     }
   }, []);
@@ -112,12 +112,12 @@ export default function AdminDashboardPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (passcode === 'admin123' || passcode === 'admin') {
-      sessionStorage.setItem('munaasaba_admin_pass', 'admin123');
+    if (passcode === 'Noor1234') {
+      sessionStorage.setItem('munaasaba_admin_pass', 'Noor1234');
       setIsAuthenticated(true);
       setAuthError(null);
     } else {
-      setAuthError('كلمة المرور غير صحيحة. كلمة المرور الافتراضية هي: admin123');
+      setAuthError('كلمة المرور غير صحيحة. يرجى إدخال رمز المرور الصحيح.');
     }
   };
 
@@ -352,7 +352,7 @@ export default function AdminDashboardPage() {
                 type="password"
                 value={passcode}
                 onChange={(e) => setPasscode(e.target.value)}
-                placeholder="رمز المرور (الافتراضي: admin123)"
+                placeholder="أدخل رمز المرور السري"
                 className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-800 text-neutral-100 placeholder:text-neutral-600 focus:outline-none focus:border-amber-500 text-center font-cairo text-sm"
               />
             </div>
