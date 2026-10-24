@@ -271,6 +271,7 @@ export const TemplateModernMinimalist: React.FC<{ invitation: InvitationData; is
                 groomName={invitation.groomName}
                 brideName={invitation.brideName}
                 theme="minimal"
+                updatedAt={invitation.updatedAt}
               />
             </ScrollReveal>
           )}

@@ -285,6 +285,7 @@ export const TemplateRoyalFloral: React.FC<{ invitation: InvitationData; isHostV
                 groomName={invitation.groomName}
                 brideName={invitation.brideName}
                 theme="floral"
+                updatedAt={invitation.updatedAt}
               />
             </ScrollReveal>
           )}

@@ -270,6 +270,7 @@ export const TemplateLuxuryNight: React.FC<{ invitation: InvitationData; isHostV
                 groomName={invitation.groomName}
                 brideName={invitation.brideName}
                 theme="midnight"
+                updatedAt={invitation.updatedAt}
               />
             </ScrollReveal>
           )}

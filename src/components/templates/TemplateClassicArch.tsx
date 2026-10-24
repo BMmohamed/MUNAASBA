@@ -282,6 +282,7 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData; isHostV
                   groomName={invitation.groomName}
                   brideName={invitation.brideName}
                   theme="gold"
+                  updatedAt={invitation.updatedAt}
                 />
               </ScrollReveal>
             )}

@@ -124,9 +124,10 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const handleCopyLink = (slug: string, type: 'guest' | 'host' = 'guest') => {
+  const handleCopyLink = (slug: string, type: 'guest' | 'host' = 'guest', inv?: InvitationData) => {
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
-    const url = type === 'host' ? `${origin}/d/${slug}?view=host` : `${origin}/d/${slug}`;
+    const vParam = inv?.updatedAt ? `?v=${new Date(inv.updatedAt).getTime().toString(36)}` : '';
+    const url = type === 'host' ? `${origin}/d/${slug}?view=host` : `${origin}/d/${slug}${vParam}`;
     navigator.clipboard.writeText(url);
     const key = `${slug}-${type}`;
     setCopiedSlug(key);
@@ -140,7 +141,9 @@ export default function AdminDashboardPage() {
 
   const handleCopyWhatsAppMessage = (inv: InvitationData) => {
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
-    const url = `${origin}/d/${inv.slug}`;
+    const vParam = inv.updatedAt ? `?v=${new Date(inv.updatedAt).getTime().toString(36)}` : '';
+    const url = `${origin}/d/${inv.slug}${vParam}`;
+    const venueDisplay = [inv.venueName, inv.venueCity].filter(Boolean).join(' - ');
     const text = `✨ *دعوة خاصة لحضور ${inv.eventTitle}* ✨
 
 "وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً"
@@ -150,7 +153,7 @@ export default function AdminDashboardPage() {
 
 📅 *الموعد:* ${inv.dayOfWeek} ${inv.eventDateHijri ? `(${inv.eventDateHijri})` : ''}
 ⏰ *الوقت:* ${inv.timeFormatted}
-📍 *المكان:* ${inv.venueName} - ${inv.venueCity}
+📍 *المكان:* ${venueDisplay}
 
 يسعدنا ويشرفنا حضوركم ومشاركتكم فرحتنا، لمشاهدة بطاقة الدعوة وتأكيد الحضور (RSVP) تفضلوا بالدخول عبر الرابط:
 ${url}`;
@@ -769,7 +772,7 @@ ${url}`;
                             {/* Guest Link (No counter) */}
                             <button
                               type="button"
-                              onClick={() => handleCopyLink(inv.slug, 'guest')}
+                              onClick={() => handleCopyLink(inv.slug, 'guest', inv)}
                               title="نسخ رابط المعازيم (كرت الدعوة بدون عداد الحضور)"
                               className="px-2.5 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs flex items-center justify-between gap-2 transition-all border border-neutral-700 cursor-pointer"
                             >

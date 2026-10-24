@@ -9,6 +9,7 @@ interface ShareActionProps {
   groomName: string;
   brideName: string;
   theme?: 'gold' | 'minimal' | 'floral' | 'midnight' | 'heritage';
+  updatedAt?: string;
 }
 
 export const ShareAction: React.FC<ShareActionProps> = ({
@@ -17,14 +18,16 @@ export const ShareAction: React.FC<ShareActionProps> = ({
   groomName,
   brideName,
   theme = 'gold',
+  updatedAt,
 }) => {
   const [copied, setCopied] = useState(false);
 
   const getShareUrl = () => {
+    const versionParam = updatedAt ? `?v=${new Date(updatedAt).getTime().toString(36)}` : '';
     if (typeof window !== 'undefined') {
-      return `${window.location.origin}/d/${slug}`;
+      return `${window.location.origin}/d/${slug}${versionParam}`;
     }
-    return `https://munaasaba.vercel.app/d/${slug}`;
+    return `https://munaasba.vercel.app/d/${slug}${versionParam}`;
   };
 
   const shareText = `✨ *دعوة خاصة لحضور ${title}* ✨

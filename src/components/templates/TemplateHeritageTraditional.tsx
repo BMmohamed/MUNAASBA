@@ -275,6 +275,7 @@ export const TemplateHeritageTraditional: React.FC<{ invitation: InvitationData;
                 groomName={invitation.groomName}
                 brideName={invitation.brideName}
                 theme="heritage"
+                updatedAt={invitation.updatedAt}
               />
             </ScrollReveal>
           )}
