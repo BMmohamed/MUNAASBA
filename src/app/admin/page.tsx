@@ -27,6 +27,9 @@ import {
   Palette,
   Smartphone,
   Database,
+  Crown,
+  Globe,
+  EyeOff,
 } from 'lucide-react';
 import { InvitationData, InvitationTemplateId, TimelineItem } from '@/types/invitation';
 import { TemplateRenderer } from '@/components/templates/TemplateRenderer';
@@ -118,12 +121,18 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const handleCopyLink = (slug: string) => {
+  const handleCopyLink = (slug: string, type: 'guest' | 'host' = 'guest') => {
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
-    const url = `${origin}/d/${slug}`;
+    const url = type === 'host' ? `${origin}/d/${slug}?view=host` : `${origin}/d/${slug}`;
     navigator.clipboard.writeText(url);
-    setCopiedSlug(slug);
+    const key = `${slug}-${type}`;
+    setCopiedSlug(key);
     setTimeout(() => setCopiedSlug(null), 3000);
+    showToast(
+      type === 'host'
+        ? 'تم نسخ رابط أهل العرس (المزود بعداد الحضور المباشر) 👑'
+        : 'تم نسخ رابط المعازيم (كرت الدعوة بدون عداد) 💌'
+    );
   };
 
   const handleResetRsvp = async (slug: string, id: string) => {
@@ -172,6 +181,7 @@ export default function AdminDashboardPage() {
       verseSource: QURANIC_AND_POETIC_PRESETS[0].source,
       welcomeMessage: 'يتشرفون بدعوتكم لحضور حفل الزفاف ومشاركتهم الفرحة والسرور، وبحضوركم يتم لنا الفرح والسرور.',
       rsvpCount: 0,
+      isPublic: true,
       toggles: {
         showCountdown: true,
         showCalendar: true,
@@ -237,6 +247,7 @@ export default function AdminDashboardPage() {
     if (cloned.toggles.showVerse === undefined) cloned.toggles.showVerse = true;
     if (cloned.toggles.showParents === undefined) cloned.toggles.showParents = true;
     if (cloned.toggles.showShare === undefined) cloned.toggles.showShare = true;
+    if (cloned.isPublic === undefined) cloned.isPublic = true;
     setEditingInv(cloned);
     setIsEditorOpen(true);
   };
@@ -589,14 +600,16 @@ export default function AdminDashboardPage() {
                     <th className="py-4 px-6">عنوان الدعوة / العروسين</th>
                     <th className="py-4 px-6">القالب المعتمد</th>
                     <th className="py-4 px-6">الموعد والمكان</th>
+                    <th className="py-4 px-6 text-center">الظهور</th>
                     <th className="py-4 px-6 text-center">حضور مؤكد (RSVP)</th>
-                    <th className="py-4 px-6 text-center">الرابط الفريد</th>
+                    <th className="py-4 px-6 text-center">روابط الدعوة والمشاركة</th>
                     <th className="py-4 px-6 text-center">الإجراءات</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-neutral-800/60 font-tajawal">
                   {invitations.map((inv) => {
                     const tmpl = templateNames[inv.templateId] || templateNames['template-1'];
+                    const isPublic = inv.isPublic !== false;
                     return (
                       <tr key={inv.id} className="hover:bg-neutral-800/30 transition-colors">
                         {/* Title & Couple */}
@@ -624,6 +637,21 @@ export default function AdminDashboardPage() {
                           <div className="text-neutral-500 mt-0.5">{inv.venueName} - {inv.venueCity}</div>
                         </td>
 
+                        {/* Public / Private Badge */}
+                        <td className="py-4 px-6 text-center">
+                          {isPublic ? (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
+                              <Globe className="w-3 h-3" />
+                              <span>عامة بالموقع</span>
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">
+                              <EyeOff className="w-3 h-3" />
+                              <span>خاصة وسرية</span>
+                            </span>
+                          )}
+                        </td>
+
                         {/* RSVP Counter Badge */}
                         <td className="py-4 px-6 text-center">
                           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-bold font-cairo text-xs">
@@ -632,62 +660,43 @@ export default function AdminDashboardPage() {
                           </span>
                         </td>
 
-                        {/* Slug & Copy Link */}
+                        {/* Dual Links (Guest vs Host) */}
                         <td className="py-4 px-6 text-center">
-                          <div className="inline-flex items-center gap-1">
+                          <div className="flex flex-col gap-1.5 items-stretch min-w-[210px]">
+                            {/* Guest Link (No counter) */}
                             <button
                               type="button"
-                              onClick={() => handleCopyLink(inv.slug)}
-                              title="نسخ الرابط"
-                              className="px-2.5 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-xs font-mono flex items-center gap-1.5 transition-colors"
+                              onClick={() => handleCopyLink(inv.slug, 'guest')}
+                              title="نسخ رابط المعازيم (كرت الدعوة بدون عداد الحضور)"
+                              className="px-2.5 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs flex items-center justify-between gap-2 transition-all border border-neutral-700 cursor-pointer"
                             >
-                              {copiedSlug === inv.slug ? (
-                                <>
-                                  <Check className="w-3 h-3 text-emerald-400" />
-                                  <span className="text-emerald-400">تم النسخ</span>
-                                </>
+                              <span className="flex items-center gap-1.5 text-[11px] font-cairo">
+                                <Copy className="w-3.5 h-3.5 text-amber-400" />
+                                <span>رابط المعازيم (بدون عداد)</span>
+                              </span>
+                              {copiedSlug === `${inv.slug}-guest` ? (
+                                <span className="text-emerald-400 font-bold text-[10px]">✓ نُسخ</span>
                               ) : (
-                                <>
-                                  <Copy className="w-3 h-3" />
-                                  <span>/d/{inv.slug}</span>
-                                </>
+                                <span className="text-[10px] text-neutral-400 font-mono">/d/{inv.slug}</span>
                               )}
                             </button>
-                          </div>
-                        </td>
 
-                        {/* Actions */}
-                        <td className="py-4 px-6 text-center">
-                          <div className="flex items-center justify-center gap-2">
-                            {/* View in new tab */}
-                            <a
-                              href={`/d/${inv.slug}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              title="معاينة الدعوة"
-                              className="p-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-200 transition-colors"
-                            >
-                              <ExternalLink className="w-4 h-4" />
-                            </a>
-
-                            {/* Edit */}
+                            {/* Host Link (With live counter) */}
                             <button
                               type="button"
-                              onClick={() => openEditModal(inv)}
-                              title="تعديل الدعوة"
-                              className="p-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-amber-300 transition-colors"
+                              onClick={() => handleCopyLink(inv.slug, 'host')}
+                              title="نسخ رابط أهل العرس (مزود بعداد الحضور المباشر)"
+                              className="px-2.5 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs flex items-center justify-between gap-2 transition-all border border-amber-500/30 cursor-pointer"
                             >
-                              <Edit className="w-4 h-4" />
-                            </button>
-
-                            {/* Reset RSVP */}
-                            <button
-                              type="button"
-                              onClick={() => handleResetRsvp(inv.slug, inv.id)}
-                              title="تصفير عداد الحضور"
-                              className="p-2 rounded-lg bg-neutral-800 hover:bg-rose-950/50 text-neutral-400 hover:text-rose-400 transition-colors"
-                            >
-                              <RotateCcw className="w-4 h-4" />
+                              <span className="flex items-center gap-1.5 text-[11px] font-cairo font-bold">
+                                <Crown className="w-3.5 h-3.5 text-amber-400" />
+                                <span>رابط أهل العرس (مع العداد)</span>
+                              </span>
+                              {copiedSlug === `${inv.slug}-host` ? (
+                                <span className="text-emerald-400 font-bold text-[10px]">✓ نُسخ</span>
+                              ) : (
+                                <span className="text-[10px] text-amber-400/70 font-mono">?view=host</span>
+                              )}
                             </button>
                           </div>
                         </td>
@@ -858,6 +867,67 @@ export default function AdminDashboardPage() {
                     placeholder="حفل الزفاف المبارك / عقد قران"
                     className="w-full px-3 py-2 rounded-xl bg-neutral-950 border border-neutral-800 text-xs text-neutral-200 focus:outline-none focus:border-amber-500"
                   />
+                </div>
+              </div>
+
+              {/* Privacy Setting & Dual Links Helper */}
+              <div className="p-3.5 rounded-2xl bg-neutral-950/80 border border-neutral-800 space-y-2.5">
+                <label className="block text-xs font-bold text-amber-300 font-cairo">
+                  ظهور وخصوصية الدعوة:
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setEditingInv({ ...editingInv, isPublic: true })}
+                    className={`p-2.5 rounded-xl border text-right transition-all cursor-pointer ${
+                      editingInv.isPublic !== false
+                        ? 'border-emerald-500 bg-emerald-500/10 text-emerald-300 font-bold'
+                        : 'border-neutral-800 bg-neutral-900/60 text-neutral-400 hover:border-neutral-700'
+                    }`}
+                  >
+                    <div className="text-xs flex items-center gap-1.5">
+                      <Globe className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>دعوة عامة</span>
+                    </div>
+                    <div className="text-[10px] text-neutral-400 mt-0.5 font-tajawal">تظهر في الرئيسية والمعرض</div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setEditingInv({ ...editingInv, isPublic: false })}
+                    className={`p-2.5 rounded-xl border text-right transition-all cursor-pointer ${
+                      editingInv.isPublic === false
+                        ? 'border-amber-500 bg-amber-500/10 text-amber-300 font-bold'
+                        : 'border-neutral-800 bg-neutral-900/60 text-neutral-400 hover:border-neutral-700'
+                    }`}
+                  >
+                    <div className="text-xs flex items-center gap-1.5">
+                      <EyeOff className="w-3.5 h-3.5 text-amber-400" />
+                      <span>دعوة خاصة</span>
+                    </div>
+                    <div className="text-[10px] text-neutral-400 mt-0.5 font-tajawal">برابط فقط ولا تظهر بالرئيسية</div>
+                  </button>
+                </div>
+
+                {/* Dual links info */}
+                <div className="pt-2 border-t border-neutral-800/80 space-y-1.5 text-xs font-tajawal">
+                  <div className="flex items-center justify-between bg-neutral-900 p-2 rounded-xl border border-neutral-800">
+                    <div className="flex items-center gap-1.5 text-neutral-300">
+                      <Copy className="w-3.5 h-3.5 text-amber-400" />
+                      <span className="font-bold">رابط المعازيم:</span>
+                      <span className="text-[11px] text-neutral-400 font-mono">/d/{editingInv.slug || 'slug'}</span>
+                    </div>
+                    <span className="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">بدون عداد الحضور</span>
+                  </div>
+
+                  <div className="flex items-center justify-between bg-amber-500/5 p-2 rounded-xl border border-amber-500/20">
+                    <div className="flex items-center gap-1.5 text-amber-300">
+                      <Crown className="w-3.5 h-3.5 text-amber-400" />
+                      <span className="font-bold">رابط أهل العرس:</span>
+                      <span className="text-[11px] text-amber-400/80 font-mono">/d/{editingInv.slug || 'slug'}?view=host</span>
+                    </div>
+                    <span className="text-[10px] text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded">مع العداد المباشر</span>
+                  </div>
                 </div>
               </div>
 

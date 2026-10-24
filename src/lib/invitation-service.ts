@@ -14,8 +14,8 @@ function getStore(): Map<string, InvitationData> {
   if (!global.__INVITATIONS_CACHE__) {
     const store = new Map<string, InvitationData>();
     INITIAL_INVITATIONS.forEach((inv) => {
-      store.set(inv.slug, { ...inv });
-      store.set(inv.id, { ...inv });
+      store.set(inv.slug, { ...inv, isPublic: inv.isPublic ?? true });
+      store.set(inv.id, { ...inv, isPublic: inv.isPublic ?? true });
     });
     global.__INVITATIONS_CACHE__ = store;
   }
@@ -56,6 +56,7 @@ function mapDbToInvitation(row: any): InvitationData {
     welcomeMessage: row.welcome_message || '',
     rsvpCount: typeof row.rsvp_count === 'number' ? row.rsvp_count : 0,
     rsvpDeviceList: Array.isArray(row.rsvp_device_list) ? row.rsvp_device_list : [],
+    isPublic: row.is_public !== undefined ? Boolean(row.is_public) : true,
     toggles: row.toggles || {},
     timeline: Array.isArray(row.timeline) ? row.timeline : [],
     typography: row.typography || {},
@@ -96,6 +97,7 @@ function mapInvitationToDb(inv: Partial<InvitationData>): any {
   if (inv.welcomeMessage !== undefined) dbRow.welcome_message = inv.welcomeMessage;
   if (inv.rsvpCount !== undefined) dbRow.rsvp_count = inv.rsvpCount;
   if (inv.rsvpDeviceList !== undefined) dbRow.rsvp_device_list = inv.rsvpDeviceList;
+  if (inv.isPublic !== undefined) dbRow.is_public = inv.isPublic;
   if (inv.toggles !== undefined) dbRow.toggles = inv.toggles;
   if (inv.timeline !== undefined) dbRow.timeline = inv.timeline;
   if (inv.typography !== undefined) dbRow.typography = inv.typography;
@@ -108,22 +110,27 @@ function mapInvitationToDb(inv: Partial<InvitationData>): any {
   return dbRow;
 }
 
-export async function getAllInvitations(): Promise<InvitationData[]> {
+export async function getAllInvitations(onlyPublic: boolean = false): Promise<InvitationData[]> {
   if (isSupabaseConfigured()) {
     try {
       const client = getSupabaseAdmin() || getSupabase();
       if (client) {
-        const { data, error } = await client
+        let query = client
           .from('invitations')
           .select('*')
           .order('created_at', { ascending: false });
+
+        if (onlyPublic) {
+          query = query.neq('is_public', false);
+        }
+
+        const { data, error } = await query;
 
         if (error) {
           console.warn('[Supabase] Warning fetching invitations:', error.message);
         } else if (data && data.length > 0) {
           return data.map(mapDbToInvitation);
         } else {
-          // If table exists but empty, return default seeds
           return INITIAL_INVITATIONS;
         }
       }
@@ -139,7 +146,9 @@ export async function getAllInvitations(): Promise<InvitationData[]> {
   store.forEach((inv) => {
     if (!seen.has(inv.id)) {
       seen.add(inv.id);
-      list.push({ ...inv });
+      if (!onlyPublic || inv.isPublic !== false) {
+        list.push({ ...inv });
+      }
     }
   });
   return list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -201,7 +210,7 @@ export async function createInvitation(data: Partial<InvitationData>): Promise<I
     groomParents: data.groomParents || 'أهل العريس الكرام',
     brideParents: data.brideParents || 'أهل العروس الكرام',
     eventDate: data.eventDate || '2026-12-01T20:00:00',
-    eventDateHijri: data.eventDateHijri || '١ رجب ١٤٤٨ هـ',
+    eventDateHijri: data.eventDateHijri || '١ رجب ١٤٨ هـ',
     dayOfWeek: data.dayOfWeek || 'الجمعة',
     timeFormatted: data.timeFormatted || 'الساعة ٨:٠٠ مساءً',
     venueName: data.venueName || 'قصر الاحتفالات',
@@ -214,6 +223,7 @@ export async function createInvitation(data: Partial<InvitationData>): Promise<I
     welcomeMessage: data.welcomeMessage || 'يتشرفون بدعوتكم لحضور حفل الزفاف ومشاركتهم الفرحة والسرور.',
     rsvpCount: data.rsvpCount || 0,
     rsvpDeviceList: [],
+    isPublic: data.isPublic !== undefined ? data.isPublic : true,
     toggles: {
       showCountdown: data.toggles?.showCountdown ?? true,
       showCalendar: data.toggles?.showCalendar ?? true,
@@ -259,7 +269,12 @@ export async function createInvitation(data: Partial<InvitationData>): Promise<I
       const client = getSupabaseAdmin() || getSupabase();
       if (client) {
         const row = mapInvitationToDb(newInvitation);
-        const { error } = await client.from('invitations').insert(row);
+        let { error } = await client.from('invitations').insert(row);
+        if (error && error.code === '42703') {
+          delete row.is_public;
+          const retry = await client.from('invitations').insert(row);
+          error = retry.error;
+        }
         if (error) {
           console.error('[Supabase] Error creating invitation in DB:', error.message);
         }
@@ -277,7 +292,7 @@ export async function createInvitation(data: Partial<InvitationData>): Promise<I
 
 export async function updateInvitation(id: string, data: Partial<InvitationData>): Promise<InvitationData | null> {
   const store = getStore();
-  const existing = await getInvitationBySlug(id) || store.get(id);
+  const existing = (await getInvitationBySlug(id)) || store.get(id);
   if (!existing) {
     return null;
   }
@@ -285,6 +300,7 @@ export async function updateInvitation(id: string, data: Partial<InvitationData>
   const updated: InvitationData = {
     ...existing,
     ...data,
+    isPublic: data.isPublic !== undefined ? data.isPublic : (existing.isPublic ?? true),
     toggles: {
       ...existing.toggles,
       ...(data.toggles || {}),
@@ -302,7 +318,12 @@ export async function updateInvitation(id: string, data: Partial<InvitationData>
       const client = getSupabaseAdmin() || getSupabase();
       if (client) {
         const row = mapInvitationToDb(updated);
-        const { error } = await client.from('invitations').update(row).eq('id', id);
+        let { error } = await client.from('invitations').update(row).eq('id', id);
+        if (error && error.code === '42703') {
+          delete row.is_public;
+          const retry = await client.from('invitations').update(row).eq('id', id);
+          error = retry.error;
+        }
         if (error) {
           console.error('[Supabase] Error updating invitation:', error.message);
         }
@@ -323,9 +344,15 @@ export async function updateInvitation(id: string, data: Partial<InvitationData>
   return updated;
 }
 
-export async function registerRsvp(slugOrId: string, deviceFingerprint: string): Promise<RsvpResponse> {
+export async function registerRsvp(
+  slugOrId: string,
+  deviceFingerprint: string,
+  guestCount: number = 1,
+  guestName: string = ''
+): Promise<RsvpResponse> {
   const store = getStore();
   const deviceSet = getDeviceSet();
+  const countToAdd = Math.max(1, Math.min(20, Number(guestCount) || 1));
 
   let target: InvitationData | null = null;
   if (isSupabaseConfigured()) {
@@ -374,15 +401,23 @@ export async function registerRsvp(slugOrId: string, deviceFingerprint: string):
           };
         }
 
-        // 2. Insert new rsvp_log
-        await client.from('rsvp_logs').insert({
+        // 2. Insert new rsvp_log with guest_count & guest_name
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const logPayload: any = {
           invitation_id: target.id,
           invitation_slug: target.slug,
           device_fingerprint: deviceFingerprint,
-        });
+          guest_count: countToAdd,
+          guest_name: guestName || '',
+        };
+        const { error: insertErr } = await client.from('rsvp_logs').insert(logPayload);
+        if (insertErr && insertErr.code === '42703') {
+          delete logPayload.guest_count;
+          await client.from('rsvp_logs').insert(logPayload);
+        }
 
-        // 3. Update rsvp_count in invitations table
-        const newCount = target.rsvpCount + 1;
+        // 3. Update rsvp_count in invitations table (+ countToAdd)
+        const newCount = target.rsvpCount + countToAdd;
         const updatedList = Array.isArray(target.rsvpDeviceList)
           ? [...target.rsvpDeviceList, deviceFingerprint]
           : [deviceFingerprint];
@@ -403,9 +438,10 @@ export async function registerRsvp(slugOrId: string, deviceFingerprint: string):
         store.set(target.id, { ...target });
         deviceSet.add(lockKey);
 
+        const guestSuffix = countToAdd > 1 ? ` لـ (${countToAdd}) أفراد` : '';
         return {
           success: true,
-          message: 'تم تأكيد حضورك بنجاح! نتشرف بوجودكم معنا.',
+          message: `تم تأكيد حضوركم${guestSuffix} بنجاح! نتشرف بوجودكم معنا.`,
           newCount,
           alreadyRsvped: false,
         };
@@ -425,7 +461,7 @@ export async function registerRsvp(slugOrId: string, deviceFingerprint: string):
     };
   }
 
-  target.rsvpCount += 1;
+  target.rsvpCount += countToAdd;
   if (!target.rsvpDeviceList) {
     target.rsvpDeviceList = [];
   }
@@ -435,9 +471,10 @@ export async function registerRsvp(slugOrId: string, deviceFingerprint: string):
   store.set(target.slug, { ...target });
   store.set(target.id, { ...target });
 
+  const guestSuffix = countToAdd > 1 ? ` لـ (${countToAdd}) أفراد` : '';
   return {
     success: true,
-    message: 'تم تأكيد حضورك بنجاح! نتشرف بوجودكم معنا.',
+    message: `تم تأكيد حضوركم${guestSuffix} بنجاح! نتشرف بوجودكم معنا.`,
     newCount: target.rsvpCount,
     alreadyRsvped: false,
   };

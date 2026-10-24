@@ -22,7 +22,10 @@ import {
   getParentsSizeClass,
 } from '@/lib/typography-utils';
 
-export const TemplateModernMinimalist: React.FC<{ invitation: InvitationData }> = ({ invitation }) => {
+export const TemplateModernMinimalist: React.FC<{ invitation: InvitationData; isHostView?: boolean }> = ({
+  invitation,
+  isHostView = false,
+}) => {
   const dateFormatted = formatArabicDateDisplay(invitation.eventDate);
   const typo = invitation.typography;
 
@@ -36,6 +39,13 @@ export const TemplateModernMinimalist: React.FC<{ invitation: InvitationData }> 
 
   return (
     <div className="relative min-h-screen text-stone-100 font-cairo overflow-x-clip">
+      
+      {/* Host Mode Indicator Banner */}
+      {isHostView && (
+        <div className="sticky top-0 z-50 px-4 py-2 bg-gradient-to-r from-stone-700 via-stone-600 to-stone-700 text-stone-100 text-xs font-bold font-cairo text-center shadow-lg flex items-center justify-center gap-2">
+          <span>👑 رابط خاص بأهل الحفل (متابعة إحصائيات وعداد الحضور المباشر)</span>
+        </div>
+      )}
       
       {/* Slow-Motion Ambient Video Loop & AI Image Background */}
       <BackgroundMediaLayer
@@ -246,6 +256,7 @@ export const TemplateModernMinimalist: React.FC<{ invitation: InvitationData }> 
                   slug={invitation.slug}
                   initialCount={invitation.rsvpCount}
                   theme="minimal"
+                  isHostView={isHostView}
                 />
               </div>
             </ScrollReveal>

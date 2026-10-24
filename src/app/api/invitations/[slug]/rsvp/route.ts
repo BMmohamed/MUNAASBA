@@ -8,10 +8,14 @@ export async function POST(
   try {
     const { slug } = await params;
     let fingerprint = '';
+    let guestCount = 1;
+    let guestName = '';
 
     try {
       const body = await request.json();
       fingerprint = body?.fingerprint || '';
+      guestCount = Math.max(1, Math.min(20, Number(body?.guestCount) || 1));
+      guestName = (body?.guestName || '').trim();
     } catch {
       // Body was either empty or text
     }
@@ -23,7 +27,7 @@ export async function POST(
       );
     }
 
-    const result = await registerRsvp(slug, fingerprint);
+    const result = await registerRsvp(slug, fingerprint, guestCount, guestName);
     return NextResponse.json(result);
   } catch (error) {
     console.error('Error in RSVP route:', error);

@@ -73,6 +73,7 @@ export interface InvitationData {
   welcomeMessage: string;
   rsvpCount: number;
   rsvpDeviceList?: string[]; // stored device fingerprints that already RSVPed
+  isPublic?: boolean; // هل الدعوة عامة تظهر في المعرض أم خاصة وسرية برابط فقط
   toggles: InvitationToggles;
   timeline: TimelineItem[];
   typography?: TypographySettings;
@@ -86,6 +87,7 @@ export interface InvitationData {
 
 export interface RsvpRequest {
   fingerprint: string;
+  guestCount?: number;
   guestName?: string;
 }
 

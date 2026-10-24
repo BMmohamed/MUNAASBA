@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
 import { getInvitationBySlug, getAllInvitations } from '@/lib/invitation-service';
 import { DesktopFrameWrapper } from '@/components/invitation/DesktopFrameWrapper';
 import Link from 'next/link';
@@ -8,6 +7,7 @@ export const dynamic = 'force-dynamic';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export async function generateStaticParams() {
@@ -46,8 +46,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function InvitationPage({ params }: PageProps) {
+export default async function InvitationPage({ params, searchParams }: PageProps) {
   const { slug } = await params;
+  const resolvedSearchParams = searchParams ? await searchParams : {};
+  const isHostView =
+    resolvedSearchParams?.view === 'host' ||
+    resolvedSearchParams?.host === 'true' ||
+    resolvedSearchParams?.role === 'host';
+
   const invitation = await getInvitationBySlug(slug);
 
   if (!invitation) {
@@ -72,5 +78,5 @@ export default async function InvitationPage({ params }: PageProps) {
     );
   }
 
-  return <DesktopFrameWrapper invitation={invitation} />;
+  return <DesktopFrameWrapper invitation={invitation} isHostView={isHostView} />;
 }

@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS public.invitations (
     welcome_message TEXT DEFAULT '',
     rsvp_count INTEGER DEFAULT 0,
     rsvp_device_list JSONB DEFAULT '[]'::jsonb,
+    is_public BOOLEAN DEFAULT true,
     toggles JSONB DEFAULT '{}'::jsonb,
     timeline JSONB DEFAULT '[]'::jsonb,
     typography JSONB DEFAULT '{}'::jsonb,
@@ -43,16 +44,22 @@ CREATE TABLE IF NOT EXISTS public.invitations (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- الترقية التلقائية للمشاريع الحالية (إضافة الأعمدة إذا لم تكن موجودة)
+ALTER TABLE public.invitations ADD COLUMN IF NOT EXISTS is_public BOOLEAN DEFAULT true;
+
 -- 3. إنشاء جدول سجلات الحضور (rsvp_logs) لمنع التكرار وحفظ أجهزة وضيوف الدعوة
 CREATE TABLE IF NOT EXISTS public.rsvp_logs (
     id BIGSERIAL PRIMARY KEY,
     invitation_id TEXT NOT NULL REFERENCES public.invitations(id) ON DELETE CASCADE,
     invitation_slug TEXT NOT NULL,
     device_fingerprint TEXT NOT NULL,
+    guest_count INTEGER DEFAULT 1,
     guest_name TEXT DEFAULT '',
     created_at TIMESTAMPTZ DEFAULT NOW(),
     UNIQUE(invitation_id, device_fingerprint)
 );
+
+ALTER TABLE public.rsvp_logs ADD COLUMN IF NOT EXISTS guest_count INTEGER DEFAULT 1;
 
 -- 4. إنشاء الفهارس (Indexes) لتسريع الاستعلامات
 CREATE INDEX IF NOT EXISTS idx_invitations_slug ON public.invitations(slug);

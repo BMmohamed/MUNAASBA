@@ -5,7 +5,10 @@ import { Smartphone, Monitor, QrCode, Sparkles } from 'lucide-react';
 import { InvitationData } from '@/types/invitation';
 import { TemplateRenderer } from '../templates/TemplateRenderer';
 
-export const DesktopFrameWrapper: React.FC<{ invitation: InvitationData }> = ({ invitation }) => {
+export const DesktopFrameWrapper: React.FC<{ invitation: InvitationData; isHostView?: boolean }> = ({
+  invitation,
+  isHostView = false,
+}) => {
   const [viewMode, setViewMode] = useState<'phone' | 'full'>('phone');
   const [showQr, setShowQr] = useState<boolean>(false);
 
@@ -31,7 +34,12 @@ export const DesktopFrameWrapper: React.FC<{ invitation: InvitationData }> = ({ 
           <Sparkles className="w-4 h-4 text-amber-400" />
           <span className="font-bold text-amber-300">{invitation.title}</span>
           <span className="text-neutral-500">|</span>
-          <span className="text-neutral-400">معاينة تفاعلية</span>
+          <span className="text-neutral-400">{isHostView ? 'لوحة متابعة أهل الحفل' : 'معاينة تفاعلية'}</span>
+          {isHostView && (
+            <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold text-[10px] border border-amber-500/40">
+              👑 إشراف العائلة
+            </span>
+          )}
         </div>
 
         <div className="flex items-center gap-3">
@@ -104,7 +112,7 @@ export const DesktopFrameWrapper: React.FC<{ invitation: InvitationData }> = ({ 
               : 'max-w-full'
           }`}
         >
-          <TemplateRenderer invitation={invitation} />
+          <TemplateRenderer invitation={invitation} isHostView={isHostView} />
         </div>
       </main>
 

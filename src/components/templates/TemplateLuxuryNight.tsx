@@ -23,7 +23,10 @@ import {
   getParentsSizeClass,
 } from '@/lib/typography-utils';
 
-export const TemplateLuxuryNight: React.FC<{ invitation: InvitationData }> = ({ invitation }) => {
+export const TemplateLuxuryNight: React.FC<{ invitation: InvitationData; isHostView?: boolean }> = ({
+  invitation,
+  isHostView = false,
+}) => {
   const dateFormatted = formatArabicDateDisplay(invitation.eventDate);
   const typo = invitation.typography;
 
@@ -37,6 +40,13 @@ export const TemplateLuxuryNight: React.FC<{ invitation: InvitationData }> = ({ 
 
   return (
     <div className="relative min-h-screen text-slate-100 font-cairo overflow-x-clip">
+      
+      {/* Host Mode Indicator Banner */}
+      {isHostView && (
+        <div className="sticky top-0 z-50 px-4 py-2 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 text-neutral-950 text-xs font-bold font-cairo text-center shadow-lg flex items-center justify-center gap-2">
+          <span>👑 رابط خاص بأهل الحفل (متابعة إحصائيات وعداد الحضور المباشر)</span>
+        </div>
+      )}
       
       {/* Slow-Motion Ambient Loop Video & Starry Sky Background */}
       <BackgroundMediaLayer
@@ -245,6 +255,7 @@ export const TemplateLuxuryNight: React.FC<{ invitation: InvitationData }> = ({ 
                   slug={invitation.slug}
                   initialCount={invitation.rsvpCount}
                   theme="midnight"
+                  isHostView={isHostView}
                 />
               </div>
             </ScrollReveal>

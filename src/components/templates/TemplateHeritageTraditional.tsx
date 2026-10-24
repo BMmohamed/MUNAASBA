@@ -23,7 +23,10 @@ import {
   getParentsSizeClass,
 } from '@/lib/typography-utils';
 
-export const TemplateHeritageTraditional: React.FC<{ invitation: InvitationData }> = ({ invitation }) => {
+export const TemplateHeritageTraditional: React.FC<{ invitation: InvitationData; isHostView?: boolean }> = ({
+  invitation,
+  isHostView = false,
+}) => {
   const dateFormatted = formatArabicDateDisplay(invitation.eventDate);
   const typo = invitation.typography;
 
@@ -37,6 +40,13 @@ export const TemplateHeritageTraditional: React.FC<{ invitation: InvitationData 
 
   return (
     <div className="relative min-h-screen text-amber-100 font-cairo overflow-x-clip">
+      
+      {/* Host Mode Indicator Banner */}
+      {isHostView && (
+        <div className="sticky top-0 z-50 px-4 py-2 bg-gradient-to-r from-amber-700 via-amber-600 to-amber-700 text-neutral-950 text-xs font-bold font-cairo text-center shadow-lg flex items-center justify-center gap-2">
+          <span>👑 رابط خاص بأهل الحفل (متابعة إحصائيات وعداد الحضور المباشر)</span>
+        </div>
+      )}
       
       {/* Slow-Motion Video Loop & AI Background */}
       <BackgroundMediaLayer
@@ -250,6 +260,7 @@ export const TemplateHeritageTraditional: React.FC<{ invitation: InvitationData 
                   slug={invitation.slug}
                   initialCount={invitation.rsvpCount}
                   theme="heritage"
+                  isHostView={isHostView}
                 />
               </div>
             </ScrollReveal>

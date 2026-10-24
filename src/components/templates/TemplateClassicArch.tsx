@@ -23,7 +23,10 @@ import {
   getParentsSizeClass,
 } from '@/lib/typography-utils';
 
-export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ invitation }) => {
+export const TemplateClassicArch: React.FC<{ invitation: InvitationData; isHostView?: boolean }> = ({
+  invitation,
+  isHostView = false,
+}) => {
   const dateFormatted = formatArabicDateDisplay(invitation.eventDate);
   const typo = invitation.typography;
 
@@ -48,6 +51,13 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ 
       {/* Decorative Overlays */}
       <MashrabiyaWatermark opacity={0.06} color="#d4af37" />
       <AmbientParticles count={16} color="#fde047" />
+
+      {/* Host Mode Indicator Banner */}
+      {isHostView && (
+        <div className="sticky top-0 z-50 px-4 py-2 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 text-neutral-950 text-xs font-bold font-cairo text-center shadow-lg flex items-center justify-center gap-2">
+          <span>👑 رابط خاص بأهل الحفل (متابعة إحصائيات وعداد الحضور المباشر)</span>
+        </div>
+      )}
 
       {/* Main Invitation Container */}
       <div className="relative max-w-lg mx-auto px-3 sm:px-4 py-8 sm:py-12 z-10">
@@ -260,6 +270,7 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData }> = ({ 
                     slug={invitation.slug}
                     initialCount={invitation.rsvpCount}
                     theme="gold"
+                    isHostView={isHostView}
                   />
                 </div>
               </ScrollReveal>
