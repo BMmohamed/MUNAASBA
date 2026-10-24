@@ -28,6 +28,7 @@ export interface InvitationToggles {
   showVerse?: boolean;
   showParents?: boolean;
   showShare?: boolean;
+  isPublic?: boolean;
 }
 
 export interface TypographySettings {

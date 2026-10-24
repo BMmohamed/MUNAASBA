@@ -56,8 +56,21 @@ function mapDbToInvitation(row: any): InvitationData {
     welcomeMessage: row.welcome_message || '',
     rsvpCount: typeof row.rsvp_count === 'number' ? row.rsvp_count : 0,
     rsvpDeviceList: Array.isArray(row.rsvp_device_list) ? row.rsvp_device_list : [],
-    isPublic: row.is_public !== undefined ? Boolean(row.is_public) : true,
-    toggles: row.toggles || {},
+    isPublic:
+      row.is_public !== undefined && row.is_public !== null
+        ? Boolean(row.is_public)
+        : row.toggles?.isPublic !== undefined
+        ? Boolean(row.toggles.isPublic)
+        : true,
+    toggles: {
+      ...(row.toggles || {}),
+      isPublic:
+        row.is_public !== undefined && row.is_public !== null
+          ? Boolean(row.is_public)
+          : row.toggles?.isPublic !== undefined
+          ? Boolean(row.toggles.isPublic)
+          : true,
+    },
     timeline: Array.isArray(row.timeline) ? row.timeline : [],
     typography: row.typography || {},
     themeAccentColor: row.theme_accent_color || '#d4af37',
@@ -67,6 +80,20 @@ function mapDbToInvitation(row: any): InvitationData {
     createdAt: row.created_at || new Date().toISOString(),
     updatedAt: row.updated_at || new Date().toISOString(),
   };
+}
+
+// Helper to detect if Supabase returned a column missing error (PostgREST or Postgres)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function isColumnMissingError(err: any, colName: string): boolean {
+  if (!err) return false;
+  const code = String(err.code || '');
+  const msg = String(err.message || '').toLowerCase();
+  return (
+    code === '42703' ||
+    code === 'PGRST204' ||
+    msg.includes(`'${colName.toLowerCase()}'`) ||
+    msg.includes(colName.toLowerCase())
+  );
 }
 
 // Map TypeScript camelCase model to Supabase snake_case table row
@@ -98,7 +125,14 @@ function mapInvitationToDb(inv: Partial<InvitationData>): any {
   if (inv.rsvpCount !== undefined) dbRow.rsvp_count = inv.rsvpCount;
   if (inv.rsvpDeviceList !== undefined) dbRow.rsvp_device_list = inv.rsvpDeviceList;
   if (inv.isPublic !== undefined) dbRow.is_public = inv.isPublic;
-  if (inv.toggles !== undefined) dbRow.toggles = inv.toggles;
+
+  // Always mirror isPublic into toggles JSONB so it is guaranteed to persist even if is_public column is absent
+  const togglesCopy = { ...(inv.toggles || {}) };
+  if (inv.isPublic !== undefined) {
+    togglesCopy.isPublic = inv.isPublic;
+  }
+  dbRow.toggles = togglesCopy;
+
   if (inv.timeline !== undefined) dbRow.timeline = inv.timeline;
   if (inv.typography !== undefined) dbRow.typography = inv.typography;
   if (inv.themeAccentColor !== undefined) dbRow.theme_accent_color = inv.themeAccentColor;
@@ -111,27 +145,45 @@ function mapInvitationToDb(inv: Partial<InvitationData>): any {
 }
 
 export async function getAllInvitations(onlyPublic: boolean = false): Promise<InvitationData[]> {
+  const store = getStore();
+
   if (isSupabaseConfigured()) {
     try {
       const client = getSupabaseAdmin() || getSupabase();
       if (client) {
-        let query = client
+        const { data, error } = await client
           .from('invitations')
           .select('*')
           .order('created_at', { ascending: false });
 
-        if (onlyPublic) {
-          query = query.neq('is_public', false);
-        }
-
-        const { data, error } = await query;
-
         if (error) {
           console.warn('[Supabase] Warning fetching invitations:', error.message);
-        } else if (data && data.length > 0) {
-          return data.map(mapDbToInvitation);
-        } else {
-          return INITIAL_INVITATIONS;
+        } else if (data) {
+          const dbItems = data.map(mapDbToInvitation);
+
+          // Sync into memory cache so it stays warm and never loses records
+          const map = new Map<string, InvitationData>();
+          dbItems.forEach((inv) => {
+            map.set(inv.id, inv);
+            store.set(inv.id, inv);
+            store.set(inv.slug, inv);
+          });
+
+          // Also preserve any in-memory items
+          store.forEach((inv) => {
+            if (!map.has(inv.id)) {
+              map.set(inv.id, inv);
+            }
+          });
+
+          const combined = Array.from(map.values()).sort(
+            (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+
+          if (onlyPublic) {
+            return combined.filter((inv) => inv.isPublic !== false);
+          }
+          return combined;
         }
       }
     } catch (err) {
@@ -140,7 +192,6 @@ export async function getAllInvitations(onlyPublic: boolean = false): Promise<In
   }
 
   // Fallback in-memory store
-  const store = getStore();
   const seen = new Set<string>();
   const list: InvitationData[] = [];
   store.forEach((inv) => {
@@ -155,6 +206,8 @@ export async function getAllInvitations(onlyPublic: boolean = false): Promise<In
 }
 
 export async function getInvitationBySlug(slug: string): Promise<InvitationData | null> {
+  const store = getStore();
+
   if (isSupabaseConfigured()) {
     try {
       const client = getSupabaseAdmin() || getSupabase();
@@ -168,7 +221,10 @@ export async function getInvitationBySlug(slug: string): Promise<InvitationData 
         if (error) {
           console.warn('[Supabase] Warning fetching invitation by slug:', error.message);
         } else if (data) {
-          return mapDbToInvitation(data);
+          const mapped = mapDbToInvitation(data);
+          store.set(mapped.slug, mapped);
+          store.set(mapped.id, mapped);
+          return mapped;
         }
       }
     } catch (err) {
@@ -177,7 +233,6 @@ export async function getInvitationBySlug(slug: string): Promise<InvitationData 
   }
 
   // Fallback in-memory store
-  const store = getStore();
   const inv = store.get(slug);
   if (inv) {
     return { ...inv };
@@ -270,13 +325,16 @@ export async function createInvitation(data: Partial<InvitationData>): Promise<I
       if (client) {
         const row = mapInvitationToDb(newInvitation);
         let { error } = await client.from('invitations').insert(row);
-        if (error && error.code === '42703') {
+        if (error && isColumnMissingError(error, 'is_public')) {
+          console.warn('[Supabase] Retrying insert without is_public column:', error.message);
           delete row.is_public;
           const retry = await client.from('invitations').insert(row);
           error = retry.error;
         }
         if (error) {
           console.error('[Supabase] Error creating invitation in DB:', error.message);
+        } else {
+          console.log('[Supabase] Successfully inserted invitation into Supabase:', newInvitation.id);
         }
       }
     } catch (err) {
@@ -304,6 +362,7 @@ export async function updateInvitation(id: string, data: Partial<InvitationData>
     toggles: {
       ...existing.toggles,
       ...(data.toggles || {}),
+      isPublic: data.isPublic !== undefined ? data.isPublic : (existing.isPublic ?? true),
     },
     typography: {
       ...(existing.typography || {}),
@@ -319,13 +378,16 @@ export async function updateInvitation(id: string, data: Partial<InvitationData>
       if (client) {
         const row = mapInvitationToDb(updated);
         let { error } = await client.from('invitations').update(row).eq('id', id);
-        if (error && error.code === '42703') {
+        if (error && isColumnMissingError(error, 'is_public')) {
+          console.warn('[Supabase] Retrying update without is_public column:', error.message);
           delete row.is_public;
           const retry = await client.from('invitations').update(row).eq('id', id);
           error = retry.error;
         }
         if (error) {
           console.error('[Supabase] Error updating invitation:', error.message);
+        } else {
+          console.log('[Supabase] Successfully updated invitation in Supabase:', id);
         }
       }
     } catch (err) {

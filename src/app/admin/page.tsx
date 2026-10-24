@@ -30,6 +30,7 @@ import {
   Crown,
   Globe,
   EyeOff,
+  Loader2,
 } from 'lucide-react';
 import { InvitationData, InvitationTemplateId, TimelineItem } from '@/types/invitation';
 import { TemplateRenderer } from '@/components/templates/TemplateRenderer';
@@ -44,6 +45,7 @@ export default function AdminDashboardPage() {
   const [invitations, setInvitations] = useState<InvitationData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
+  const [updatingPrivacyId, setUpdatingPrivacyId] = useState<string | null>(null);
 
   // Editor Modal State
   const [isEditorOpen, setIsEditorOpen] = useState<boolean>(false);
@@ -133,6 +135,62 @@ export default function AdminDashboardPage() {
         ? 'تم نسخ رابط أهل العرس (المزود بعداد الحضور المباشر) 👑'
         : 'تم نسخ رابط المعازيم (كرت الدعوة بدون عداد) 💌'
     );
+  };
+
+  // Toggle privacy directly from dashboard table without opening modal
+  const handleTogglePrivacy = async (inv: InvitationData) => {
+    const currentIsPublic = inv.isPublic !== false;
+    const nextIsPublic = !currentIsPublic;
+    setUpdatingPrivacyId(inv.id);
+
+    // Optimistic UI update
+    setInvitations((prev) =>
+      prev.map((item) =>
+        item.id === inv.id
+          ? {
+              ...item,
+              isPublic: nextIsPublic,
+              toggles: { ...(item.toggles || {}), isPublic: nextIsPublic },
+            }
+          : item
+      )
+    );
+
+    try {
+      const res = await fetch('/api/invitations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: inv.id,
+          isPublic: nextIsPublic,
+          toggles: {
+            ...(inv.toggles || {}),
+            isPublic: nextIsPublic,
+          },
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.invitation) {
+        setInvitations((prev) =>
+          prev.map((item) => (item.id === inv.id ? data.invitation : item))
+        );
+        showToast(
+          nextIsPublic
+            ? 'تم تحويل الدعوة إلى: عامة في الموقع 🟢 (تظهر في الرئيسية)'
+            : 'تم تحويل الدعوة إلى: خاصة وسرية 🔒 (مخفية عن الرئيسية)'
+        );
+      } else {
+        throw new Error(data.error || 'فشل التحديث');
+      }
+    } catch {
+      // Rollback on error
+      setInvitations((prev) =>
+        prev.map((item) => (item.id === inv.id ? inv : item))
+      );
+      showToast('تعذر تغيير وضع الخصوصية');
+    } finally {
+      setUpdatingPrivacyId(null);
+    }
   };
 
   const handleResetRsvp = async (slug: string, id: string) => {
@@ -637,19 +695,37 @@ export default function AdminDashboardPage() {
                           <div className="text-neutral-500 mt-0.5">{inv.venueName} - {inv.venueCity}</div>
                         </td>
 
-                        {/* Public / Private Badge */}
+                        {/* Interactive Privacy Toggle Button */}
                         <td className="py-4 px-6 text-center">
-                          {isPublic ? (
-                            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
-                              <Globe className="w-3 h-3" />
-                              <span>عامة بالموقع</span>
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">
-                              <EyeOff className="w-3 h-3" />
-                              <span>خاصة وسرية</span>
-                            </span>
-                          )}
+                          <button
+                            type="button"
+                            onClick={() => handleTogglePrivacy(inv)}
+                            disabled={updatingPrivacyId === inv.id}
+                            title={
+                              isPublic
+                                ? 'الدعوة عامة ومعروضة في الواجهة الرئيسية. انقر للتحويل إلى خاصة وسرية 🔒'
+                                : 'الدعوة خاصة وسرية ولا تظهر في الواجهة الرئيسية. انقر للتحويل إلى عامة 🟢'
+                            }
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all border shadow-sm cursor-pointer hover:scale-105 active:scale-95 ${
+                              isPublic
+                                ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/25 hover:border-emerald-500/50'
+                                : 'bg-amber-500/15 text-amber-400 border-amber-500/30 hover:bg-amber-500/25 hover:border-amber-500/50'
+                            }`}
+                          >
+                            {updatingPrivacyId === inv.id ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin text-neutral-400" />
+                            ) : isPublic ? (
+                              <>
+                                <Globe className="w-3.5 h-3.5 text-emerald-400" />
+                                <span>عامة بالموقع 🟢</span>
+                              </>
+                            ) : (
+                              <>
+                                <Lock className="w-3.5 h-3.5 text-amber-400" />
+                                <span>خاصة وسرية 🔒</span>
+                              </>
+                            )}
+                          </button>
                         </td>
 
                         {/* RSVP Counter Badge */}
@@ -697,6 +773,39 @@ export default function AdminDashboardPage() {
                               ) : (
                                 <span className="text-[10px] text-amber-400/70 font-mono">?view=host</span>
                               )}
+                            </button>
+                          </div>
+                        </td>
+
+                        {/* Actions (Edit / Preview / Reset RSVP) */}
+                        <td className="py-4 px-6 text-center">
+                          <div className="flex items-center justify-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => openEditModal(inv)}
+                              title="تعديل وتخصيص بيانات الدعوة والقالب"
+                              className="p-2 rounded-xl bg-neutral-800 hover:bg-amber-500/20 text-neutral-300 hover:text-amber-400 border border-neutral-700 hover:border-amber-500/40 transition-all cursor-pointer"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </button>
+
+                            <a
+                              href={`/d/${inv.slug}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              title="معاينة كرت الدعوة في تبويب جديد"
+                              className="p-2 rounded-xl bg-neutral-800 hover:bg-blue-500/20 text-neutral-300 hover:text-blue-400 border border-neutral-700 hover:border-blue-500/40 transition-all cursor-pointer inline-flex items-center justify-center"
+                            >
+                              <ExternalLink className="w-4 h-4" />
+                            </a>
+
+                            <button
+                              type="button"
+                              onClick={() => handleResetRsvp(inv.slug, inv.id)}
+                              title="إعادة ضبط عداد الحضور إلى ٠"
+                              className="p-2 rounded-xl bg-neutral-800 hover:bg-rose-500/20 text-neutral-300 hover:text-rose-400 border border-neutral-700 hover:border-rose-500/40 transition-all cursor-pointer"
+                            >
+                              <RotateCcw className="w-4 h-4" />
                             </button>
                           </div>
                         </td>
