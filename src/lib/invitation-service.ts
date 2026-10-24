@@ -406,6 +406,33 @@ export async function updateInvitation(id: string, data: Partial<InvitationData>
   return updated;
 }
 
+export async function deleteInvitation(id: string): Promise<boolean> {
+  const store = getStore();
+  const existing = store.get(id);
+
+  if (isSupabaseConfigured()) {
+    try {
+      const client = getSupabaseAdmin() || getSupabase();
+      if (client) {
+        const { error } = await client.from('invitations').delete().eq('id', id);
+        if (error) {
+          console.error('[Supabase] Error deleting invitation:', error.message);
+        } else {
+          console.log('[Supabase] Successfully deleted invitation:', id);
+        }
+      }
+    } catch (err) {
+      console.error('[Supabase] Exception deleting invitation:', err);
+    }
+  }
+
+  if (existing) {
+    store.delete(existing.slug);
+  }
+  store.delete(id);
+  return true;
+}
+
 export async function registerRsvp(
   slugOrId: string,
   deviceFingerprint: string,

@@ -32,11 +32,30 @@ import {
   EyeOff,
   Loader2,
   MessageCircle,
+  Trash2,
+  HeartHandshake,
+  Layers,
 } from 'lucide-react';
 import { InvitationData, InvitationTemplateId, TimelineItem } from '@/types/invitation';
 import { TemplateRenderer } from '@/components/templates/TemplateRenderer';
-import { QURANIC_AND_POETIC_PRESETS } from '@/lib/constants';
+import { QURANIC_AND_POETIC_PRESETS, INITIAL_INVITATIONS } from '@/lib/constants';
 import { toArabicNumerals } from '@/lib/date-utils';
+
+export const MASTER_TEMPLATE_IDS = ['inv-1', 'inv-2', 'inv-3', 'inv-4', 'inv-5'];
+export const MASTER_TEMPLATE_SLUGS = [
+  'demo-bab',
+  'modern-minimalist',
+  'royal-floral',
+  'midnight-stars',
+  'heritage-andalus',
+];
+
+export const isMasterTemplate = (inv: Partial<InvitationData> | null | undefined): boolean => {
+  if (!inv) return false;
+  if (inv.id && MASTER_TEMPLATE_IDS.includes(inv.id)) return true;
+  if (inv.slug && MASTER_TEMPLATE_SLUGS.includes(inv.slug)) return true;
+  return false;
+};
 
 export default function AdminDashboardPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -47,6 +66,7 @@ export default function AdminDashboardPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
   const [updatingPrivacyId, setUpdatingPrivacyId] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<'client-cards' | 'master-templates'>('client-cards');
 
   // Editor Modal State
   const [isEditorOpen, setIsEditorOpen] = useState<boolean>(false);
@@ -110,6 +130,15 @@ export default function AdminDashboardPage() {
     if (isAuthenticated) {
       fetchInvitations();
       checkDbStatus();
+
+      if (typeof window !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search);
+        const fromTmpl = urlParams.get('fromTemplate') || urlParams.get('template');
+        if (fromTmpl) {
+          openCreateModal(fromTmpl);
+          window.history.replaceState({}, '', '/admin');
+        }
+      }
     }
   }, [isAuthenticated]);
 
@@ -244,67 +273,71 @@ ${url}`;
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  const openCreateModal = () => {
+  const openCreateModal = (fromTemplateId: string = 'template-1') => {
+    const baseTmpl = INITIAL_INVITATIONS.find((t) => t.templateId === fromTemplateId) || INITIAL_INVITATIONS[0];
     const newDraft: Partial<InvitationData> = {
-      templateId: 'template-1',
-      title: 'دعوة زفاف جديدة',
+      templateId: (fromTemplateId as InvitationTemplateId) || 'template-1',
+      title: 'كرت دعوة جديد',
       eventTitle: 'حفل الزفاف المبارك',
       slug: `invite-${Date.now().toString(36)}`,
-      groomName: 'عبدالرحمن بن سعود',
-      brideName: 'سارة بنت عبدالله',
-      groomParents: 'أبناء الشيخ سعود آل مبارك رحمه الله',
-      brideParents: 'وكريمة الأستاذ عبدالله الشمري',
-      eventDate: '2026-12-15T20:00:00',
-      eventDateHijri: '٦ رجب ١٤٤٨ هـ',
-      dayOfWeek: 'الجمعة',
-      timeFormatted: 'الساعة ٨:٠٠ مساءً',
-      venueName: 'قصر الاحتفالات الملكي',
-      venueHall: 'القاعة الكبرى',
-      venueCity: 'الرياض',
-      venueAddress: 'طريق الملك فهد، الرياض',
-      googleMapsUrl: 'https://maps.google.com/?q=24.7136,46.6753',
-      headerVerse: QURANIC_AND_POETIC_PRESETS[0].verse,
-      verseSource: QURANIC_AND_POETIC_PRESETS[0].source,
+      groomName: '',
+      brideName: '',
+      groomParents: '',
+      brideParents: '',
+      eventDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
+      eventDateHijri: '',
+      dayOfWeek: 'الخميس',
+      timeFormatted: 'الساعة 8:00 مساءً',
+      venueName: '',
+      venueHall: '',
+      venueCity: '',
+      venueAddress: '',
+      googleMapsUrl: '',
+      headerVerse: baseTmpl.headerVerse || QURANIC_AND_POETIC_PRESETS[0].verse,
+      verseSource: baseTmpl.verseSource || QURANIC_AND_POETIC_PRESETS[0].source,
       welcomeMessage: 'يتشرفون بدعوتكم لحضور حفل الزفاف ومشاركتهم الفرحة والسرور، وبحضوركم يتم لنا الفرح والسرور.',
       rsvpCount: 0,
-      isPublic: true,
+      isPublic: false, // Default to private for client cards
       toggles: {
-        showCountdown: true,
-        showCalendar: true,
-        showLocation: true,
-        showRsvp: true,
-        showChildrenAdvisory: true,
-        childrenAdvisoryText: 'جنة الأطفال منازلهم.. نعتذر عن استقبال الأطفال لمشاركتنا فرحة هادئة.',
-        showDressCode: true,
-        dressCodeText: 'الزي الرسمي السعودي (ثوب وبشت)',
-        showTimeline: true,
-        showMusic: true,
-        showVerse: true,
-        showParents: true,
-        showShare: true,
-        musicUrl: 'https://assets.mixkit.co/music/preview/mixkit-serene-view-443.mp3',
+        ...(baseTmpl.toggles || {}),
+        isPublic: false,
       },
       typography: {
-        namesFontFamily: 'ruqaa',
-        verseFontFamily: 'amiri',
-        parentsFontFamily: 'tajawal',
-        namesSize: 'xlarge',
-        verseSize: 'medium',
-        parentsSize: 'medium',
-        namesColor: '#fde047',
-        verseColor: '#fef3c7',
-        parentsColor: '#ffffff',
-        welcomeColor: '#fef3c7',
-        timelineColor: '#fef3c7',
+        ...(baseTmpl.typography || {}),
       },
-      timeline: [
+      timeline: baseTmpl.timeline ? JSON.parse(JSON.stringify(baseTmpl.timeline)) : [
         { id: 't1', time: '٠٨:٠٠ م', label: 'استقبال الضيوف الكرام', icon: 'coffee' },
         { id: 't2', time: '٠٩:٣٠ م', label: 'مراسم الزفة المباركة', icon: 'ring' },
         { id: 't3', time: '١٠:٣٠ م', label: 'تناول طعام العشاء الفاخر', icon: 'dinner' },
       ],
+      themeAccentColor: baseTmpl.themeAccentColor || '#d4af37',
     };
     setEditingInv(newDraft);
     setIsEditorOpen(true);
+    setEditorTab('editor');
+  };
+
+  const handleCreateClientCardFromTemplate = (tmplInv: InvitationData) => {
+    openCreateModal(tmplInv.templateId);
+    showToast(`تم فتح المحرر لإنشاء كرت دعوة لزبون بالاعتماد على تصميم: ${templateNames[tmplInv.templateId]?.name || ''} ✨`);
+  };
+
+  const handleDeleteInvitation = async (id: string, name: string) => {
+    if (!window.confirm(`هل أنت متأكد من رغبتك في حذف كرت الدعوة الخاص بـ (${name}) نهائياً؟ لن يمكن التراجع عن هذا الإجراء.`)) {
+      return;
+    }
+    try {
+      const res = await fetch(`/api/invitations?id=${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        setInvitations((prev) => prev.filter((inv) => inv.id !== id));
+        showToast('تم حذف كرت الدعوة بنجاح 🗑️');
+      } else {
+        throw new Error(data.error || 'فشل الحذف');
+      }
+    } catch {
+      showToast('تعذر حذف كرت الدعوة');
+    }
   };
 
   const openEditModal = (inv: InvitationData) => {
@@ -463,6 +496,11 @@ ${url}`;
     );
   }
 
+  const clientCards = invitations.filter((inv) => !isMasterTemplate(inv));
+  const masterTemplatesFromDb = invitations.filter((inv) => isMasterTemplate(inv));
+  const displayMasterTemplates =
+    masterTemplatesFromDb.length > 0 ? masterTemplatesFromDb : INITIAL_INVITATIONS;
+  const totalClientRsvps = clientCards.reduce((acc, curr) => acc + (curr.rsvpCount || 0), 0);
   const totalRsvps = invitations.reduce((acc, curr) => acc + (curr.rsvpCount || 0), 0);
 
   // Real-time complete invitation object for live preview card
@@ -471,7 +509,7 @@ ${url}`;
         id: editingInv.id || 'preview-id',
         slug: editingInv.slug || 'preview-slug',
         templateId: (editingInv.templateId as InvitationTemplateId) || 'template-1',
-        title: editingInv.title || 'معاينة الدعوة',
+        title: editingInv.title || 'معاينة كرت الدعوة',
         eventTitle: editingInv.eventTitle || 'حفل زفاف مبارك',
         groomName: editingInv.groomName || 'اسم العريس',
         brideName: editingInv.brideName || 'اسم العروس',
@@ -479,13 +517,13 @@ ${url}`;
         brideParents: editingInv.brideParents || 'أهل العروس الكرام',
         eventDate: editingInv.eventDate || '2026-12-01T20:00:00',
         eventDateHijri: editingInv.eventDateHijri || '١ رجب ١٤٤٨ هـ',
-        dayOfWeek: editingInv.dayOfWeek || 'الجمعة',
+        dayOfWeek: editingInv.dayOfWeek || 'الخميس',
         timeFormatted: editingInv.timeFormatted || 'الساعة ٨:٠٠ مساءً',
-        venueName: editingInv.venueName || 'قصر الاحتفالات الملكي',
+        venueName: editingInv.venueName || 'اسم القاعة أو الفندق',
         venueHall: editingInv.venueHall !== undefined ? editingInv.venueHall : '',
-        venueCity: editingInv.venueCity || 'الرياض',
+        venueCity: editingInv.venueCity || '',
         venueAddress: editingInv.venueAddress !== undefined ? editingInv.venueAddress : '',
-        googleMapsUrl: editingInv.googleMapsUrl || 'https://maps.google.com',
+        googleMapsUrl: editingInv.googleMapsUrl || '',
         headerVerse:
           editingInv.headerVerse ||
           'وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً',
@@ -599,11 +637,11 @@ ${url}`;
 
             <button
               type="button"
-              onClick={openCreateModal}
+              onClick={() => openCreateModal('template-1')}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-neutral-950 font-bold text-xs sm:text-sm shadow-lg shadow-amber-500/20 transition-all cursor-pointer"
             >
               <Plus className="w-4 h-4" />
-              <span>إنشاء دعوة جديدة</span>
+              <span>إنشاء كرت دعوة لزبون</span>
             </button>
           </div>
         </div>
@@ -616,22 +654,28 @@ ${url}`;
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="p-5 rounded-2xl bg-neutral-900/80 border border-neutral-800 flex items-center justify-between">
             <div>
-              <span className="text-xs text-neutral-400 font-tajawal">إجمالي الدعوات المنشورة</span>
+              <span className="text-xs text-neutral-400 font-tajawal">كروت دعوة الزبائن (كروت الدعوة)</span>
               <div className="text-2xl sm:text-3xl font-bold text-neutral-100 mt-1">
-                {toArabicNumerals(invitations.length)}
+                {toArabicNumerals(clientCards.length)} كرت
               </div>
+              <span className="text-[11px] text-amber-400/80 font-tajawal block mt-1">
+                كروت مخصصة ومصممة لزبائن المنصة
+              </span>
             </div>
-            <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
-              <FileText className="w-6 h-6" />
+            <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+              <HeartHandshake className="w-6 h-6" />
             </div>
           </div>
 
           <div className="p-5 rounded-2xl bg-neutral-900/80 border border-neutral-800 flex items-center justify-between">
             <div>
-              <span className="text-xs text-neutral-400 font-tajawal">إجمالي الحضور المؤكدين (RSVP)</span>
+              <span className="text-xs text-neutral-400 font-tajawal">حضور مؤكد لكروت الزبائن (RSVP)</span>
               <div className="text-2xl sm:text-3xl font-bold text-emerald-400 mt-1">
-                {toArabicNumerals(totalRsvps)}
+                {toArabicNumerals(totalClientRsvps)} ضيف
               </div>
+              <span className="text-[11px] text-emerald-400/80 font-tajawal block mt-1">
+                تأكيدات الحضور المسجلة عبر روابط الزبائن
+              </span>
             </div>
             <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
               <Users className="w-6 h-6" />
@@ -640,231 +684,420 @@ ${url}`;
 
           <div className="p-5 rounded-2xl bg-neutral-900/80 border border-neutral-800 flex items-center justify-between">
             <div>
-              <span className="text-xs text-neutral-400 font-tajawal">القوالب الفاخرة المعتمدة</span>
-              <div className="text-2xl sm:text-3xl font-bold text-amber-400 mt-1">
-                {toArabicNumerals(5)} قوالب
+              <span className="text-xs text-neutral-400 font-tajawal">القوالب الأساسية (المعروضة بالرئيسية)</span>
+              <div className="text-2xl sm:text-3xl font-bold text-blue-400 mt-1">
+                {toArabicNumerals(displayMasterTemplates.length)} قوالب أساسية
               </div>
+              <span className="text-[11px] text-blue-400/80 font-tajawal block mt-1">
+                نماذج العرض والتصميم على الصفحة الرئيسية
+              </span>
             </div>
-            <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+            <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
               <Sparkles className="w-6 h-6" />
             </div>
           </div>
         </div>
 
-        {/* Invitations Table / List */}
-        <div className="rounded-3xl bg-neutral-900/70 border border-neutral-800 overflow-hidden shadow-xl">
-          <div className="p-6 border-b border-neutral-800 flex items-center justify-between flex-wrap gap-4">
-            <div>
-              <h2 className="text-base font-bold text-neutral-100">
-                قائمة بطاقات الدعوة الحالية
-              </h2>
-              <p className="text-xs text-neutral-400 font-tajawal">
-                يمكنك معاينة الدعوة، نسخ الرابط المباشر، تعديل النصوص والقالب، أو إعادة ضبط عداد الحضور.
-              </p>
-            </div>
+        {/* Section Navigation Tabs: Client Cards vs Master Templates */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 p-2.5 rounded-2xl bg-neutral-900/90 border border-neutral-800 shadow-md">
+          <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={fetchInvitations}
-              className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1 font-tajawal"
+              onClick={() => setActiveCategory('client-cards')}
+              className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold font-cairo transition-all cursor-pointer ${
+                activeCategory === 'client-cards'
+                  ? 'bg-gradient-to-r from-amber-600 to-amber-500 text-neutral-950 shadow-md shadow-amber-500/20'
+                  : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/60'
+              }`}
             >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span>تحديث البيانات</span>
+              <HeartHandshake className="w-4 h-4" />
+              <span>كروت دعوة الزبائن</span>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono ${
+                activeCategory === 'client-cards' ? 'bg-black/20 text-neutral-950 font-bold' : 'bg-neutral-800 text-neutral-300'
+              }`}>
+                {toArabicNumerals(clientCards.length)}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveCategory('master-templates')}
+              className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold font-cairo transition-all cursor-pointer ${
+                activeCategory === 'master-templates'
+                  ? 'bg-gradient-to-r from-amber-600 to-amber-500 text-neutral-950 shadow-md shadow-amber-500/20'
+                  : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/60'
+              }`}
+            >
+              <Sparkles className="w-4 h-4" />
+              <span>القوالب الأساسية (المعروضة بالرئيسية)</span>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono ${
+                activeCategory === 'master-templates' ? 'bg-black/20 text-neutral-950 font-bold' : 'bg-neutral-800 text-neutral-300'
+              }`}>
+                {toArabicNumerals(displayMasterTemplates.length)}
+              </span>
             </button>
           </div>
 
-          {isLoading ? (
-            <div className="p-12 text-center text-neutral-400 text-sm font-tajawal">
-              جاري تحميل بيانات الدعوات...
-            </div>
-          ) : invitations.length === 0 ? (
-            <div className="p-12 text-center text-neutral-400 text-sm font-tajawal">
-              لا توجد دعوات حالية. انقر على &ldquo;إنشاء دعوة جديدة&rdquo; للبدء.
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-right text-sm">
-                <thead className="bg-neutral-950/50 text-neutral-400 text-xs font-tajawal border-b border-neutral-800">
-                  <tr>
-                    <th className="py-4 px-6">عنوان الدعوة / العروسين</th>
-                    <th className="py-4 px-6">القالب المعتمد</th>
-                    <th className="py-4 px-6">الموعد والمكان</th>
-                    <th className="py-4 px-6 text-center">الظهور</th>
-                    <th className="py-4 px-6 text-center">حضور مؤكد (RSVP)</th>
-                    <th className="py-4 px-6 text-center">روابط الدعوة والمشاركة</th>
-                    <th className="py-4 px-6 text-center">الإجراءات</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-neutral-800/60 font-tajawal">
-                  {invitations.map((inv) => {
-                    const tmpl = templateNames[inv.templateId] || templateNames['template-1'];
-                    const isPublic = inv.isPublic !== false;
-                    return (
-                      <tr key={inv.id} className="hover:bg-neutral-800/30 transition-colors">
-                        {/* Title & Couple */}
-                        <td className="py-4 px-6">
-                          <div className="font-bold font-cairo text-neutral-100 text-sm">
-                            {inv.groomName} & {inv.brideName}
-                          </div>
-                          <div className="text-xs text-neutral-400 font-tajawal mt-0.5">
-                            {inv.eventTitle}
-                          </div>
-                        </td>
+          <div className="flex items-center gap-2 justify-end px-2">
+            {activeCategory === 'client-cards' && (
+              <button
+                type="button"
+                onClick={() => openCreateModal('template-1')}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-cairo font-bold transition-all cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>+ إنشاء كرت دعوة جديد</span>
+              </button>
+            )}
 
-                        {/* Template Badge */}
-                        <td className="py-4 px-6">
-                          <span
-                            className={`inline-block px-3 py-1 rounded-full text-xs font-medium border ${tmpl.color}`}
+            <button
+              type="button"
+              onClick={fetchInvitations}
+              className="text-xs text-neutral-400 hover:text-amber-300 flex items-center gap-1 font-tajawal py-1.5 px-2.5 rounded-lg hover:bg-neutral-800/80 transition-colors cursor-pointer"
+              title="تحديث البيانات من السحابة"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">تحديث البيانات</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Tab 1: Client Cards Management */}
+        {activeCategory === 'client-cards' && (
+          <div className="rounded-3xl bg-neutral-900/70 border border-neutral-800 overflow-hidden shadow-xl">
+            <div className="p-6 border-b border-neutral-800 flex items-center justify-between flex-wrap gap-4">
+              <div>
+                <h2 className="text-base font-bold text-neutral-100 flex items-center gap-2">
+                  <HeartHandshake className="w-4 h-4 text-amber-400" />
+                  <span>كروت دعوة الزبائن (كروت الدعوة)</span>
+                </h2>
+                <p className="text-xs text-neutral-400 font-tajawal mt-0.5">
+                  إدارة كروت الدعوة المخصصة لزبائنك مع روابط المعازيم، ورابط أهل العرس، وعداد الحضور، ووضع الخصوصية.
+                </p>
+              </div>
+            </div>
+
+            {isLoading ? (
+              <div className="p-12 text-center text-neutral-400 text-sm font-tajawal">
+                جاري تحميل كروت دعوة الزبائن...
+              </div>
+            ) : clientCards.length === 0 ? (
+              <div className="p-12 text-center space-y-4">
+                <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 mx-auto text-2xl">
+                  💌
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-neutral-100 font-cairo">
+                    لا توجد كروت دعوة خاصة بالزبائن حالياً
+                  </h3>
+                  <p className="text-xs text-neutral-400 font-tajawal max-w-md mx-auto mt-1 leading-relaxed">
+                    القوالب المعروضة على الصفحة الرئيسية هي القوالب الأساسية. عندما تقوم بإنشاء كرت أو استنساخ قالب وتضع بيانات الزبون، ستظهر هنا كروت الدعوة كاملة.
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => openCreateModal('template-1')}
+                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-neutral-950 font-bold text-xs font-cairo shadow-lg shadow-amber-500/20 cursor-pointer"
+                  >
+                    + إنشاء كرت دعوة لزبون جديد
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveCategory('master-templates')}
+                    className="px-5 py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-bold text-xs font-cairo border border-neutral-700 cursor-pointer"
+                  >
+                    تصفح القوالب الأساسية لاختيار قالب للزبون
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-right text-sm">
+                  <thead className="bg-neutral-950/50 text-neutral-400 text-xs font-tajawal border-b border-neutral-800">
+                    <tr>
+                      <th className="py-4 px-6">كرت الدعوة / العروسين</th>
+                      <th className="py-4 px-6">القالب المعتمد</th>
+                      <th className="py-4 px-6">الموعد والمكان</th>
+                      <th className="py-4 px-6 text-center">الظهور بالرئيسية</th>
+                      <th className="py-4 px-6 text-center">حضور مؤكد (RSVP)</th>
+                      <th className="py-4 px-6 text-center">روابط كرت الدعوة والمشاركة</th>
+                      <th className="py-4 px-6 text-center">الإجراءات</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-neutral-800/60 font-tajawal">
+                    {clientCards.map((inv) => {
+                      const tmpl = templateNames[inv.templateId] || templateNames['template-1'];
+                      const isPublic = inv.isPublic !== false;
+                      const coupleNames = [inv.groomName, inv.brideName].filter(Boolean).join(' & ') || 'بدون أسماء';
+                      return (
+                        <tr key={inv.id} className="hover:bg-neutral-800/30 transition-colors">
+                          {/* Title & Couple */}
+                          <td className="py-4 px-6">
+                            <div className="font-bold font-cairo text-neutral-100 text-sm">
+                              {coupleNames}
+                            </div>
+                            <div className="text-xs text-neutral-400 font-tajawal mt-0.5">
+                              {inv.eventTitle || inv.title}
+                            </div>
+                          </td>
+
+                          {/* Template Badge */}
+                          <td className="py-4 px-6">
+                            <span
+                              className={`inline-block px-3 py-1 rounded-full text-xs font-medium border ${tmpl.color}`}
+                            >
+                              {tmpl.name}
+                            </span>
+                          </td>
+
+                          {/* Date & Location */}
+                          <td className="py-4 px-6 text-xs text-neutral-300">
+                            <div>{inv.dayOfWeek} • {inv.timeFormatted}</div>
+                            <div className="text-neutral-500 mt-0.5">
+                              {[inv.venueName, inv.venueCity].filter(Boolean).join(' - ') || 'لم يُحدد المكان'}
+                            </div>
+                          </td>
+
+                          {/* Interactive Privacy Toggle Button */}
+                          <td className="py-4 px-6 text-center">
+                            <button
+                              type="button"
+                              onClick={() => handleTogglePrivacy(inv)}
+                              disabled={updatingPrivacyId === inv.id}
+                              title={
+                                isPublic
+                                  ? 'كرت الدعوة عام ويظهر في الواجهة الرئيسية. انقر للتحويل إلى خاص وسري 🔒'
+                                  : 'كرت الدعوة خاص وسري ولا يظهر في الواجهة الرئيسية. انقر للتحويل إلى عام 🟢'
+                              }
+                              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all border shadow-sm cursor-pointer hover:scale-105 active:scale-95 ${
+                                isPublic
+                                  ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/25 hover:border-emerald-500/50'
+                                  : 'bg-amber-500/15 text-amber-400 border-amber-500/30 hover:bg-amber-500/25 hover:border-amber-500/50'
+                              }`}
+                            >
+                              {updatingPrivacyId === inv.id ? (
+                                <Loader2 className="w-3.5 h-3.5 animate-spin text-neutral-400" />
+                              ) : isPublic ? (
+                                <>
+                                  <Globe className="w-3.5 h-3.5 text-emerald-400" />
+                                  <span>عام بالرئيسية 🟢</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Lock className="w-3.5 h-3.5 text-amber-400" />
+                                  <span>خاص وسري 🔒</span>
+                                </>
+                              )}
+                            </button>
+                          </td>
+
+                          {/* RSVP Counter Badge */}
+                          <td className="py-4 px-6 text-center">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-bold font-cairo text-xs">
+                              <Users className="w-3.5 h-3.5" />
+                              <span>{toArabicNumerals(inv.rsvpCount)} ضيف</span>
+                            </span>
+                          </td>
+
+                          {/* Dual Links (Guest vs Host) */}
+                          <td className="py-4 px-6 text-center">
+                            <div className="flex flex-col gap-1.5 items-stretch min-w-[210px]">
+                              {/* Guest Link (No counter) */}
+                              <button
+                                type="button"
+                                onClick={() => handleCopyLink(inv.slug, 'guest', inv)}
+                                title="نسخ رابط المعازيم (كرت الدعوة بدون عداد الحضور)"
+                                className="px-2.5 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs flex items-center justify-between gap-2 transition-all border border-neutral-700 cursor-pointer"
+                              >
+                                <span className="flex items-center gap-1.5 text-[11px] font-cairo">
+                                  <Copy className="w-3.5 h-3.5 text-amber-400" />
+                                  <span>رابط المعازيم (بدون عداد)</span>
+                                </span>
+                                {copiedSlug === `${inv.slug}-guest` ? (
+                                  <span className="text-emerald-400 font-bold text-[10px]">✓ نُسخ</span>
+                                ) : (
+                                  <span className="text-[10px] text-neutral-400 font-mono">/d/{inv.slug}</span>
+                                )}
+                              </button>
+
+                              {/* Host Link (With live counter) */}
+                              <button
+                                type="button"
+                                onClick={() => handleCopyLink(inv.slug, 'host', inv)}
+                                title="نسخ رابط أهل العرس (مزود بعداد الحضور المباشر)"
+                                className="px-2.5 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs flex items-center justify-between gap-2 transition-all border border-amber-500/30 cursor-pointer"
+                              >
+                                <span className="flex items-center gap-1.5 text-[11px] font-cairo font-bold">
+                                  <Crown className="w-3.5 h-3.5 text-amber-400" />
+                                  <span>رابط أهل العرس (مع العداد)</span>
+                                </span>
+                                {copiedSlug === `${inv.slug}-host` ? (
+                                  <span className="text-emerald-400 font-bold text-[10px]">✓ نُسخ</span>
+                                ) : (
+                                  <span className="text-[10px] text-amber-400/70 font-mono">?view=host</span>
+                                )}
+                              </button>
+
+                              {/* WhatsApp Ready-to-Send Message */}
+                              <button
+                                type="button"
+                                onClick={() => handleCopyWhatsAppMessage(inv)}
+                                title="نسخ رسالة واتساب جاهزة مزودة بنص الدعوة وتفاصيل العروسين والرابط"
+                                className="px-2.5 py-1.5 rounded-lg bg-emerald-950/40 hover:bg-emerald-900/60 text-emerald-300 text-xs flex items-center justify-between gap-2 transition-all border border-emerald-500/30 cursor-pointer"
+                              >
+                                <span className="flex items-center gap-1.5 text-[11px] font-cairo font-bold">
+                                  <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
+                                  <span>رسالة واتساب جاهزة</span>
+                                </span>
+                                {copiedSlug === `${inv.slug}-wa` ? (
+                                  <span className="text-emerald-400 font-bold text-[10px]">✓ نُسخت الرسالة</span>
+                                ) : (
+                                  <span className="text-[10px] text-emerald-400/70 font-mono">WhatsApp 📲</span>
+                                )}
+                              </button>
+                            </div>
+                          </td>
+
+                          {/* Actions (Edit / Preview / Reset RSVP / Delete) */}
+                          <td className="py-4 px-6 text-center">
+                            <div className="flex items-center justify-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => openEditModal(inv)}
+                                title="تعديل وتخصيص بيانات كرت الدعوة للزبون"
+                                className="p-2 rounded-xl bg-neutral-800 hover:bg-amber-500/20 text-neutral-300 hover:text-amber-400 border border-neutral-700 hover:border-amber-500/40 transition-all cursor-pointer"
+                              >
+                                <Edit className="w-4 h-4" />
+                              </button>
+
+                              <a
+                                href={`/d/${inv.slug}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                title="معاينة كرت الدعوة في تبويب جديد"
+                                className="p-2 rounded-xl bg-neutral-800 hover:bg-blue-500/20 text-neutral-300 hover:text-blue-400 border border-neutral-700 hover:border-blue-500/40 transition-all cursor-pointer inline-flex items-center justify-center"
+                              >
+                                <ExternalLink className="w-4 h-4" />
+                              </a>
+
+                              <button
+                                type="button"
+                                onClick={() => handleResetRsvp(inv.slug, inv.id)}
+                                title="إعادة ضبط عداد الحضور إلى ٠"
+                                className="p-2 rounded-xl bg-neutral-800 hover:bg-amber-500/20 text-neutral-300 hover:text-amber-400 border border-neutral-700 hover:border-amber-500/40 transition-all cursor-pointer"
+                              >
+                                <RotateCcw className="w-4 h-4" />
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteInvitation(inv.id, coupleNames)}
+                                title="حذف كرت الدعوة نهائياً"
+                                className="p-2 rounded-xl bg-neutral-800 hover:bg-rose-500/20 text-neutral-300 hover:text-rose-400 border border-neutral-700 hover:border-rose-500/40 transition-all cursor-pointer"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Tab 2: Master Templates (Displayed on Home Page) */}
+        {activeCategory === 'master-templates' && (
+          <div className="space-y-6">
+            <div className="p-6 rounded-3xl bg-neutral-900/70 border border-neutral-800 flex items-center justify-between flex-wrap gap-4">
+              <div>
+                <h2 className="text-base font-bold text-neutral-100 flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-amber-400" />
+                  <span>معرض القوالب الأساسية (المعروضة على الصفحة الرئيسية)</span>
+                </h2>
+                <p className="text-xs text-neutral-400 font-tajawal mt-1">
+                  هذه هي النماذج الخمسة الأساسية التي يستعرضها زوار الصفحة الرئيسية. يمكنك تعديل نموذج أي قالب، أو النقر على &ldquo;إنشاء كرت دعوة لزبون من هذا القالب&rdquo; للبدء فوراً بتجهيز كرت مخصص لزبونك.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {displayMasterTemplates.map((tmpl) => {
+                const info = templateNames[tmpl.templateId] || templateNames['template-1'];
+                return (
+                  <div
+                    key={tmpl.id}
+                    className="rounded-3xl bg-neutral-900/80 border border-neutral-800 hover:border-amber-500/40 transition-all duration-300 overflow-hidden flex flex-col justify-between shadow-xl"
+                  >
+                    {/* Header preview stripe */}
+                    <div className="p-5 bg-gradient-to-b from-neutral-800/80 to-neutral-900 border-b border-neutral-800 flex items-center justify-between">
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold border ${info.color}`}>
+                        {info.name}
+                      </span>
+                      <span className="text-[11px] text-neutral-400 font-mono">
+                        معروض بالرئيسية 🌐
+                      </span>
+                    </div>
+
+                    <div className="p-6 space-y-4 flex-1 flex flex-col justify-between">
+                      <div className="space-y-2">
+                        <div className="text-xs text-amber-400 font-tajawal font-bold">
+                          نموذج العرض بالرئيسية:
+                        </div>
+                        <div className="font-bold font-cairo text-neutral-100 text-base">
+                          {tmpl.groomName} & {tmpl.brideName}
+                        </div>
+                        <div className="text-xs text-neutral-400 font-tajawal">
+                          {tmpl.eventTitle} • {tmpl.venueName}
+                        </div>
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="space-y-2 pt-4 border-t border-neutral-800">
+                        {/* Primary Gold Action: Clone into Client Card */}
+                        <button
+                          type="button"
+                          onClick={() => handleCreateClientCardFromTemplate(tmpl)}
+                          className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-neutral-950 font-bold text-xs font-cairo flex items-center justify-center gap-1.5 shadow-md shadow-amber-500/15 cursor-pointer transition-all"
+                        >
+                          <Plus className="w-4 h-4" />
+                          <span>إنشاء كرت دعوة لزبون من هذا القالب</span>
+                        </button>
+
+                        <div className="flex items-center gap-2">
+                          <a
+                            href={`/d/${tmpl.slug}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex-1 py-2 px-3 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs font-cairo flex items-center justify-center gap-1.5 transition-colors border border-neutral-700"
                           >
-                            {tmpl.name}
-                          </span>
-                        </td>
+                            <ExternalLink className="w-3.5 h-3.5 text-blue-400" />
+                            <span>معاينة القالب بالصفحة</span>
+                          </a>
 
-                        {/* Date & Location */}
-                        <td className="py-4 px-6 text-xs text-neutral-300">
-                          <div>{inv.dayOfWeek} • {inv.timeFormatted}</div>
-                          <div className="text-neutral-500 mt-0.5">{inv.venueName} - {inv.venueCity}</div>
-                        </td>
-
-                        {/* Interactive Privacy Toggle Button */}
-                        <td className="py-4 px-6 text-center">
                           <button
                             type="button"
-                            onClick={() => handleTogglePrivacy(inv)}
-                            disabled={updatingPrivacyId === inv.id}
-                            title={
-                              isPublic
-                                ? 'الدعوة عامة ومعروضة في الواجهة الرئيسية. انقر للتحويل إلى خاصة وسرية 🔒'
-                                : 'الدعوة خاصة وسرية ولا تظهر في الواجهة الرئيسية. انقر للتحويل إلى عامة 🟢'
-                            }
-                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all border shadow-sm cursor-pointer hover:scale-105 active:scale-95 ${
-                              isPublic
-                                ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/25 hover:border-emerald-500/50'
-                                : 'bg-amber-500/15 text-amber-400 border-amber-500/30 hover:bg-amber-500/25 hover:border-amber-500/50'
-                            }`}
+                            onClick={() => openEditModal(tmpl)}
+                            className="py-2 px-3 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs font-cairo flex items-center justify-center gap-1.5 transition-colors border border-neutral-700 cursor-pointer"
+                            title="تعديل بيانات القالب الأساسي المعروض بالرئيسية"
                           >
-                            {updatingPrivacyId === inv.id ? (
-                              <Loader2 className="w-3.5 h-3.5 animate-spin text-neutral-400" />
-                            ) : isPublic ? (
-                              <>
-                                <Globe className="w-3.5 h-3.5 text-emerald-400" />
-                                <span>عامة بالموقع 🟢</span>
-                              </>
-                            ) : (
-                              <>
-                                <Lock className="w-3.5 h-3.5 text-amber-400" />
-                                <span>خاصة وسرية 🔒</span>
-                              </>
-                            )}
+                            <Edit className="w-3.5 h-3.5 text-amber-400" />
+                            <span>تعديل</span>
                           </button>
-                        </td>
-
-                        {/* RSVP Counter Badge */}
-                        <td className="py-4 px-6 text-center">
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-bold font-cairo text-xs">
-                            <Users className="w-3.5 h-3.5" />
-                            <span>{toArabicNumerals(inv.rsvpCount)} ضيف</span>
-                          </span>
-                        </td>
-
-                        {/* Dual Links (Guest vs Host) */}
-                        <td className="py-4 px-6 text-center">
-                          <div className="flex flex-col gap-1.5 items-stretch min-w-[210px]">
-                            {/* Guest Link (No counter) */}
-                            <button
-                              type="button"
-                              onClick={() => handleCopyLink(inv.slug, 'guest', inv)}
-                              title="نسخ رابط المعازيم (كرت الدعوة بدون عداد الحضور)"
-                              className="px-2.5 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs flex items-center justify-between gap-2 transition-all border border-neutral-700 cursor-pointer"
-                            >
-                              <span className="flex items-center gap-1.5 text-[11px] font-cairo">
-                                <Copy className="w-3.5 h-3.5 text-amber-400" />
-                                <span>رابط المعازيم (بدون عداد)</span>
-                              </span>
-                              {copiedSlug === `${inv.slug}-guest` ? (
-                                <span className="text-emerald-400 font-bold text-[10px]">✓ نُسخ</span>
-                              ) : (
-                                <span className="text-[10px] text-neutral-400 font-mono">/d/{inv.slug}</span>
-                              )}
-                            </button>
-
-                            {/* Host Link (With live counter) */}
-                            <button
-                              type="button"
-                              onClick={() => handleCopyLink(inv.slug, 'host')}
-                              title="نسخ رابط أهل العرس (مزود بعداد الحضور المباشر)"
-                              className="px-2.5 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs flex items-center justify-between gap-2 transition-all border border-amber-500/30 cursor-pointer"
-                            >
-                              <span className="flex items-center gap-1.5 text-[11px] font-cairo font-bold">
-                                <Crown className="w-3.5 h-3.5 text-amber-400" />
-                                <span>رابط أهل العرس (مع العداد)</span>
-                              </span>
-                              {copiedSlug === `${inv.slug}-host` ? (
-                                <span className="text-emerald-400 font-bold text-[10px]">✓ نُسخ</span>
-                              ) : (
-                                <span className="text-[10px] text-amber-400/70 font-mono">?view=host</span>
-                              )}
-                            </button>
-
-                            {/* WhatsApp Ready-to-Send Message */}
-                            <button
-                              type="button"
-                              onClick={() => handleCopyWhatsAppMessage(inv)}
-                              title="نسخ رسالة واتساب جاهزة مزودة بنص الدعوة وتفاصيل العروسين والرابط"
-                              className="px-2.5 py-1.5 rounded-lg bg-emerald-950/40 hover:bg-emerald-900/60 text-emerald-300 text-xs flex items-center justify-between gap-2 transition-all border border-emerald-500/30 cursor-pointer"
-                            >
-                              <span className="flex items-center gap-1.5 text-[11px] font-cairo font-bold">
-                                <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
-                                <span>رسالة واتساب جاهزة</span>
-                              </span>
-                              {copiedSlug === `${inv.slug}-wa` ? (
-                                <span className="text-emerald-400 font-bold text-[10px]">✓ نُسخت الرسالة</span>
-                              ) : (
-                                <span className="text-[10px] text-emerald-400/70 font-mono">WhatsApp 📲</span>
-                              )}
-                            </button>
-                          </div>
-                        </td>
-
-                        {/* Actions (Edit / Preview / Reset RSVP) */}
-                        <td className="py-4 px-6 text-center">
-                          <div className="flex items-center justify-center gap-2">
-                            <button
-                              type="button"
-                              onClick={() => openEditModal(inv)}
-                              title="تعديل وتخصيص بيانات الدعوة والقالب"
-                              className="p-2 rounded-xl bg-neutral-800 hover:bg-amber-500/20 text-neutral-300 hover:text-amber-400 border border-neutral-700 hover:border-amber-500/40 transition-all cursor-pointer"
-                            >
-                              <Edit className="w-4 h-4" />
-                            </button>
-
-                            <a
-                              href={`/d/${inv.slug}`}
-                              target="_blank"
-                              rel="noreferrer"
-                              title="معاينة كرت الدعوة في تبويب جديد"
-                              className="p-2 rounded-xl bg-neutral-800 hover:bg-blue-500/20 text-neutral-300 hover:text-blue-400 border border-neutral-700 hover:border-blue-500/40 transition-all cursor-pointer inline-flex items-center justify-center"
-                            >
-                              <ExternalLink className="w-4 h-4" />
-                            </a>
-
-                            <button
-                              type="button"
-                              onClick={() => handleResetRsvp(inv.slug, inv.id)}
-                              title="إعادة ضبط عداد الحضور إلى ٠"
-                              className="p-2 rounded-xl bg-neutral-800 hover:bg-rose-500/20 text-neutral-300 hover:text-rose-400 border border-neutral-700 hover:border-rose-500/40 transition-all cursor-pointer"
-                            >
-                              <RotateCcw className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          )}
-        </div>
+          </div>
+        )}
+
       </main>
 
       {/* Create / Edit Customizer Studio Modal with Live Center Card Preview */}
@@ -879,7 +1112,13 @@ ${url}`;
               </div>
               <div>
                 <h3 className="text-sm sm:text-base font-bold text-neutral-100 font-cairo flex items-center gap-2">
-                  <span>{editingInv.id ? 'استوديو تخصيص الدعوة' : 'استوديو تصميم دعوة جديدة'}</span>
+                  <span>
+                    {editingInv.id
+                      ? isMasterTemplate(editingInv)
+                        ? 'استوديو تعديل القالب الأساسي المعروض بالرئيسية'
+                        : 'استوديو تعديل كرت دعوة الزبون'
+                      : 'استوديو إنشاء كرت دعوة لزبون جديد'}
+                  </span>
                   <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[11px] font-tajawal bg-amber-500/15 text-amber-300 border border-amber-500/30">
                     {editingInv.templateId === 'template-1' && 'قالب باب الفرح الملكي'}
                     {editingInv.templateId === 'template-2' && 'قالب المودرن البسيط'}

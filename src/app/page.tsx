@@ -17,6 +17,7 @@ import {
   ExternalLink,
   Layers,
   Crown,
+  Plus,
 } from 'lucide-react';
 import { BismillahCalligraphy, MashrabiyaWatermark, AmbientParticles } from '@/components/common/CalligraphyDecorations';
 import { InvitationData } from '@/types/invitation';
@@ -441,10 +442,10 @@ export default function HomePage() {
       <section className="relative py-12 px-4 sm:px-8 max-w-6xl mx-auto z-10 border-t border-neutral-900">
         <div className="text-center mb-10">
           <h2 className="text-2xl sm:text-3xl font-bold font-cairo text-neutral-100">
-            كافة القوالب المتاحة بالتفصيل
+            معرض القوالب الأساسية المعتمدة
           </h2>
           <p className="text-xs sm:text-sm text-neutral-400 font-tajawal mt-1">
-            اختر أي قالب لمعاينته مباشرة كضيف أو مشاركته مع المعازيم
+            اختر أي قالب لمعاينته مباشرة، أو اضغط لإنشاء كرت دعوة لزبون بالاعتماد على تصميمه
           </p>
         </div>
 
@@ -497,13 +498,13 @@ export default function HomePage() {
                   </p>
                 </div>
 
-                {/* Dual Action Buttons */}
+                {/* Triple Action Buttons */}
                 <div className="pt-4 border-t border-neutral-800/80 space-y-2">
                   <Link
                     href={`/d/${tmpl.slug}`}
                     className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-neutral-950 font-bold text-xs font-cairo flex items-center justify-center gap-1.5 transition-all shadow-md shadow-amber-500/15"
                   >
-                    <span>معاينة كرت الدعوة الكامل</span>
+                    <span>معاينة القالب الكامل</span>
                     <ChevronLeft className="w-4 h-4" />
                   </Link>
 
@@ -513,6 +514,14 @@ export default function HomePage() {
                   >
                     <Crown className="w-3 h-3 text-amber-400" />
                     <span>معاينة رابط أهل العرس (مع العداد)</span>
+                  </Link>
+
+                  <Link
+                    href={`/admin?fromTemplate=${tmpl.id}`}
+                    className="w-full py-1.5 px-3 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-[11px] font-tajawal flex items-center justify-center gap-1.5 transition-colors border border-amber-500/30"
+                  >
+                    <Plus className="w-3 h-3 text-amber-400" />
+                    <span>تخصيص كرت دعوة لزبون من هذا القالب</span>
                   </Link>
                 </div>
               </div>

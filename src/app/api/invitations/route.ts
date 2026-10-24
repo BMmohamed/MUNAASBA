@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAllInvitations, createInvitation, updateInvitation } from '@/lib/invitation-service';
+import { getAllInvitations, createInvitation, updateInvitation, deleteInvitation } from '@/lib/invitation-service';
 
 export async function GET() {
   try {
@@ -25,5 +25,20 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error saving invitation:', error);
     return NextResponse.json({ error: 'فشل في حفظ الدعوة' }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    if (!id) {
+      return NextResponse.json({ error: 'معرف كرت الدعوة مطلوب' }, { status: 400 });
+    }
+    const success = await deleteInvitation(id);
+    return NextResponse.json({ success });
+  } catch (error) {
+    console.error('Error deleting invitation:', error);
+    return NextResponse.json({ error: 'فشل في حذف كرت الدعوة' }, { status: 500 });
   }
 }
