@@ -11,6 +11,7 @@ import { LocationCard } from '../invitation/LocationCard';
 import { TimelineSection } from '../invitation/TimelineSection';
 import { ChildrenAdvisory } from '../invitation/ChildrenAdvisory';
 import { ShareAction } from '../invitation/ShareAction';
+import { FooterContact } from '../invitation/FooterContact';
 import { AmbientMusicPlayer } from '../invitation/AmbientMusicPlayer';
 import { ScrollReveal } from '../common/ScrollReveal';
 import { formatArabicDateDisplay } from '@/lib/date-utils';
@@ -278,6 +279,8 @@ export const TemplateLuxuryNight: React.FC<{ invitation: InvitationData; isHostV
           <div className="mt-8 pt-4 border-t border-slate-800 text-center text-xs sm:text-sm text-amber-200 font-tajawal font-medium">
             تكتمل بهجة ليلتنا بحضوركم الراقي ✦
           </div>
+
+          <FooterContact theme="midnight" />
 
         </div>
       </div>

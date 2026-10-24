@@ -10,6 +10,7 @@ import { LocationCard } from '../invitation/LocationCard';
 import { TimelineSection } from '../invitation/TimelineSection';
 import { ChildrenAdvisory } from '../invitation/ChildrenAdvisory';
 import { ShareAction } from '../invitation/ShareAction';
+import { FooterContact } from '../invitation/FooterContact';
 import { AmbientMusicPlayer } from '../invitation/AmbientMusicPlayer';
 import { ScrollReveal } from '../common/ScrollReveal';
 import { formatArabicDateDisplay } from '@/lib/date-utils';
@@ -279,6 +280,8 @@ export const TemplateModernMinimalist: React.FC<{ invitation: InvitationData; is
           <div className="mt-8 pt-4 border-t border-stone-800/80 text-center text-xs text-amber-200/90 font-tajawal font-medium">
             حضوركم شرفٌ وفرحةٌ لقلوبنا
           </div>
+
+          <FooterContact theme="minimal" />
 
         </div>
       </div>

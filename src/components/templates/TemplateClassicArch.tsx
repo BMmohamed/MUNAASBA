@@ -11,6 +11,7 @@ import { LocationCard } from '../invitation/LocationCard';
 import { TimelineSection } from '../invitation/TimelineSection';
 import { ChildrenAdvisory } from '../invitation/ChildrenAdvisory';
 import { ShareAction } from '../invitation/ShareAction';
+import { FooterContact } from '../invitation/FooterContact';
 import { AmbientMusicPlayer } from '../invitation/AmbientMusicPlayer';
 import { ScrollReveal } from '../common/ScrollReveal';
 import { Sparkles, Shirt } from 'lucide-react';
@@ -292,10 +293,10 @@ export const TemplateClassicArch: React.FC<{ invitation: InvitationData; isHostV
               <p className="text-sm text-amber-200 font-amiri italic font-bold">
                 دامـت أفراحكم بالمسـرّات عامرـة
               </p>
-              <div className="text-[11px] text-neutral-400 mt-2 font-tajawal">
-                منصة مناسبة • تصميم دعوات إلكترونية تفاعلية
-              </div>
             </div>
+
+            {/* Custom Invitation Creation Contact */}
+            <FooterContact theme="gold" />
 
           </div>
         </div>

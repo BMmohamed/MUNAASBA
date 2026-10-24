@@ -11,6 +11,7 @@ import { LocationCard } from '../invitation/LocationCard';
 import { TimelineSection } from '../invitation/TimelineSection';
 import { ChildrenAdvisory } from '../invitation/ChildrenAdvisory';
 import { ShareAction } from '../invitation/ShareAction';
+import { FooterContact } from '../invitation/FooterContact';
 import { AmbientMusicPlayer } from '../invitation/AmbientMusicPlayer';
 import { ScrollReveal } from '../common/ScrollReveal';
 import { formatArabicDateDisplay } from '@/lib/date-utils';
@@ -283,6 +284,8 @@ export const TemplateHeritageTraditional: React.FC<{ invitation: InvitationData;
           <div className="mt-8 pt-4 border-t border-amber-700/30 text-center text-xs sm:text-sm text-amber-200 font-tajawal font-medium">
             حياكم الله وبياكم في ديار الكرم والجود
           </div>
+
+          <FooterContact theme="heritage" />
 
         </div>
       </div>

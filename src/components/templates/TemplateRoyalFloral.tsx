@@ -10,6 +10,7 @@ import { LocationCard } from '../invitation/LocationCard';
 import { TimelineSection } from '../invitation/TimelineSection';
 import { ChildrenAdvisory } from '../invitation/ChildrenAdvisory';
 import { ShareAction } from '../invitation/ShareAction';
+import { FooterContact } from '../invitation/FooterContact';
 import { AmbientMusicPlayer } from '../invitation/AmbientMusicPlayer';
 import { ScrollReveal } from '../common/ScrollReveal';
 import { formatArabicDateDisplay } from '@/lib/date-utils';
@@ -293,6 +294,8 @@ export const TemplateRoyalFloral: React.FC<{ invitation: InvitationData; isHostV
           <div className="mt-8 pt-4 border-t border-rose-400/20 text-center text-xs sm:text-sm text-rose-200 font-tajawal font-medium">
             تزهو الأمسية بجميل حضوركم العطر 🌸
           </div>
+
+          <FooterContact theme="floral" />
 
         </div>
       </div>
