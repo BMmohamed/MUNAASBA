@@ -598,3 +598,61 @@ export async function resetRsvpCount(idOrSlug: string): Promise<boolean> {
   store.set(target.id, { ...target });
   return true;
 }
+
+export async function adjustRsvpCount(
+  idOrSlug: string,
+  options: { delta?: number; exact?: number }
+): Promise<{ success: boolean; newCount: number }> {
+  const store = getStore();
+
+  let target: InvitationData | null = null;
+  if (isSupabaseConfigured()) {
+    target = await getInvitationBySlug(idOrSlug);
+  } else {
+    target = store.get(idOrSlug) || null;
+    if (!target) {
+      for (const item of store.values()) {
+        if (item.slug === idOrSlug || item.id === idOrSlug) {
+          target = item;
+          break;
+        }
+      }
+    }
+  }
+
+  if (!target) {
+    return { success: false, newCount: 0 };
+  }
+
+  let newCount = target.rsvpCount;
+  if (typeof options.exact === 'number' && !isNaN(options.exact)) {
+    newCount = Math.max(0, Math.round(options.exact));
+  } else if (typeof options.delta === 'number' && !isNaN(options.delta)) {
+    newCount = Math.max(0, Math.round(target.rsvpCount + options.delta));
+  }
+
+  target.rsvpCount = newCount;
+  target.updatedAt = new Date().toISOString();
+
+  // Sync with Supabase if configured
+  if (isSupabaseConfigured()) {
+    try {
+      const client = getSupabaseAdmin() || getSupabase();
+      if (client) {
+        await client
+          .from('invitations')
+          .update({ rsvp_count: newCount, updated_at: target.updatedAt })
+          .eq('id', target.id);
+      }
+    } catch (err) {
+      console.warn('[Supabase] Error adjusting RSVP count in DB:', err);
+    }
+  }
+
+  // Update memory cache
+  store.set(target.slug, { ...target });
+  store.set(target.id, { ...target });
+
+  return { success: true, newCount };
+}
+

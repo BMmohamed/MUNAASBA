@@ -2,7 +2,16 @@ import type { Metadata, Viewport } from 'next';
 import { Analytics } from '@vercel/analytics/next';
 import './globals.css';
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+  ? (process.env.NEXT_PUBLIC_SITE_URL.startsWith('http')
+      ? process.env.NEXT_PUBLIC_SITE_URL
+      : `https://${process.env.NEXT_PUBLIC_SITE_URL}`)
+  : process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : 'https://munaasaba.vercel.app';
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: 'منصة مناسبة | بطاقات ودعوات زفاف إلكترونية فاخرة',
   description: 'منصة احترافية لتصميم وتوزيع بطاقات الدعوة الرقمية الفاخرة لحفلات الزفاف والمناسبات الملكية بأرقى الخطوط العربية والتصاميم التفاعلية.',
   keywords: ['دعوة زفاف إلكترونية', 'كرت زواج رقمي', 'دعوات أعراس تفاعلية', 'تأكيد حضور RSVP', 'دعوات إلكترونية فاخرة'],
@@ -11,6 +20,7 @@ export const metadata: Metadata = {
     description: 'شارك لحظات الفرح بدعوة إلكترونية تفاعلية راقية وتأكيد حضور مباشر بلمسة واحدة.',
     type: 'website',
     locale: 'ar_SA',
+    siteName: 'منصة مناسبة للدعوات الإلكترونية الفاخرة',
   },
 };
 

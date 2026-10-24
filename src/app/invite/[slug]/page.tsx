@@ -26,8 +26,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const title = `${invitation.eventTitle}: ${invitation.groomName} & ${invitation.brideName}`;
-  const description = `${invitation.welcomeMessage} • ${invitation.venueName} • ${invitation.dayOfWeek} ${invitation.timeFormatted}`;
+  const title = `💌 دعوة خاصة: ${invitation.groomName} & ${invitation.brideName}`;
+  const description = `يتشرفون بدعوتكم لحضور ${invitation.eventTitle} • ${invitation.venueName} (${invitation.venueCity}) • ${invitation.dayOfWeek} ${invitation.timeFormatted} • اضغط هنا لمشاهدة تفاصيل الدعوة وتأكيد الحضور (RSVP)`;
+
+  const ogImageUrl = `/api/og?slug=${encodeURIComponent(slug)}&v=${encodeURIComponent(invitation.updatedAt || '1')}`;
 
   return {
     title,
@@ -35,8 +37,23 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title,
       description,
-      type: 'article',
+      type: 'website',
       locale: 'ar_SA',
+      siteName: 'منصة مناسبة للدعوات الإلكترونية الفاخرة',
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: `${invitation.eventTitle}: ${invitation.groomName} & ${invitation.brideName}`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImageUrl],
     },
   };
 }

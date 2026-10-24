@@ -27,7 +27,15 @@ export const ShareAction: React.FC<ShareActionProps> = ({
     return `https://munaasaba.vercel.app/d/${slug}`;
   };
 
-  const shareText = `يشرفنا دعوتكم لحضور ${title} (${groomName} & ${brideName}) عبر الرابط:\n${getShareUrl()}`;
+  const shareText = `✨ *دعوة خاصة لحضور ${title}* ✨
+
+"وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً"
+
+يتشرف أهل العروسين بدعوتكم الكريمة لمشاركتهم الفرحة والسرور بمناسبة زفاف:
+💍 *${groomName} & ${brideName}* 💍
+
+يسعدنا ويشرفنا حضوركم، لتفاصيل الموعد والموقع وتأكيد الحضور (RSVP) تفضلوا بالدخول عبر الرابط:
+${getShareUrl()}`;
 
   const handleCopy = async () => {
     try {

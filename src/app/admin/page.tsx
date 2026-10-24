@@ -31,6 +31,7 @@ import {
   Globe,
   EyeOff,
   Loader2,
+  MessageCircle,
 } from 'lucide-react';
 import { InvitationData, InvitationTemplateId, TimelineItem } from '@/types/invitation';
 import { TemplateRenderer } from '@/components/templates/TemplateRenderer';
@@ -135,6 +136,30 @@ export default function AdminDashboardPage() {
         ? 'تم نسخ رابط أهل العرس (المزود بعداد الحضور المباشر) 👑'
         : 'تم نسخ رابط المعازيم (كرت الدعوة بدون عداد) 💌'
     );
+  };
+
+  const handleCopyWhatsAppMessage = (inv: InvitationData) => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const url = `${origin}/d/${inv.slug}`;
+    const text = `✨ *دعوة خاصة لحضور ${inv.eventTitle}* ✨
+
+"وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً"
+
+يتشرف أهل العروسين بدعوتكم الكريمة لمشاركتهم الفرحة والسرور بمناسبة حفل زفاف:
+💍 *${inv.groomName} & ${inv.brideName}* 💍
+
+📅 *الموعد:* ${inv.dayOfWeek} ${inv.eventDateHijri ? `(${inv.eventDateHijri})` : ''}
+⏰ *الوقت:* ${inv.timeFormatted}
+📍 *المكان:* ${inv.venueName} - ${inv.venueCity}
+
+يسعدنا ويشرفنا حضوركم ومشاركتكم فرحتنا، لمشاهدة بطاقة الدعوة وتأكيد الحضور (RSVP) تفضلوا بالدخول عبر الرابط:
+${url}`;
+
+    navigator.clipboard.writeText(text);
+    const key = `${inv.slug}-wa`;
+    setCopiedSlug(key);
+    setTimeout(() => setCopiedSlug(null), 3000);
+    showToast('تم نسخ نص رسالة الواتساب الجاهزة مع الرابط للمشاركة 📲');
   };
 
   // Toggle privacy directly from dashboard table without opening modal
@@ -772,6 +797,24 @@ export default function AdminDashboardPage() {
                                 <span className="text-emerald-400 font-bold text-[10px]">✓ نُسخ</span>
                               ) : (
                                 <span className="text-[10px] text-amber-400/70 font-mono">?view=host</span>
+                              )}
+                            </button>
+
+                            {/* WhatsApp Ready-to-Send Message */}
+                            <button
+                              type="button"
+                              onClick={() => handleCopyWhatsAppMessage(inv)}
+                              title="نسخ رسالة واتساب جاهزة مزودة بنص الدعوة وتفاصيل العروسين والرابط"
+                              className="px-2.5 py-1.5 rounded-lg bg-emerald-950/40 hover:bg-emerald-900/60 text-emerald-300 text-xs flex items-center justify-between gap-2 transition-all border border-emerald-500/30 cursor-pointer"
+                            >
+                              <span className="flex items-center gap-1.5 text-[11px] font-cairo font-bold">
+                                <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
+                                <span>رسالة واتساب جاهزة</span>
+                              </span>
+                              {copiedSlug === `${inv.slug}-wa` ? (
+                                <span className="text-emerald-400 font-bold text-[10px]">✓ نُسخت الرسالة</span>
+                              ) : (
+                                <span className="text-[10px] text-emerald-400/70 font-mono">WhatsApp 📲</span>
                               )}
                             </button>
                           </div>
