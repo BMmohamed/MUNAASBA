@@ -123,6 +123,54 @@ export default function HomePage() {
       venue: 'قصر الدرعية التراثي - حي البجيري',
       themeStyle: 'heritage-warm',
     },
+    {
+      id: 'template-6',
+      title: 'خاتم المحبس والرباط الذهبي',
+      subtitle: 'Golden Wedding Rings',
+      slug: 'golden-rings',
+      badge: 'تصميم غير تقليدي',
+      color: 'from-[#1e150a] via-[#120c04] to-neutral-950',
+      accentBorder: 'border-amber-400/60',
+      accentText: 'text-amber-300',
+      tag: 'محبسان ذهبيان متداخلان • انحناء كبسولي مفرغ • بريق ألماسي',
+      desc: 'قالب غير تقليدي كلياً متحرر من الصناديق والمربعات، يعتمد على أيقونة محبسين متشابكين مع بريق ماسي وانحناءات كبسولية فخمة وموسيقى بيانو ناعمة.',
+      coupleNames: 'عبدالرحمن بن سعود & رزان بنت فهد',
+      eventTitle: 'حفل الزفاف والرباط المبارك',
+      venue: 'قصر الفرسان للاحتفالات والمؤتمرات - الرياض',
+      themeStyle: 'golden-rings',
+    },
+    {
+      id: 'template-7',
+      title: 'شلال الورود وأمطار البتلات',
+      subtitle: 'Floral Cascade & Petals Rain',
+      slug: 'floral-cascade',
+      badge: 'تأثير أمطار البتلات',
+      color: 'from-[#2b0d18] via-[#1a080f] to-neutral-950',
+      accentBorder: 'border-rose-400/60',
+      accentText: 'text-rose-300',
+      tag: 'أمطار بتلات متساقطة على الشاشة • إكليل زهور عضوي • تموجات وردية',
+      desc: 'تجربة حية تنهمر فيها بتلات الورد المتطايرة على الشاشة بانسيابية شلالية، مع إكليل زهور نباتي دائري وإطار مموج وموسيقى بيانو رومانسية هادئة.',
+      coupleNames: 'سعود بن عبدالعزيز & ديمة بنت منصور',
+      eventTitle: 'ليلة الياسمين وشلال الفرح',
+      venue: 'منتجع بارك حياة - قاعة الصحبة - جدة',
+      themeStyle: 'floral-cascade',
+    },
+    {
+      id: 'template-8',
+      title: 'الميدالية الملكية والتاج',
+      subtitle: 'Royal Baroque Medallion',
+      slug: 'baroque-medallion',
+      badge: 'طابع باروكي ملكي',
+      color: 'from-[#140b24] via-[#090412] to-neutral-950',
+      accentBorder: 'border-purple-400/50',
+      accentText: 'text-amber-300',
+      tag: 'إطار بيضاوي مذهب • تاج ملكي أرستقراطي • نقوش مفرغة نبيلة',
+      desc: 'تصميم ملكي مستوحى من الميداليات الأرستقراطية الكلاسيكية بإطار بيضاوي مقوّس وزخارف فيليغري ذهبية مذهلة يتوسطها تاج الفرح.',
+      coupleNames: 'بدر بن خالد & سارة بنت فيصل',
+      eventTitle: 'المراسم الملكية لعقد القران',
+      venue: 'فندق الفيصلية - قاعة أمسيات الكبرى - الرياض',
+      themeStyle: 'baroque-medallion',
+    },
   ];
 
   const currentTmpl = templates[activeSlide];
@@ -196,7 +244,7 @@ export default function HomePage() {
             استعراض فوري وسريع
           </span>
           <h2 className="text-2xl sm:text-4xl font-bold font-cairo text-neutral-100 mt-1">
-            لمحة سريعة على القوالب الخمسة
+            لمحة سريعة على تشكيلة القوالب الملكية (٨ قوالب مميزة)
           </h2>
           <p className="text-xs sm:text-sm text-neutral-400 font-tajawal mt-1">
             تنقّل بين الشرائح لاكتشاف أسلوب كل تصميم وهويته البصرية قبل المعاينة الكاملة
@@ -421,6 +469,66 @@ export default function HomePage() {
                       </div>
                       <div className="py-2 px-3 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 text-neutral-950 font-bold text-[11px] shadow">
                         تأكيد الحضور
+                      </div>
+                    </div>
+                  )}
+
+                  {currentTmpl.themeStyle === 'golden-rings' && (
+                    <div className="border border-amber-400/50 rounded-t-[100px] rounded-b-[40px] p-4 h-full flex flex-col justify-between relative z-10 bg-amber-950/40 shadow-inner">
+                      <div>
+                        <div className="text-lg text-amber-300 mb-1">💍</div>
+                        <span className="text-[9px] text-amber-200/90 font-amiri block">وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا</span>
+                        <div className="my-2 p-2 rounded-full border border-amber-400/40 bg-black/40">
+                          <h4 className="text-sm font-bold font-cairo text-amber-200">عبدالرحمن & رزان</h4>
+                        </div>
+                      </div>
+                      <div className="text-[10px] text-amber-200/90 space-y-0.5">
+                        <div>الخميس • ٨:٠٠ مساءً</div>
+                        <div className="text-amber-300/80 text-[9px]">قصر الفرسان للاحتفالات</div>
+                      </div>
+                      <div className="py-2 px-3 rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 text-neutral-950 font-bold text-[11px] shadow">
+                        تأكيد الحضور
+                      </div>
+                    </div>
+                  )}
+
+                  {currentTmpl.themeStyle === 'floral-cascade' && (
+                    <div className="border border-rose-400/50 rounded-[40px] p-4 h-full flex flex-col justify-between relative z-10 bg-rose-950/40 shadow-inner overflow-hidden">
+                      <div className="text-[10px] text-rose-300/60 animate-pulse">🌸 🍃 🌸</div>
+                      <div>
+                        <div className="w-10 h-10 mx-auto rounded-full border border-rose-400/50 flex items-center justify-center text-sm mb-1 bg-rose-500/10">
+                          🌿
+                        </div>
+                        <span className="text-[9px] text-rose-200/90 font-amiri block">شلال البهجة والمسرات</span>
+                        <h4 className="text-sm font-bold font-amiri text-rose-100 mt-1">سعود & ديمة</h4>
+                      </div>
+                      <div className="text-[10px] text-rose-200/90 space-y-0.5">
+                        <div>الجمعة • ٨:٣٠ مساءً</div>
+                        <div className="text-rose-300/80 text-[9px]">منتجع بارك حياة جدة</div>
+                      </div>
+                      <div className="py-2 px-3 rounded-2xl bg-gradient-to-r from-rose-500 to-amber-400 text-neutral-950 font-bold text-[11px] shadow">
+                        سأحضر بكل سرور
+                      </div>
+                    </div>
+                  )}
+
+                  {currentTmpl.themeStyle === 'baroque-medallion' && (
+                    <div className="border-2 border-amber-400/60 rounded-full p-4 h-full flex flex-col justify-between relative z-10 bg-purple-950/40 shadow-2xl">
+                      <div>
+                        <div className="text-base text-amber-300 mb-0.5">👑</div>
+                        <span className="text-[8px] text-amber-300 tracking-widest block uppercase">ROYAL WEDDING</span>
+                        <div className="my-1.5 p-1.5 border-y border-amber-400/40">
+                          <h4 className="text-xs font-bold font-cairo text-amber-200">بدر بن خالد</h4>
+                          <span className="text-[9px] text-amber-400/80 block">&</span>
+                          <h4 className="text-xs font-bold font-cairo text-amber-200">سارة بنت فيصل</h4>
+                        </div>
+                      </div>
+                      <div className="text-[9px] text-purple-200/90">
+                        <div>السبت • ٨:٠٠ مساءً</div>
+                        <div className="text-amber-300/70 text-[8px]">فندق الفيصلية - أمسيات</div>
+                      </div>
+                      <div className="py-1.5 px-3 rounded-full bg-gradient-to-r from-amber-400 to-yellow-300 text-neutral-950 font-bold text-[10px] shadow">
+                        تأكيد الحضور الملكي
                       </div>
                     </div>
                   )}

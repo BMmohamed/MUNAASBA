@@ -13,20 +13,24 @@ export const DesktopFrameWrapper: React.FC<{ invitation: InvitationData; isHostV
   const [showQr, setShowQr] = useState<boolean>(false);
 
   // Background ambiance theme colors (deep luxury backdrop)
-  const themeBg = {
+  const themeBg: Record<string, string> = {
     'template-1': 'bg-[#020b08]',
     'template-2': 'bg-[#08090a]',
     'template-3': 'bg-[#0d0509]',
     'template-4': 'bg-[#03060c]',
     'template-5': 'bg-[#0e0704]',
-  }[invitation.templateId] || 'bg-neutral-950';
+    'template-6': 'bg-[#0d0903]',
+    'template-7': 'bg-[#0f0408]',
+    'template-8': 'bg-[#0a0512]',
+  };
+  const currentThemeBg = themeBg[invitation.templateId] || 'bg-neutral-950';
 
   const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(
     typeof window !== 'undefined' ? window.location.href : `https://munaasaba.vercel.app/d/${invitation.slug}`
   )}`;
 
   return (
-    <div className={`relative min-h-screen ${themeBg} flex flex-col items-center justify-start`}>
+    <div className={`relative min-h-screen ${currentThemeBg} flex flex-col items-center justify-start`}>
       
       {/* Desktop Top Toolbar (Only shown on larger screens md+) */}
       <aside aria-label="أدوات العرض" className="hidden md:flex items-center justify-between w-full max-w-4xl py-3 px-6 my-2 rounded-2xl bg-neutral-900/80 border border-neutral-800 text-neutral-200 text-xs font-cairo shadow-lg z-30 backdrop-blur-md">

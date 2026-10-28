@@ -7,6 +7,9 @@ import { TemplateModernMinimalist } from './TemplateModernMinimalist';
 import { TemplateRoyalFloral } from './TemplateRoyalFloral';
 import { TemplateLuxuryNight } from './TemplateLuxuryNight';
 import { TemplateHeritageTraditional } from './TemplateHeritageTraditional';
+import { TemplateGoldenRings } from './TemplateGoldenRings';
+import { TemplateFloralCascade } from './TemplateFloralCascade';
+import { TemplateBaroqueMedallion } from './TemplateBaroqueMedallion';
 
 interface TemplateRendererProps {
   invitation: InvitationData;
@@ -23,6 +26,12 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({ invitation, 
       return <TemplateLuxuryNight invitation={invitation} isHostView={isHostView} />;
     case 'template-5':
       return <TemplateHeritageTraditional invitation={invitation} isHostView={isHostView} />;
+    case 'template-6':
+      return <TemplateGoldenRings invitation={invitation} isHostView={isHostView} />;
+    case 'template-7':
+      return <TemplateFloralCascade invitation={invitation} isHostView={isHostView} />;
+    case 'template-8':
+      return <TemplateBaroqueMedallion invitation={invitation} isHostView={isHostView} />;
     case 'template-1':
     default:
       return <TemplateClassicArch invitation={invitation} isHostView={isHostView} />;

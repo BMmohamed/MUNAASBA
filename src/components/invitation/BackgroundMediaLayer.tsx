@@ -19,8 +19,11 @@ export const BackgroundMediaLayer: React.FC<BackgroundMediaLayerProps> = ({
     'template-1': '/images/backgrounds/bg_classic_arch.jpg',
     'template-2': '/images/backgrounds/bg_modern_minimal.jpg',
     'template-3': '/images/backgrounds/bg_royal_floral.jpg',
-    'template-4': '/images/backgrounds/bg_classic_arch.jpg', // fallback to royal dark arch or custom
+    'template-4': '/images/backgrounds/bg_classic_arch.jpg',
     'template-5': '/images/backgrounds/bg_modern_minimal.jpg',
+    'template-6': '/images/backgrounds/bg_classic_arch.jpg',
+    'template-7': '/images/backgrounds/bg_royal_floral.jpg',
+    'template-8': '/images/backgrounds/bg_classic_arch.jpg',
   };
 
   // High-performance royalty-free slow-motion ambient loop videos
@@ -30,6 +33,9 @@ export const BackgroundMediaLayer: React.FC<BackgroundMediaLayerProps> = ({
     'template-3': 'https://assets.mixkit.co/videos/preview/mixkit-pink-petals-falling-slowly-41552-large.mp4',
     'template-4': 'https://assets.mixkit.co/videos/preview/mixkit-particles-in-a-dark-starry-night-41554-large.mp4',
     'template-5': 'https://assets.mixkit.co/videos/preview/mixkit-warm-fire-embers-floating-in-the-night-41553-large.mp4',
+    'template-6': 'https://assets.mixkit.co/videos/preview/mixkit-gold-dust-particles-in-motion-41551-large.mp4',
+    'template-7': 'https://assets.mixkit.co/videos/preview/mixkit-pink-petals-falling-slowly-41552-large.mp4',
+    'template-8': 'https://assets.mixkit.co/videos/preview/mixkit-gold-dust-particles-in-motion-41551-large.mp4',
   };
 
   const videoSrc = customVideoUrl || defaultVideos[templateId];
@@ -42,6 +48,9 @@ export const BackgroundMediaLayer: React.FC<BackgroundMediaLayerProps> = ({
     'template-3': 'from-stone-950/75 via-rose-950/65 to-stone-950/85',
     'template-4': 'from-black/80 via-slate-950/75 to-black/90',
     'template-5': 'from-black/75 via-amber-950/75 to-black/90',
+    'template-6': 'from-black/80 via-[#1e150a]/80 to-black/90',
+    'template-7': 'from-black/80 via-[#200a14]/80 to-black/90',
+    'template-8': 'from-black/85 via-[#150a24]/85 to-black/90',
   };
 
   return (

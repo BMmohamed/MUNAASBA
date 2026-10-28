@@ -3,7 +3,10 @@ export type InvitationTemplateId =
   | 'template-2' // Modern Minimalist
   | 'template-3' // Royal Floral
   | 'template-4' // Luxury Night / Midnight Elegance
-  | 'template-5'; // Heritage / Traditional
+  | 'template-5' // Heritage / Traditional
+  | 'template-6' // Ring of Eternity / Golden Rings (خاتم المحبس والرباط الذهبي)
+  | 'template-7' // Floral Cascade / Raining Petals (شلال الورود وأمطار البتلات)
+  | 'template-8'; // Royal Baroque Medallion (الميدالية الملكية والتاج)
 
 export interface TimelineItem {
   id: string;

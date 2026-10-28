@@ -50,13 +50,25 @@ import {
 } from '@/lib/constants';
 import { toArabicNumerals } from '@/lib/date-utils';
 
-export const MASTER_TEMPLATE_IDS = ['inv-1', 'inv-2', 'inv-3', 'inv-4', 'inv-5'];
+export const MASTER_TEMPLATE_IDS = [
+  'inv-1',
+  'inv-2',
+  'inv-3',
+  'inv-4',
+  'inv-5',
+  'inv-6',
+  'inv-7',
+  'inv-8',
+];
 export const MASTER_TEMPLATE_SLUGS = [
   'demo-bab',
   'modern-minimalist',
   'royal-floral',
   'midnight-stars',
   'heritage-andalus',
+  'golden-rings',
+  'floral-cascade',
+  'baroque-medallion',
 ];
 
 export const isMasterTemplate = (inv: Partial<InvitationData> | null | undefined): boolean => {
@@ -560,6 +572,9 @@ ${url}`;
     'template-3': { name: 'الورود الملكية (Royal Floral)', color: 'text-rose-300 border-rose-500/40 bg-rose-950/40' },
     'template-4': { name: 'ليلة العمر / الفخامة الليلية (Midnight)', color: 'text-amber-300 border-amber-500/40 bg-slate-900/80' },
     'template-5': { name: 'التراث الأصيل (Heritage Mashrabiya)', color: 'text-amber-400 border-amber-700/50 bg-amber-950/50' },
+    'template-6': { name: 'خاتم المحبس والرباط الذهبي (Golden Rings)', color: 'text-amber-300 border-amber-500/40 bg-amber-950/50' },
+    'template-7': { name: 'شلال الورود وأمطار البتلات (Floral Cascade)', color: 'text-rose-300 border-rose-500/40 bg-rose-950/50' },
+    'template-8': { name: 'الميدالية الملكية والتاج (Baroque Medallion)', color: 'text-yellow-300 border-yellow-500/40 bg-slate-900/80' },
   };
 
   // Passcode Gate View
@@ -1325,7 +1340,7 @@ ${url}`;
               {/* 1. Template Selection */}
               <div>
                 <label className="block text-xs font-bold text-amber-300 mb-2 font-cairo">
-                  اختر قالب الدعوة (١ إلى ٥)
+                  اختر قالب الدعوة (١ إلى ٨)
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   {(
@@ -1335,6 +1350,9 @@ ${url}`;
                       { id: 'template-3', title: '٣. الورود الملكية (Royal Floral)', desc: 'ألوان الباستيل وبتلات الورد العائمة' },
                       { id: 'template-4', title: '٤. ليلة العمر (Midnight Elegance)', desc: 'كحلي ليلي فاخر وبريق النجوم والذهب' },
                       { id: 'template-5', title: '٥. التراث الأصيل (Heritage)', desc: 'طابع ترابي ودفء المشربيات الأندلسية' },
+                      { id: 'template-6', title: '٦. خاتم المحبس والرباط (Golden Rings)', desc: 'محبسان متشابكان وانحناء كبسولي مفرغ وغير تقليدي' },
+                      { id: 'template-7', title: '٧. شلال الورود وأمطار البتلات (Floral Cascade)', desc: 'تأثير أمطار بتلات متساقطة وإكليل زهري عضوي' },
+                      { id: 'template-8', title: '٨. الميدالية الملكية والتاج (Baroque Medallion)', desc: 'إطار بيضاوي باروكي مذهب وتاج ملكي فاخر' },
                     ] as const
                   ).map((t) => (
                     <button
