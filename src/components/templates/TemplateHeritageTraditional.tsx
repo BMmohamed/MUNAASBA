@@ -10,6 +10,7 @@ import { CalendarButtons } from '../invitation/CalendarButtons';
 import { LocationCard } from '../invitation/LocationCard';
 import { TimelineSection } from '../invitation/TimelineSection';
 import { ChildrenAdvisory } from '../invitation/ChildrenAdvisory';
+import { NoPhotographyAdvisory } from '../invitation/NoPhotographyAdvisory';
 import { ShareAction } from '../invitation/ShareAction';
 import { FooterContact } from '../invitation/FooterContact';
 import { AmbientMusicPlayer } from '../invitation/AmbientMusicPlayer';
@@ -239,6 +240,16 @@ export const TemplateHeritageTraditional: React.FC<{ invitation: InvitationData;
                 <Shirt className="w-4 h-4 text-amber-300 shrink-0" />
                 <span>{invitation.toggles.dressCodeText}</span>
               </div>
+            </ScrollReveal>
+          )}
+
+          {/* Strict No-Photography / Privacy Warning */}
+          {invitation.toggles.showNoPhotography && (
+            <ScrollReveal delay={8.5}>
+              <NoPhotographyAdvisory
+                text={invitation.toggles.noPhotographyText}
+                theme="heritage"
+              />
             </ScrollReveal>
           )}
 

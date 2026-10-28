@@ -288,6 +288,10 @@ export async function createInvitation(data: Partial<InvitationData>): Promise<I
       childrenAdvisoryText: data.toggles?.childrenAdvisoryText || 'جنة الأطفال منازلهم.. نعتذر عن استقبال الأطفال لمشاركتنا فرحة هادئة.',
       showDressCode: data.toggles?.showDressCode ?? true,
       dressCodeText: data.toggles?.dressCodeText || 'الزي الرسمي السعودي',
+      showNoPhotography: data.toggles?.showNoPhotography ?? true,
+      noPhotographyText:
+        data.toggles?.noPhotographyText ||
+        'نهيب بالسادة الحضور الكرام ونؤكد بشدة على الامتناع التام عن رفع الهواتف المحمولة للتصوير أو تسجيل مقاطع الفيديو، حفظاً لخصوصية الحفل وأهله. شاكرين لكم طيب تعاونكم.',
       showTimeline: data.toggles?.showTimeline ?? true,
       showMusic: data.toggles?.showMusic ?? true,
       showVerse: data.toggles?.showVerse ?? true,

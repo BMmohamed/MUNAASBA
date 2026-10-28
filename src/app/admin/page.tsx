@@ -544,6 +544,10 @@ ${url}`;
             'جنة الأطفال منازلهم.. نعتذر عن استقبال الأطفال لمشاركتنا فرحة هادئة.',
           showDressCode: editingInv.toggles?.showDressCode ?? true,
           dressCodeText: editingInv.toggles?.dressCodeText || 'الزي الرسمي السعودي (ثوب وبشت)',
+          showNoPhotography: editingInv.toggles?.showNoPhotography ?? true,
+          noPhotographyText:
+            editingInv.toggles?.noPhotographyText ||
+            'نهيب بالسادة الحضور الكرام ونؤكد بشدة على الامتناع التام عن رفع الهواتف المحمولة للتصوير أو تسجيل مقاطع الفيديو، حفظاً لخصوصية الحفل وأهله. شاكرين لكم طيب تعاونكم.',
           showTimeline: editingInv.toggles?.showTimeline ?? true,
           showMusic: editingInv.toggles?.showMusic ?? true,
           musicUrl: editingInv.toggles?.musicUrl || '',
@@ -1568,6 +1572,7 @@ ${url}`;
                     { key: 'showShare', label: 'زر مشاركة الدعوة (WhatsApp / رابط)' },
                     { key: 'showChildrenAdvisory', label: 'تنويه الأطفال ("جنة الأطفال منازلهم")' },
                     { key: 'showDressCode', label: 'الزي المعتمد (Dress Code)' },
+                    { key: 'showNoPhotography', label: 'تنبيه منع التصوير بالهواتف (فيديو وصور)' },
                     { key: 'showTimeline', label: 'برنامج ومراسم الحفل (Timeline)' },
                     { key: 'showMusic', label: 'مشغل الموسيقى الخلفية الهادئة' },
                   ].map((item) => (
@@ -1636,6 +1641,79 @@ ${url}`;
                       }
                       className="w-full px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-800 text-xs text-neutral-200"
                     />
+                  </div>
+                )}
+
+                {editingInv.toggles?.showNoPhotography && (
+                  <div className="mt-3 p-3 rounded-xl bg-neutral-900/90 border border-amber-500/30">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="block text-[11px] font-bold text-amber-300">
+                        🚫 نص التحذير المشدد من التصوير ورفع الهواتف:
+                      </label>
+                      <span className="text-[10px] text-neutral-400">يمكنك تعديله أو اختيار صيغة جاهزة</span>
+                    </div>
+                    <textarea
+                      rows={2}
+                      value={editingInv.toggles?.noPhotographyText || ''}
+                      onChange={(e) =>
+                        setEditingInv({
+                          ...editingInv,
+                          toggles: {
+                            ...editingInv.toggles!,
+                            noPhotographyText: e.target.value,
+                          },
+                        })
+                      }
+                      placeholder="اكتب صيغة التحذير من التصوير..."
+                      className="w-full px-3 py-2 rounded-lg bg-neutral-950 border border-neutral-700 text-xs text-neutral-200 focus:outline-none focus:border-amber-500 font-tajawal resize-none"
+                    />
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setEditingInv({
+                            ...editingInv,
+                            toggles: {
+                              ...editingInv.toggles!,
+                              noPhotographyText: 'نهيب بالسادة الحضور الكرام ونؤكد بشدة على الامتناع التام عن رفع الهواتف المحمولة للتصوير أو تسجيل مقاطع الفيديو، حفظاً لخصوصية الحفل وأهله. شاكرين لكم طيب تعاونكم وتفهمكم الراقي.',
+                            },
+                          })
+                        }
+                        className="text-[10px] px-2 py-1 rounded bg-neutral-800 hover:bg-neutral-700 text-amber-300 border border-neutral-700 transition-colors"
+                      >
+                        ⚡ صيغة 1: مشددة ورسمية
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setEditingInv({
+                            ...editingInv,
+                            toggles: {
+                              ...editingInv.toggles!,
+                              noPhotographyText: 'خصوصيتنا أمانة لديكم.. نرجو التكرم والالتزام بعدم استخدام الهواتف المحمولة للتصوير أو تسجيل الفيديو، لتكتمل فرحتنا بخصوصية تامة.',
+                            },
+                          })
+                        }
+                        className="text-[10px] px-2 py-1 rounded bg-neutral-800 hover:bg-neutral-700 text-neutral-300 border border-neutral-700 transition-colors"
+                      >
+                        ✨ صيغة 2: ودية وراقية
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setEditingInv({
+                            ...editingInv,
+                            toggles: {
+                              ...editingInv.toggles!,
+                              noPhotographyText: 'يُمنع منعاً باتاً رفع الهواتف المحمولة لالتقاط الصور أو تسجيل مقاطع الفيديو احتراماً لخصوصية الحفل وأهله.',
+                            },
+                          })
+                        }
+                        className="text-[10px] px-2 py-1 rounded bg-neutral-800 hover:bg-neutral-700 text-neutral-300 border border-neutral-700 transition-colors"
+                      >
+                        🎯 صيغة 3: موجزة وحاسمة
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>

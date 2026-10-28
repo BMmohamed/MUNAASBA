@@ -21,6 +21,8 @@ export interface InvitationToggles {
   childrenAdvisoryText: string;
   showDressCode: boolean;
   dressCodeText: string;
+  showNoPhotography?: boolean;
+  noPhotographyText?: string;
   showTimeline: boolean;
   showMusic: boolean;
   musicUrl?: string;
