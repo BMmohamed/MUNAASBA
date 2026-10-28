@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" width="100%" height="100%">
+  <defs>
+    <radialGradient id="nightSky" cx="50%" cy="40%" r="65%">
+      <stop offset="0%" stop-color="#141c3a"/>
+      <stop offset="60%" stop-color="#0a0f24"/>
+      <stop offset="100%" stop-color="#04060e"/>
+    </radialGradient>
+    <linearGradient id="goldFoil" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fdf3b8"/>
+      <stop offset="25%" stop-color="#d4af37"/>
+      <stop offset="50%" stop-color="#fff4c2"/>
+      <stop offset="75%" stop-color="#aa8022"/>
+      <stop offset="100%" stop-color="#e6c66e"/>
+    </linearGradient>
+    <radialGradient id="starGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffd700" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#ffd700" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="600" height="800" fill="url(#nightSky)"/>
+
+  <!-- Starfield Sparkles -->
+  <g opacity="0.7">
+    <circle cx="120" cy="140" r="1.5" fill="#ffffff"/>
+    <circle cx="480" cy="160" r="2" fill="#ffd700"/>
+    <circle cx="230" cy="80" r="1" fill="#ffffff"/>
+    <circle cx="370" cy="110" r="1.5" fill="#ffffff"/>
+    <circle cx="80" cy="320" r="2" fill="#ffd700"/>
+    <circle cx="520" cy="340" r="1.5" fill="#ffffff"/>
+    <circle cx="150" cy="650" r="1.5" fill="#ffffff"/>
+    <circle cx="450" cy="680" r="2" fill="#ffd700"/>
+    <circle cx="300" cy="740" r="1.2" fill="#ffffff"/>
+    <circle cx="90" cy="500" r="1" fill="#ffffff"/>
+    <circle cx="510" cy="520" r="1.8" fill="#ffd700"/>
+  </g>
+
+  <!-- Star Crosses -->
+  <g fill="url(#goldFoil)" filter="url(#glow)" opacity="0.85">
+    <!-- Star 1 -->
+    <path d="M480,160 Q480,175 495,175 Q480,175 480,190 Q480,175 465,175 Q480,175 480,160 Z" transform="scale(0.8) translate(150, 40)"/>
+    <!-- Star 2 -->
+    <path d="M120,220 Q120,230 130,230 Q120,230 120,240 Q120,230 110,230 Q120,230 120,220 Z" transform="scale(0.7) translate(20, 80)"/>
+    <!-- Star 3 -->
+    <path d="M300,70 Q300,82 312,82 Q300,82 300,94 Q300,82 288,82 Q300,82 300,70 Z" transform="scale(0.9) translate(30, 20)"/>
+  </g>
+
+  <!-- Ornate Card Inner Frame -->
+  <rect x="35" y="35" width="530" height="730" rx="24" fill="none" stroke="url(#goldFoil)" stroke-width="2" opacity="0.85"/>
+  <rect x="45" y="45" width="510" height="710" rx="18" fill="none" stroke="url(#goldFoil)" stroke-width="0.75" opacity="0.5"/>
+
+  <!-- Ornate Corner Filigrees -->
+  <g stroke="url(#goldFoil)" stroke-width="1.5" fill="none" opacity="0.8">
+    <!-- Top-Left -->
+    <path d="M50,80 Q80,80 80,50 M55,95 Q95,95 95,55"/>
+    <circle cx="68" cy="68" r="3" fill="url(#goldFoil)"/>
+    <!-- Top-Right -->
+    <path d="M550,80 Q520,80 520,50 M545,95 Q505,95 505,55"/>
+    <circle cx="532" cy="68" r="3" fill="url(#goldFoil)"/>
+    <!-- Bottom-Left -->
+    <path d="M50,720 Q80,720 80,750 M55,705 Q95,705 95,745"/>
+    <circle cx="68" cy="732" r="3" fill="url(#goldFoil)"/>
+    <!-- Bottom-Right -->
+    <path d="M550,720 Q520,720 520,750 M545,705 Q505,705 505,745"/>
+    <circle cx="532" cy="732" r="3" fill="url(#goldFoil)"/>
+  </g>
+
+  <!-- Celestial Moon Crest Top -->
+  <g transform="translate(300, 155)">
+    <circle cx="0" cy="0" r="42" fill="#ffd700" opacity="0.08" filter="url(#glow)"/>
+    <path d="M-18,-24 A26,26 0 1,0 18,24 A32,32 0 1,1 -18,-24 Z" fill="url(#goldFoil)" filter="url(#glow)"/>
+    <polygon points="12,-6 14,-1 19,-1 15,2 17,7 12,4 7,7 9,2 5,-1 10,-1" fill="url(#goldFoil)"/>
+  </g>
+
+  <!-- Bismillah & Header -->
+  <text x="300" y="235" font-family="'Amiri', serif" font-size="20" fill="url(#goldFoil)" text-anchor="middle" letter-spacing="1">
+    بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+  </text>
+  <text x="300" y="275" font-family="'Cairo', sans-serif" font-size="14" fill="#a5b4fc" text-anchor="middle" letter-spacing="3" opacity="0.9">
+    دعوة لحفل زفاف ملكي فاخر
+  </text>
+
+  <!-- Names Divider -->
+  <path d="M180,310 L260,310 M340,310 L420,310" stroke="url(#goldFoil)" stroke-width="1" opacity="0.6"/>
+  <circle cx="300" cy="310" r="4" fill="url(#goldFoil)"/>
+
+  <!-- Groom & Bride Names -->
+  <text x="300" y="380" font-family="'Aref Ruqaa', 'Amiri', serif" font-size="38" font-weight="bold" fill="url(#goldFoil)" text-anchor="middle" filter="url(#glow)">
+    فيصل بن بدر
+  </text>
+  <text x="300" y="430" font-family="'Aref Ruqaa', 'Amiri', serif" font-size="24" fill="#ffd700" text-anchor="middle" opacity="0.85">
+    &amp;
+  </text>
+  <text x="300" y="490" font-family="'Aref Ruqaa', 'Amiri', serif" font-size="38" font-weight="bold" fill="url(#goldFoil)" text-anchor="middle" filter="url(#glow)">
+    نورة بنت سلطان
+  </text>
+
+  <!-- Event Details -->
+  <text x="300" y="555" font-family="'Tajawal', sans-serif" font-size="16" fill="#e0e7ff" text-anchor="middle">
+    في ليلة تزهو ببريق النجوم وسحر الأمسيات
+  </text>
+  <text x="300" y="590" font-family="'Cairo', sans-serif" font-weight="bold" font-size="15" fill="url(#goldFoil)" text-anchor="middle">
+    الجمعة • قاعة أمسيات - فندق الفيصلية
+  </text>
+  <text x="300" y="620" font-family="'Tajawal', sans-serif" font-size="13" fill="#94a3b8" text-anchor="middle">
+    الرياض • في تمام الساعة الثامنة مساءً
+  </text>
+
+  <!-- RSVP Badge Bottom -->
+  <g transform="translate(200, 665)">
+    <rect width="200" height="42" rx="21" fill="url(#goldFoil)" filter="url(#glow)"/>
+    <text x="100" y="26" font-family="'Cairo', sans-serif" font-weight="bold" font-size="13" fill="#0a0f24" text-anchor="middle">
+      تأكيد الحضور الإلكتروني
+    </text>
+  </g>
+</svg>

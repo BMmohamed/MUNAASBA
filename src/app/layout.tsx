@@ -46,7 +46,7 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Aref+Ruqaa:wght@400;700&family=Cairo:wght@300;400;500;600;700;800;900&family=Tajawal:wght@300;400;500;700;800&display=swap"
         />
       </head>
-      <body className="min-h-screen bg-neutral-950 text-neutral-100 antialiased selection:bg-amber-400/30 selection:text-amber-200">
+      <body className="min-h-screen bg-[#faf8f5] text-stone-900 antialiased selection:bg-amber-200 selection:text-amber-900">
         {children}
         <Analytics />
       </body>

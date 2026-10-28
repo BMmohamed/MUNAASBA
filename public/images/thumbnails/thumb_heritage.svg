@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" width="100%" height="100%">
+  <defs>
+    <linearGradient id="warmTerracotta" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#3d1f0f"/>
+      <stop offset="50%" stop-color="#2a1206"/>
+      <stop offset="100%" stop-color="#180902"/>
+    </linearGradient>
+    <linearGradient id="desertGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffe8a3"/>
+      <stop offset="30%" stop-color="#d49b37"/>
+      <stop offset="60%" stop-color="#f5d376"/>
+      <stop offset="100%" stop-color="#a66e1e"/>
+    </linearGradient>
+    <pattern id="mashrabiya" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M30 0 L60 30 L30 60 L0 30 Z" fill="none" stroke="#d49b37" stroke-width="0.8" opacity="0.15"/>
+      <circle cx="30" cy="30" r="10" fill="none" stroke="#d49b37" stroke-width="0.8" opacity="0.12"/>
+      <path d="M0 0 L60 60 M60 0 L0 60" stroke="#d49b37" stroke-width="0.5" opacity="0.1"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="600" height="800" fill="url(#warmTerracotta)"/>
+  <rect width="600" height="800" fill="url(#mashrabiya)"/>
+
+  <!-- Ornate Andalusian Horseshoe Arch -->
+  <path d="M 70 740 L 70 320 C 70 140 160 70 300 70 C 440 70 530 140 530 320 L 530 740 Z" 
+        fill="none" stroke="url(#desertGold)" stroke-width="2.5" opacity="0.85"/>
+  <path d="M 82 740 L 82 325 C 82 155 170 85 300 85 C 430 85 518 155 518 325 L 518 740 Z" 
+        fill="none" stroke="url(#desertGold)" stroke-width="0.8" opacity="0.45"/>
+
+  <!-- Arch Top Finial -->
+  <g transform="translate(300, 60)">
+    <circle cx="0" cy="0" r="6" fill="url(#desertGold)"/>
+    <path d="M 0 -15 L 4 -2 L 15 0 L 4 2 L 0 15 L -4 2 L -15 0 L -4 -2 Z" fill="url(#desertGold)"/>
+  </g>
+
+  <!-- Traditional Palm Emblem -->
+  <g transform="translate(300, 160)">
+    <circle cx="0" cy="0" r="32" fill="#d49b37" opacity="0.1"/>
+    <path d="M 0 15 L 0 -15 M -8 -8 C -4 -16 0 -18 0 -18 C 0 -18 4 -16 8 -8 M -12 0 C -6 -8 0 -9 0 -9 C 0 -9 6 -8 12 0 M -10 10 C -5 4 0 3 0 3 C 0 3 5 4 10 10" 
+          stroke="url(#desertGold)" stroke-width="2" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <!-- Bismillah Calligraphy -->
+  <text x="300" y="240" font-family="'Amiri', serif" font-size="20" fill="url(#desertGold)" text-anchor="middle">
+    بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+  </text>
+  <text x="300" y="280" font-family="'Tajawal', sans-serif" font-size="13" fill="#f5d376" text-anchor="middle" letter-spacing="2" opacity="0.9">
+    حَفْلُ الزِّفَافِ التُّرَاثِيِّ الأَصِيلِ
+  </text>
+
+  <!-- Decorative Line -->
+  <path d="M200,315 L400,315" stroke="url(#desertGold)" stroke-width="1" opacity="0.6"/>
+  <polygon points="300,310 305,315 300,320 295,315" fill="url(#desertGold)"/>
+
+  <!-- Groom & Bride Names -->
+  <text x="300" y="380" font-family="'Aref Ruqaa', 'Amiri', serif" font-size="38" font-weight="bold" fill="url(#desertGold)" text-anchor="middle">
+    ماجد بن تركي
+  </text>
+  <text x="300" y="430" font-family="'Aref Ruqaa', 'Amiri', serif" font-size="22" fill="#ffd700" text-anchor="middle" opacity="0.85">
+    &amp;
+  </text>
+  <text x="300" y="490" font-family="'Aref Ruqaa', 'Amiri', serif" font-size="38" font-weight="bold" fill="url(#desertGold)" text-anchor="middle">
+    هيا بنت عبدالله
+  </text>
+
+  <!-- Event Details -->
+  <text x="300" y="555" font-family="'Tajawal', sans-serif" font-size="16" fill="#fde68a" text-anchor="middle">
+    على بساط العراقة ودفء الضيافة العربية
+  </text>
+  <text x="300" y="590" font-family="'Cairo', sans-serif" font-weight="bold" font-size="15" fill="url(#desertGold)" text-anchor="middle">
+    الخميس • قصر الدرعية التراثي - حي البجيري
+  </text>
+  <text x="300" y="620" font-family="'Tajawal', sans-serif" font-size="13" fill="#fed7aa" text-anchor="middle">
+    الرياض • حضوركم بهجة وفرح
+  </text>
+
+  <!-- Traditional Seal Stamp -->
+  <g transform="translate(300, 680)">
+    <circle cx="0" cy="0" r="28" fill="#5c260b" stroke="url(#desertGold)" stroke-width="1.5"/>
+    <circle cx="0" cy="0" r="24" fill="none" stroke="url(#desertGold)" stroke-width="0.8" stroke-dasharray="3,2"/>
+    <text x="0" y="5" font-family="'Amiri', serif" font-size="12" font-weight="bold" fill="url(#desertGold)" text-anchor="middle">
+      أهلاً بكم
+    </text>
+  </g>
+</svg>
