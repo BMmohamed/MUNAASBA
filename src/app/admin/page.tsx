@@ -298,7 +298,7 @@ ${url}`;
   const toggleAdminAudioPlay = (url?: string) => {
     let targetUrl = (url || editingInv?.toggles?.musicUrl || '').trim();
     if (!targetUrl || targetUrl.includes('assets.mixkit.co')) {
-      targetUrl = '/audio/wedding-serene.m4a';
+      targetUrl = '/audio/gentle-piano.mp3';
     }
 
     if (adminAudioRef.current) {

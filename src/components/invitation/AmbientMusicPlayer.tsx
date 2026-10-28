@@ -9,7 +9,7 @@ interface AmbientMusicPlayerProps {
 }
 
 export const AmbientMusicPlayer: React.FC<AmbientMusicPlayerProps> = ({
-  musicUrl = '/audio/wedding-serene.m4a',
+  musicUrl = '/audio/gentle-piano.mp3',
   theme = 'gold',
 }) => {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -17,8 +17,8 @@ export const AmbientMusicPlayer: React.FC<AmbientMusicPlayerProps> = ({
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Normalize url: if empty or from blocked CDN (mixkit 403), fallback to local file
-  const rawUrl = musicUrl && musicUrl.trim() !== '' ? musicUrl.trim() : '/audio/wedding-serene.m4a';
-  const effectiveUrl = rawUrl.includes('assets.mixkit.co') ? '/audio/wedding-serene.m4a' : rawUrl;
+  const rawUrl = musicUrl && musicUrl.trim() !== '' ? musicUrl.trim() : '/audio/gentle-piano.mp3';
+  const effectiveUrl = rawUrl.includes('assets.mixkit.co') ? '/audio/gentle-piano.mp3' : rawUrl;
 
   useEffect(() => {
     // If audio already exists and URL is unchanged, keep it

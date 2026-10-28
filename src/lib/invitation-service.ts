@@ -297,7 +297,7 @@ export async function createInvitation(data: Partial<InvitationData>): Promise<I
       showVerse: data.toggles?.showVerse ?? true,
       showParents: data.toggles?.showParents ?? true,
       showShare: data.toggles?.showShare ?? true,
-      musicUrl: data.toggles?.musicUrl || '/audio/wedding-serene.m4a',
+      musicUrl: data.toggles?.musicUrl || '/audio/gentle-piano.mp3',
     },
     typography: data.typography || {
       namesFontFamily: 'ruqaa',
