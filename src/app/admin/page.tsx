@@ -296,10 +296,9 @@ ${url}`;
   };
 
   const toggleAdminAudioPlay = (url?: string) => {
-    const targetUrl = url || editingInv?.toggles?.musicUrl;
-    if (!targetUrl || targetUrl.trim() === '') {
-      showToast('يرجى اختيار أو رفع أو إدخال رابط مقطع صوتي أولاً');
-      return;
+    let targetUrl = (url || editingInv?.toggles?.musicUrl || '').trim();
+    if (!targetUrl || targetUrl.includes('assets.mixkit.co')) {
+      targetUrl = '/audio/wedding-serene.m4a';
     }
 
     if (adminAudioRef.current) {
@@ -320,14 +319,22 @@ ${url}`;
         })
         .catch((err) => {
           console.error('Audio playback error:', err);
-          showToast('تعذر تشغيل المقطع الصوتي، تأكد من صحة الرابط أو الملف');
-          setIsPlayingAdminAudio(false);
+          if (targetUrl !== '/audio/wedding-serene.m4a') {
+            const fallbackAudio = new Audio('/audio/wedding-serene.m4a');
+            adminAudioRef.current = fallbackAudio;
+            fallbackAudio
+              .play()
+              .then(() => setIsPlayingAdminAudio(true))
+              .catch(() => setIsPlayingAdminAudio(false));
+          } else {
+            showToast('تعذر تشغيل المقطع الصوتي');
+            setIsPlayingAdminAudio(false);
+          }
         });
 
       audio.onended = () => setIsPlayingAdminAudio(false);
       audio.onerror = () => {
         setIsPlayingAdminAudio(false);
-        showToast('حدث خطأ أثناء تشغيل الملف الصوتي');
       };
     } catch {
       showToast('تعذر إنشاء مشغل الصوت');

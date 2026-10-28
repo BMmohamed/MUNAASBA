@@ -297,7 +297,7 @@ export async function createInvitation(data: Partial<InvitationData>): Promise<I
       showVerse: data.toggles?.showVerse ?? true,
       showParents: data.toggles?.showParents ?? true,
       showShare: data.toggles?.showShare ?? true,
-      musicUrl: data.toggles?.musicUrl || 'https://assets.mixkit.co/music/preview/mixkit-serene-view-443.mp3',
+      musicUrl: data.toggles?.musicUrl || '/audio/wedding-serene.m4a',
     },
     typography: data.typography || {
       namesFontFamily: 'ruqaa',
