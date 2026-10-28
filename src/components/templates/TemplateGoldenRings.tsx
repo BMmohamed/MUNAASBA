@@ -1,22 +1,26 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
+import { 
+  Heart, 
+  MapPin, 
+  Navigation, 
+  Sparkles, 
+  Calendar as CalendarIcon, 
+  Clock, 
+  Coffee, 
+  Utensils, 
+  CameraOff, 
+  Baby, 
+  Music, 
+  Check, 
+  X,
+  Volume2,
+  VolumeX,
+  ChevronDown
+} from 'lucide-react';
 import { InvitationData } from '@/types/invitation';
-import { BismillahCalligraphy, AmbientParticles } from '../common/CalligraphyDecorations';
-import { BackgroundMediaLayer } from '../invitation/BackgroundMediaLayer';
-import { CountdownTimer } from '../invitation/CountdownTimer';
-import { RsvpButton } from '../invitation/RsvpButton';
-import { CalendarButtons } from '../invitation/CalendarButtons';
-import { LocationCard } from '../invitation/LocationCard';
-import { TimelineSection } from '../invitation/TimelineSection';
-import { ChildrenAdvisory } from '../invitation/ChildrenAdvisory';
-import { NoPhotographyAdvisory } from '../invitation/NoPhotographyAdvisory';
-import { ShareAction } from '../invitation/ShareAction';
-import { FooterContact } from '../invitation/FooterContact';
-import { AmbientMusicPlayer } from '../invitation/AmbientMusicPlayer';
-import { ScrollReveal } from '../common/ScrollReveal';
-import { Sparkles, Shirt, Heart, Gem } from 'lucide-react';
-import { formatArabicDateDisplay } from '@/lib/date-utils';
+import { formatArabicDateDisplay, toArabicNumerals } from '@/lib/date-utils';
 import {
   getFontFamilyClass,
   getFontFamilyStyle,
@@ -24,310 +28,551 @@ import {
   getVerseSizeClass,
   getParentsSizeClass,
 } from '@/lib/typography-utils';
+import { ScrollReveal } from '../common/ScrollReveal';
+import { CountdownTimer } from '../invitation/CountdownTimer';
+import { generateGoogleCalendarUrl, downloadAppleIcsFile } from '@/lib/calendar';
 
 export const TemplateGoldenRings: React.FC<{ invitation: InvitationData; isHostView?: boolean }> = ({
   invitation,
   isHostView = false,
 }) => {
-  const dateFormatted = formatArabicDateDisplay(invitation.eventDate);
   const typo = invitation.typography;
+  const namesFont = getFontFamilyClass(typo?.namesFontFamily || 'ruqaa');
+  const verseFont = getFontFamilyClass(typo?.verseFontFamily || 'amiri');
+  const parentsFont = getFontFamilyClass(typo?.parentsFontFamily || 'tajawal');
+  const namesSize = getNamesSizeClass(typo?.namesSize || 'xlarge');
+  const verseSize = getVerseSizeClass(typo?.verseSize || 'medium');
+  const parentsSize = getParentsSizeClass(typo?.parentsSize || 'medium');
 
-  const namesFont = getFontFamilyClass(typo?.namesFontFamily, 'font-ruqaa');
-  const verseFont = getFontFamilyClass(typo?.verseFontFamily, 'font-amiri');
-  const parentsFont = getFontFamilyClass(typo?.parentsFontFamily, 'font-tajawal');
+  const dateFormatted = formatArabicDateDisplay(invitation.eventDate);
 
-  const namesSize = getNamesSizeClass(typo?.namesSize);
-  const verseSize = getVerseSizeClass(typo?.verseSize);
-  const parentsSize = getParentsSizeClass(typo?.parentsSize);
+  // RSVP Form State
+  const [rsvpStatus, setRsvpStatus] = useState<'yes' | 'no' | 'maybe'>('yes');
+  const [guestName, setGuestName] = useState('');
+  const [companionCount, setCompanionCount] = useState(0);
+  const [guestMessage, setGuestMessage] = useState('');
+  const [isSubmittingRsvp, setIsSubmittingRsvp] = useState(false);
+  const [rsvpSubmitted, setRsvpSubmitted] = useState(false);
+
+  // Audio state
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const audioRef = React.useRef<HTMLAudioElement | null>(null);
+
+  const toggleAudio = () => {
+    if (!audioRef.current) return;
+    if (isPlayingAudio) {
+      audioRef.current.pause();
+      setIsPlayingAudio(false);
+    } else {
+      audioRef.current.play().then(() => setIsPlayingAudio(true)).catch(() => {});
+    }
+  };
+
+  const handleRsvpSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!guestName.trim()) return;
+    setIsSubmittingRsvp(true);
+    try {
+      await fetch(`/api/invitations/${invitation.slug}/rsvp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: guestName,
+          status: rsvpStatus,
+          guestsCount: rsvpStatus === 'yes' ? 1 + companionCount : 0,
+          message: guestMessage,
+        }),
+      });
+      setRsvpSubmitted(true);
+    } catch {
+      setRsvpSubmitted(true);
+    } finally {
+      setIsSubmittingRsvp(false);
+    }
+  };
+
+  const googleUrl = generateGoogleCalendarUrl({
+    title: `${invitation.eventTitle} - ${invitation.groomName} & ${invitation.brideName}`,
+    description: `${invitation.welcomeMessage}\nالمكان: ${invitation.venueName}`,
+    location: `${invitation.venueName} - ${invitation.venueCity}`,
+    startDate: invitation.eventDate,
+    durationHours: 4,
+  });
 
   return (
-    <div className="relative min-h-screen text-neutral-100 overflow-x-clip font-cairo bg-[#0a0705]">
-      {/* Background Media */}
-      <BackgroundMediaLayer
-        templateId="template-6"
-        customVideoUrl={invitation.customVideoUrl}
-        customImageUrl={invitation.customImageUrl}
-      />
+    <div 
+      className="relative min-h-screen text-[#f9e7ec] font-tajawal overflow-hidden select-none"
+      style={{
+        background: 'radial-gradient(ellipse at top, #2b0e0a 0%, #170705 60%, #0d0302 100%)',
+      }}
+      dir="rtl"
+    >
+      {/* Background Soft Glow & Velvet Ambience */}
+      <div className="absolute inset-0 pointer-events-none opacity-40 bg-[radial-gradient(circle_at_50%_20%,rgba(212,175,106,0.18)_0%,transparent_60%)]" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-96 h-96 bg-amber-600/10 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Warm Golden Radiant Glows */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-amber-500/15 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-yellow-600/10 rounded-full blur-[160px] pointer-events-none" />
-      <AmbientParticles count={20} color="#fbbf24" />
+      {/* Floating Gentle Light Sparks */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
+        <span className="absolute top-[12%] left-[18%] w-1.5 h-1.5 rounded-full bg-amber-200 animate-pulse" />
+        <span className="absolute top-[28%] right-[15%] w-2 h-2 rounded-full bg-amber-300 blur-[1px] animate-ping" />
+        <span className="absolute top-[55%] left-[22%] w-1 h-1 rounded-full bg-amber-100" />
+        <span className="absolute top-[75%] right-[25%] w-1.5 h-1.5 rounded-full bg-amber-300 animate-pulse" />
+      </div>
 
-      {/* Host Mode Indicator Banner */}
-      {isHostView && (
-        <div className="sticky top-0 z-50 px-4 py-2 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 text-neutral-950 text-xs font-bold font-cairo text-center shadow-lg flex items-center justify-center gap-2">
-          <span>👑 رابط خاص بأهل الحفل (متابعة إحصائيات وعداد الحضور المباشر)</span>
+      {/* Floating Music Toggle Button */}
+      {invitation.toggles.showMusic && (
+        <div className="fixed top-5 left-5 z-50">
+          <button
+            type="button"
+            onClick={toggleAudio}
+            className="p-3 rounded-full bg-neutral-900/80 border border-amber-400/40 text-amber-300 shadow-xl backdrop-blur-md hover:scale-105 transition-all cursor-pointer flex items-center justify-center"
+            title={isPlayingAudio ? 'كتم الموسيقى الهادئة' : 'تشغيل الموسيقى الهادئة'}
+          >
+            {isPlayingAudio ? <Volume2 className="w-4 h-4 animate-pulse" /> : <VolumeX className="w-4 h-4 opacity-70" />}
+          </button>
+          <audio ref={audioRef} loop src={invitation.coverMusicTrack || '/audio/gentle-piano.mp3'} />
         </div>
       )}
 
-      {/* Main Container */}
-      <div className="relative max-w-lg mx-auto px-3 sm:px-4 py-8 sm:py-12 z-10">
-        
-        {/* Curved Oval/Capsule Silhouette Frame - Circular Elegance (No Rigid Squares) */}
-        <div className="relative rounded-t-[180px] rounded-b-[70px] bg-gradient-to-b from-[#1b120c]/90 via-neutral-950/95 to-[#150e09]/95 border-2 border-amber-400/40 p-5 sm:p-8 shadow-[0_0_50px_rgba(217,119,6,0.18)] backdrop-blur-xl transition-all duration-300">
-          
-          {/* Inner Golden Hairline Ring Contour */}
-          <div className="absolute inset-2.5 rounded-t-[168px] rounded-b-[58px] border border-amber-400/25 pointer-events-none" />
+      {/* Main Free-Flowing Content Area (No restrictive outer boxes) */}
+      <div className="relative z-10 max-w-xl mx-auto px-5 sm:px-8 py-14 space-y-12 text-center">
 
-          {/* Interlocking Golden Wedding Rings Emblem */}
+        {/* 1. HERO SECTION: Emblem & Free Typography */}
+        <header className="space-y-6 pt-4">
           <ScrollReveal delay={0.2}>
-            <div className="relative flex items-center justify-center pt-2 pb-4">
-              <div className="relative flex items-center justify-center">
-                {/* Groom's Ring */}
-                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-4 border-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.4)] flex items-center justify-center -mr-3 bg-gradient-to-br from-amber-300/20 to-transparent">
-                  <div className="w-9 h-9 rounded-full border border-amber-300/40" />
-                </div>
-                {/* Bride's Ring with Solitaire Diamond */}
-                <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full border-4 border-amber-300 shadow-[0_0_25px_rgba(253,224,71,0.5)] flex items-center justify-center bg-gradient-to-tl from-amber-200/25 to-transparent">
-                  {/* Sparkling Diamond Topper */}
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center justify-center">
-                    <div className="relative">
-                      <Gem className="w-6 h-6 text-amber-200 fill-amber-100 drop-shadow-[0_0_8px_rgba(253,224,71,0.8)] animate-pulse" />
-                      <Sparkles className="w-3.5 h-3.5 text-white absolute -top-1 -right-1" />
-                    </div>
-                  </div>
-                  <div className="w-9 h-9 rounded-full border border-amber-200/50" />
-                </div>
+            {/* Jewelry Emblem: Interlocking Diamond Rings SVG */}
+            <div className="flex justify-center mb-4">
+              <div className="relative group cursor-pointer p-4">
+                <svg className="w-16 h-16 drop-shadow-[0_4px_16px_rgba(212,175,106,0.4)]" viewBox="0 0 60 60" fill="none">
+                  {/* Left Ring */}
+                  <circle cx="25" cy="35" r="15" stroke="#d4af6a" strokeWidth="3" fill="none" opacity="0.9" />
+                  {/* Right Ring with Solitaire Diamond Top */}
+                  <circle cx="37" cy="33" r="15" stroke="#e6c382" strokeWidth="3" fill="none" />
+                  {/* Solitaire Diamond Gem */}
+                  <polygon points="37,8 43,15 37,21 31,15" fill="#fdf8ed" stroke="#d4af6a" strokeWidth="1.2" />
+                  {/* Sparkle Glints */}
+                  <line x1="37" y1="2" x2="37" y2="7" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" />
+                  <line x1="28" y1="12" x2="33" y2="14" stroke="#fff" strokeWidth="1" strokeLinecap="round" />
+                  <line x1="41" y1="14" x2="46" y2="12" stroke="#fff" strokeWidth="1" strokeLinecap="round" />
+                </svg>
               </div>
             </div>
           </ScrollReveal>
 
-          {/* Bismillah Calligraphy */}
-          <ScrollReveal delay={0.6}>
-            <div className="text-center my-3">
-              <BismillahCalligraphy color="#fde047" className="w-56 sm:w-64 h-auto mx-auto drop-shadow-md" />
-            </div>
+          <ScrollReveal delay={0.4}>
+            <p className="text-[12px] font-bold text-[#d4af6a] uppercase tracking-[0.25em]">
+              Wedding Invitation
+            </p>
+            <h3 className="text-sm sm:text-base font-bold text-amber-200/90 font-cairo mt-1">
+              {invitation.eventTitle}
+            </h3>
           </ScrollReveal>
 
-          {/* Quranic Verse / Poetic Header */}
-          {invitation.toggles.showVerse !== false && (
-            <ScrollReveal delay={1.1}>
-              <div className="my-5 px-3 text-center">
-                <p
-                  className={`${verseFont} ${verseSize} leading-relaxed drop-shadow`}
-                  style={{
-                    color: typo?.verseColor || '#fef3c7',
-                    ...getFontFamilyStyle(typo?.verseFontFamily),
-                  }}
-                >
-                  {invitation.headerVerse}
-                </p>
-                {invitation.verseSource && (
-                  <span className="block mt-1 text-[11px] text-amber-400/80 font-tajawal">
-                    — {invitation.verseSource} —
-                  </span>
-                )}
-              </div>
-            </ScrollReveal>
-          )}
-
-          {/* Circular Ribbon Divider */}
-          <div className="flex items-center justify-center gap-2 my-4">
-            <span className="h-[1px] w-14 bg-gradient-to-r from-transparent to-amber-400/60" />
-            <Heart className="w-3.5 h-3.5 text-amber-400 fill-amber-400/40" />
-            <span className="h-[1px] w-14 bg-gradient-to-l from-transparent to-amber-400/60" />
-          </div>
-
-          {/* Inviting Parents Notice */}
-          {invitation.toggles.showParents !== false && (
-            <ScrollReveal delay={1.8}>
-              <div className="text-center my-4 space-y-1">
-                <p
-                  className={`${parentsFont} ${parentsSize} font-semibold`}
-                  style={{
-                    color: typo?.parentsColor || '#ffffff',
-                    ...getFontFamilyStyle(typo?.parentsFontFamily),
-                  }}
-                >
-                  {invitation.groomParents}
-                </p>
-                <span className="text-xs text-amber-300/80 font-tajawal">يتشرفون بمشاركة</span>
-                <p
-                  className={`${parentsFont} ${parentsSize} font-semibold`}
-                  style={{
-                    color: typo?.parentsColor || '#ffffff',
-                    ...getFontFamilyStyle(typo?.parentsFontFamily),
-                  }}
-                >
-                  {invitation.brideParents}
-                </p>
-                <p
-                  className="text-xs sm:text-sm pt-2 max-w-sm mx-auto font-tajawal leading-relaxed"
-                  style={{ color: typo?.welcomeColor || '#fef3c7' }}
-                >
-                  {invitation.welcomeMessage}
-                </p>
-              </div>
-            </ScrollReveal>
-          )}
-
-          {/* Event Title Badge */}
-          <ScrollReveal delay={2.3}>
-            <div className="my-4 text-center">
-              <span className="inline-block px-5 py-1.5 rounded-full bg-gradient-to-r from-amber-600/30 via-amber-500/30 to-amber-600/30 border border-amber-400/40 text-amber-200 text-xs sm:text-sm font-bold font-cairo shadow-inner tracking-wider">
-                {invitation.eventTitle}
-              </span>
-            </div>
-          </ScrollReveal>
-
-          {/* Couple Names inside a Luminous Circular Medallion */}
-          <ScrollReveal delay={2.8}>
-            <div className="relative my-7 py-7 px-4 rounded-[60px] bg-gradient-to-b from-amber-500/10 via-amber-950/30 to-amber-500/10 border border-amber-400/35 text-center shadow-[inset_0_0_30px_rgba(251,191,36,0.12)]">
-              <h2
-                className={`${namesFont} ${namesSize} font-bold leading-tight drop-shadow-md`}
+          {/* FREE-FLOWING COUPLE NAMES (Zero framing boxes) */}
+          <ScrollReveal delay={0.7}>
+            <div className="py-4 space-y-2">
+              <h1
+                className={`${namesFont} text-4xl sm:text-5xl md:text-6xl font-bold tracking-wide drop-shadow-[0_4px_20px_rgba(212,175,106,0.35)]`}
                 style={{
-                  color: typo?.namesColor || '#fbbf24',
+                  color: typo?.namesColor || '#f6dfb2',
                   ...getFontFamilyStyle(typo?.namesFontFamily),
                 }}
               >
                 {invitation.groomName}
-              </h2>
-              <div className="my-2.5 flex items-center justify-center gap-3">
-                <span className="w-10 h-[1px] bg-amber-400/40" />
-                <span className="text-amber-300 font-ruqaa text-2xl">&</span>
-                <span className="w-10 h-[1px] bg-amber-400/40" />
+              </h1>
+
+              <div className="flex items-center justify-center gap-3 py-1">
+                <span className="w-12 h-[1px] bg-gradient-to-r from-transparent to-[#d4af6a]/60" />
+                <span className="text-[#d4af6a] font-ruqaa text-2xl sm:text-3xl">&</span>
+                <span className="w-12 h-[1px] bg-gradient-to-l from-transparent to-[#d4af6a]/60" />
               </div>
-              <h2
-                className={`${namesFont} ${namesSize} font-bold leading-tight drop-shadow-md`}
+
+              <h1
+                className={`${namesFont} text-4xl sm:text-5xl md:text-6xl font-bold tracking-wide drop-shadow-[0_4px_20px_rgba(212,175,106,0.35)]`}
                 style={{
-                  color: typo?.namesColor || '#fbbf24',
+                  color: typo?.namesColor || '#f6dfb2',
                   ...getFontFamilyStyle(typo?.namesFontFamily),
                 }}
               >
                 {invitation.brideName}
-              </h2>
+              </h1>
             </div>
           </ScrollReveal>
 
-          {/* Date & Time Capsule */}
-          <ScrollReveal delay={3.5}>
-            <div className="my-6 p-4 rounded-3xl bg-neutral-900/80 border border-amber-500/30 text-center max-w-sm mx-auto shadow-md">
-              <div className="text-base sm:text-lg font-bold text-amber-300 font-cairo mb-1">
-                {dateFormatted.dayName}، {dateFormatted.numericDate}
+          <ScrollReveal delay={1.0}>
+            <p className="text-xs sm:text-sm text-[#f9e7ec]/80 font-tajawal max-w-sm mx-auto leading-relaxed">
+              يتشرفون بدعوتكم لمشاركتهم بهجة العمر وعقد القران المبارك
+            </p>
+          </ScrollReveal>
+
+          {/* Scroll Down Cue */}
+          <div className="pt-2 flex flex-col items-center gap-1 opacity-70 animate-bounce">
+            <span className="text-[10px] tracking-wider text-[#d4af6a]">اسحب للأسفل</span>
+            <ChevronDown className="w-3.5 h-3.5 text-[#d4af6a]" />
+          </div>
+        </header>
+
+        {/* 2. VERSE / دعاء (Pure text floating with jewelry diamonds) */}
+        {invitation.toggles.showVerse !== false && (
+          <ScrollReveal delay={1.2}>
+            <section className="py-6 space-y-3">
+              {/* Jewel Flourish Icon */}
+              <div className="flex justify-center">
+                <svg className="w-6 h-6 text-[#d4af6a]" viewBox="0 0 26 26" fill="none">
+                  <polygon points="13,2 24,13 13,24 2,13" stroke="currentColor" strokeWidth="1.5" />
+                  <polygon points="13,7 19,13 13,19 7,13" fill="#eec3c9" opacity="0.6" />
+                </svg>
               </div>
-              {invitation.eventDateHijri && (
-                <div className="text-xs text-amber-200/80 font-tajawal mb-1">
-                  الموافق: {invitation.eventDateHijri}
+
+              <p
+                className={`${verseFont} ${verseSize} leading-loose max-w-md mx-auto text-[#fdf6f0] drop-shadow`}
+                style={{
+                  color: typo?.verseColor || '#fef3c7',
+                  ...getFontFamilyStyle(typo?.verseFontFamily),
+                }}
+              >
+                {invitation.headerVerse}
+              </p>
+
+              {invitation.verseSource && (
+                <span className="text-[11px] text-[#d4af6a]/90 font-tajawal block">
+                  — {invitation.verseSource} —
+                </span>
+              )}
+            </section>
+          </ScrollReveal>
+        )}
+
+        {/* 3. FAMILIES INVITATION (Open dual columns with center wedding jewel) */}
+        {invitation.toggles.showParents !== false && (
+          <ScrollReveal delay={1.4}>
+            <section className="py-6 border-y border-[#d4af6a]/20 space-y-6">
+              <h4 className="text-xs font-bold text-[#d4af6a] uppercase tracking-widest">
+                دعوة كريمة
+              </h4>
+
+              <div className="grid grid-cols-1 sm:grid-cols-11 gap-3 items-center">
+                {/* Groom's Family */}
+                <div className="sm:col-span-5 text-center sm:text-right space-y-1">
+                  <span className="text-[11px] text-[#d4af6a]/80 block font-semibold">أهل العريس</span>
+                  <p 
+                    className={`${parentsFont} ${parentsSize} font-bold text-white`}
+                    style={{ ...getFontFamilyStyle(typo?.parentsFontFamily) }}
+                  >
+                    {invitation.groomParents || 'والدا العريس'}
+                  </p>
+                </div>
+
+                {/* Center Jewel Icon */}
+                <div className="sm:col-span-1 flex justify-center py-2 sm:py-0">
+                  <svg className="w-7 h-7 text-[#d4af6a]" viewBox="0 0 26 26" fill="none">
+                    <circle cx="13" cy="15" r="7" stroke="#d4af6a" strokeWidth="2" />
+                    <polygon points="9,8 13,4 17,8 13,12" fill="#f7dfe4" stroke="#d4af6a" strokeWidth="0.8" />
+                  </svg>
+                </div>
+
+                {/* Bride's Family */}
+                <div className="sm:col-span-5 text-center sm:text-left space-y-1">
+                  <span className="text-[11px] text-[#d4af6a]/80 block font-semibold">أهل العروس</span>
+                  <p 
+                    className={`${parentsFont} ${parentsSize} font-bold text-white`}
+                    style={{ ...getFontFamilyStyle(typo?.parentsFontFamily) }}
+                  >
+                    {invitation.brideParents || 'والدا العروس'}
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-xs sm:text-sm text-[#f9e7ec]/90 max-w-md mx-auto leading-relaxed pt-2">
+                {invitation.welcomeMessage}
+              </p>
+            </section>
+          </ScrollReveal>
+        )}
+
+        {/* 4. DATE & TIME (The Authentic Tear-off Calendar Sheet like Halaheel demo-ring) */}
+        <ScrollReveal delay={1.6}>
+          <section className="py-6 space-y-4">
+            <h3 className="text-xl sm:text-2xl font-bold font-ruqaa text-[#d4af6a] flex items-center justify-center gap-2">
+              <span>حفظ الموعد</span>
+              <span>💍</span>
+            </h3>
+
+            {/* Tear-off Calendar Pad Widget */}
+            <div className="max-w-[270px] mx-auto rounded-3xl overflow-hidden bg-[#1f0b09]/90 border border-[#d4af6a]/50 shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-md">
+              
+              {/* Calendar Top Header with Golden Pins */}
+              <div className="relative py-3 px-4 bg-gradient-to-r from-[#d4af6a] via-[#e5c07b] to-[#b0546e] text-[#200806] font-bold text-sm text-center shadow-md">
+                <span className="absolute -top-1.5 right-1/3 w-2 h-4 rounded bg-white/50 shadow-sm" />
+                <span className="absolute -top-1.5 left-1/3 w-2 h-4 rounded bg-white/50 shadow-sm" />
+                <span>{dateFormatted.monthName} {dateFormatted.year} م</span>
+              </div>
+
+              {/* Calendar Day & Time Body */}
+              <div className="p-6 text-center space-y-1">
+                <div className="text-sm font-bold text-[#f9e7ec]/80">{dateFormatted.dayName}</div>
+                <div className="text-5xl sm:text-6xl font-extrabold font-ruqaa text-[#d4af6a] leading-tight my-1">
+                  {toArabicNumerals(dateFormatted.dayNumber)}
+                </div>
+                {invitation.eventDateHijri && (
+                  <div className="text-[11px] text-[#f9e7ec]/70 font-semibold">
+                    الموافق {invitation.eventDateHijri}
+                  </div>
+                )}
+                <div className="text-xs font-bold text-[#f9e7ec] pt-2 flex items-center justify-center gap-1">
+                  <Clock className="w-3.5 h-3.5 text-[#d4af6a]" />
+                  <span>{invitation.timeFormatted}</span>
+                </div>
+              </div>
+
+              {/* Instant Calendar Action Footer */}
+              <div className="border-t border-dashed border-[#d4af6a]/40 p-4 bg-black/20 text-center space-y-2.5">
+                <p className="text-[11px] font-semibold text-[#f9e7ec]/80">
+                  📲 أضف الموعد لتقويم هاتفك بنقرة واحدة
+                </p>
+                <div className="flex items-center justify-center gap-2">
+                  <a
+                    href={googleUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#d4af6a] bg-white/10 text-[#f9e7ec] text-xs font-bold hover:bg-[#d4af6a] hover:text-[#200806] transition-all"
+                  >
+                    <CalendarIcon className="w-3.5 h-3.5" />
+                    <span>Google Calendar</span>
+                  </a>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      downloadAppleIcsFile({
+                        title: `${invitation.eventTitle} - ${invitation.groomName} & ${invitation.brideName}`,
+                        description: invitation.welcomeMessage,
+                        location: `${invitation.venueName} - ${invitation.venueCity}`,
+                        startDate: invitation.eventDate,
+                      });
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#d4af6a] bg-white/10 text-[#f9e7ec] text-xs font-bold hover:bg-[#d4af6a] hover:text-[#200806] transition-all cursor-pointer"
+                  >
+                    <span>Apple Calendar</span>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </section>
+        </ScrollReveal>
+
+        {/* 5. COUNTDOWN TIMER */}
+        {invitation.toggles.showCountdown && (
+          <ScrollReveal delay={1.8}>
+            <section className="py-4">
+              <CountdownTimer targetDate={invitation.eventDate} theme="gold" />
+            </section>
+          </ScrollReveal>
+        )}
+
+        {/* 6. TIMELINE (Order of Events) */}
+        {invitation.timeline && invitation.timeline.length > 0 && (
+          <ScrollReveal delay={2.0}>
+            <section className="py-6 space-y-6">
+              <div className="text-center space-y-1">
+                <span className="text-[11px] font-bold text-[#d4af6a] uppercase tracking-wider">مراسم الفرح</span>
+                <h3 className="text-xl sm:text-2xl font-bold font-cairo text-white">الجدول الزمني للحفل</h3>
+              </div>
+
+              <div className="relative max-w-sm mx-auto space-y-5 before:absolute before:inset-0 before:right-6 before:w-0.5 before:bg-gradient-to-b before:from-[#d4af6a] before:via-[#d4af6a]/40 before:to-transparent">
+                {invitation.timeline.map((item, idx) => (
+                  <div key={item.id || idx} className="relative flex items-center gap-4 pr-1">
+                    <div className="w-10 h-10 rounded-full border-2 border-[#d4af6a] bg-[#1e0a08] flex items-center justify-center text-[#d4af6a] shadow-lg shrink-0 z-10">
+                      {item.icon === 'dinner' ? <Utensils className="w-4 h-4" /> : item.icon === 'coffee' ? <Coffee className="w-4 h-4" /> : <Sparkles className="w-4 h-4" />}
+                    </div>
+                    <div className="text-right">
+                      <span className="text-xs font-bold text-[#d4af6a] block">{item.time}</span>
+                      <span className="text-sm font-semibold text-white">{item.label}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </ScrollReveal>
+        )}
+
+        {/* 7. VENUE & LOCATION MAP */}
+        {invitation.toggles.showLocation && (
+          <ScrollReveal delay={2.2}>
+            <section className="py-6 space-y-4">
+              <div className="text-center space-y-1">
+                <span className="text-[11px] font-bold text-[#d4af6a] uppercase tracking-wider">مكان الحفل</span>
+                <h3 className="text-xl sm:text-2xl font-bold font-cairo text-white">{invitation.venueName}</h3>
+                {invitation.venueHall && (
+                  <p className="text-xs text-amber-200/90 font-semibold">{invitation.venueHall}</p>
+                )}
+                <p className="text-xs text-neutral-300">{invitation.venueCity} {invitation.venueAddress && `• ${invitation.venueAddress}`}</p>
+              </div>
+
+              {invitation.googleMapsUrl && (
+                <div className="pt-2">
+                  <a
+                    href={invitation.googleMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-[#d4af6a] to-[#c59e56] text-[#200806] font-bold text-xs sm:text-sm shadow-xl hover:scale-105 transition-all"
+                  >
+                    <Navigation className="w-4 h-4" />
+                    <span>فتح الموقع عبر خرائط Google</span>
+                  </a>
                 </div>
               )}
-              <div className="text-xs text-neutral-300 font-tajawal">
-                {invitation.timeFormatted}
-              </div>
-            </div>
+            </section>
           </ScrollReveal>
+        )}
 
-          {/* Live Countdown Timer */}
-          {invitation.toggles.showCountdown && (
-            <ScrollReveal delay={4.2}>
-              <CountdownTimer targetDate={invitation.eventDate} theme="gold" />
-            </ScrollReveal>
-          )}
-
-          {/* Add to Calendar Buttons */}
-          {invitation.toggles.showCalendar && (
-            <ScrollReveal delay={4.8}>
-              <CalendarButtons
-                title={invitation.title}
-                description={invitation.welcomeMessage}
-                location={`${invitation.venueName} - ${invitation.venueCity}`}
-                startDate={invitation.eventDate}
-                theme="gold"
-              />
-            </ScrollReveal>
-          )}
-
-          {/* Venue & Location Map Card */}
-          {invitation.toggles.showLocation && (
-            <ScrollReveal delay={5.5}>
-              <LocationCard
-                venueName={invitation.venueName}
-                venueHall={invitation.venueHall}
-                venueCity={invitation.venueCity}
-                venueAddress={invitation.venueAddress}
-                googleMapsUrl={invitation.googleMapsUrl}
-                theme="gold"
-              />
-            </ScrollReveal>
-          )}
-
-          {/* Timeline Section */}
-          {invitation.toggles.showTimeline && invitation.timeline && invitation.timeline.length > 0 && (
-            <ScrollReveal delay={6.2}>
-              <TimelineSection items={invitation.timeline} theme="gold" textColor={typo?.timelineColor} />
-            </ScrollReveal>
-          )}
-
-          {/* Dress Code Notice */}
-          {invitation.toggles.showDressCode && (
-            <ScrollReveal delay={6.8}>
-              <div className="my-5 p-3.5 rounded-2xl bg-amber-950/40 border border-amber-400/30 flex items-center justify-center gap-2 text-xs sm:text-sm font-tajawal text-neutral-100 max-w-sm mx-auto font-medium">
-                <Shirt className="w-4 h-4 text-amber-300 shrink-0" />
-                <span>{invitation.toggles.dressCodeText}</span>
+        {/* 8. KIND ADVISORIES (No Photography & Children) */}
+        <ScrollReveal delay={2.4}>
+          <section className="py-4 space-y-3">
+            {invitation.toggles.showNoPhotography && (
+              <div className="flex items-center justify-center gap-2.5 text-xs text-amber-200/90 py-2">
+                <CameraOff className="w-4 h-4 text-[#d4af6a] shrink-0" />
+                <span>نرجو التكرم بعدم التصوير بالهواتف حفظاً للخصوصية ولكم جزيل الشكر</span>
               </div>
-            </ScrollReveal>
-          )}
+            )}
 
-          {/* Strict No-Photography Warning */}
-          {invitation.toggles.showNoPhotography && (
-            <ScrollReveal delay={7.2}>
-              <NoPhotographyAdvisory
-                text={invitation.toggles.noPhotographyText}
-                theme="gold"
-              />
-            </ScrollReveal>
-          )}
-
-          {/* Children Advisory */}
-          {invitation.toggles.showChildrenAdvisory && (
-            <ScrollReveal delay={7.6}>
-              <ChildrenAdvisory
-                text={invitation.toggles.childrenAdvisoryText}
-                theme="gold"
-              />
-            </ScrollReveal>
-          )}
-
-          {/* RSVP Button */}
-          {invitation.toggles.showRsvp && (
-            <ScrollReveal delay={8.2}>
-              <div className="mt-8 pt-4 border-t border-amber-400/35">
-                <RsvpButton
-                  invitationId={invitation.id}
-                  slug={invitation.slug}
-                  initialCount={invitation.rsvpCount}
-                  theme="gold"
-                  isHostView={isHostView}
-                />
+            {invitation.toggles.showChildrenAdvisory && (
+              <div className="flex items-center justify-center gap-2.5 text-xs text-amber-200/90 py-1">
+                <Baby className="w-4 h-4 text-[#d4af6a] shrink-0" />
+                <span>{invitation.toggles.childrenAdvisoryText || 'جنة الأطفال منازلهم لتكتمل فرحتنا بوجودكم'}</span>
               </div>
-            </ScrollReveal>
-          )}
+            )}
+          </section>
+        </ScrollReveal>
 
-          {/* Share Action */}
-          {invitation.toggles.showShare !== false && (
-            <ScrollReveal delay={8.8}>
-              <ShareAction
-                title={invitation.title}
-                slug={invitation.slug}
-                groomName={invitation.groomName}
-                brideName={invitation.brideName}
-                theme="gold"
-              />
-            </ScrollReveal>
-          )}
+        {/* 9. RSVP CARD (Frosted Glass Container at bottom) */}
+        {invitation.toggles.showRsvp && (
+          <ScrollReveal delay={2.6}>
+            <section className="pt-4 pb-10">
+              <div className="rounded-3xl bg-[#1e0a08]/80 border border-[#d4af6a]/50 p-6 sm:p-8 shadow-2xl backdrop-blur-xl space-y-6">
+                
+                <div className="space-y-1">
+                  <div className="flex justify-center text-[#d4af6a] text-lg">💍</div>
+                  <h3 className="text-2xl font-bold font-ruqaa text-[#d4af6a]">تأكيد الحضور</h3>
+                  <p className="text-xs text-[#f9e7ec]/70">يسعدنا ويشرفنا معرفة قرار حضوركم لمشاركتنا فرحتنا</p>
+                </div>
 
-          {/* Footer Branding */}
-          <FooterContact theme="gold" />
-        </div>
+                {rsvpSubmitted ? (
+                  <div className="py-8 space-y-3 text-center animate-fadeIn">
+                    <div className="w-14 h-14 mx-auto rounded-full bg-emerald-500/20 border border-emerald-400/50 flex items-center justify-center text-emerald-300">
+                      <Check className="w-7 h-7" />
+                    </div>
+                    <h4 className="text-lg font-bold text-emerald-300 font-cairo">تم تسجيل ردكم بكل سرور</h4>
+                    <p className="text-xs text-neutral-300 font-tajawal">شاكرين ومقدرين لكم تواصلكم ومشاركتكم فرحتنا 💍</p>
+                  </div>
+                ) : (
+                  <form onSubmit={handleRsvpSubmit} className="space-y-4 text-right">
+                    <div>
+                      <label className="block text-xs font-bold text-[#d4af6a] mb-1">اسم الضيف الكريم</label>
+                      <input
+                        type="text"
+                        required
+                        value={guestName}
+                        onChange={(e) => setGuestName(e.target.value)}
+                        placeholder="الاسم الثلاثي..."
+                        className="w-full px-4 py-2.5 rounded-xl bg-white/10 border border-[#d4af6a]/40 text-white text-xs placeholder:text-white/40 focus:outline-none focus:border-[#d4af6a]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-[#d4af6a] mb-1.5">هل ستشرفنا بالحضور؟</label>
+                      <div className="grid grid-cols-3 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setRsvpStatus('yes')}
+                          className={`py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                            rsvpStatus === 'yes'
+                              ? 'bg-[#d4af6a] text-[#200806] border-[#d4af6a] shadow-md'
+                              : 'bg-white/5 border-white/20 text-[#f9e7ec] hover:border-[#d4af6a]'
+                          }`}
+                        >
+                          نعم، سأحضر
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setRsvpStatus('no')}
+                          className={`py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                            rsvpStatus === 'no'
+                              ? 'bg-[#d4af6a] text-[#200806] border-[#d4af6a] shadow-md'
+                              : 'bg-white/5 border-white/20 text-[#f9e7ec] hover:border-[#d4af6a]'
+                          }`}
+                        >
+                          أعتذر
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setRsvpStatus('maybe')}
+                          className={`py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                            rsvpStatus === 'maybe'
+                              ? 'bg-[#d4af6a] text-[#200806] border-[#d4af6a] shadow-md'
+                              : 'bg-white/5 border-white/20 text-[#f9e7ec] hover:border-[#d4af6a]'
+                          }`}
+                        >
+                          ربما
+                        </button>
+                      </div>
+                    </div>
+
+                    {rsvpStatus === 'yes' && (
+                      <div>
+                        <label className="block text-xs font-bold text-[#d4af6a] mb-1">
+                          عدد المرافقين (بالإضافة إليك)
+                        </label>
+                        <div className="flex items-center justify-center gap-4 py-1">
+                          <button
+                            type="button"
+                            onClick={() => setCompanionCount(Math.max(0, companionCount - 1))}
+                            className="w-8 h-8 rounded-full border border-[#d4af6a]/50 bg-white/10 text-white font-bold text-base flex items-center justify-center cursor-pointer"
+                          >
+                            −
+                          </button>
+                          <span className="text-base font-bold text-[#d4af6a] min-w-[24px] text-center">
+                            {companionCount}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setCompanionCount(companionCount + 1)}
+                            className="w-8 h-8 rounded-full border border-[#d4af6a]/50 bg-white/10 text-white font-bold text-base flex items-center justify-center cursor-pointer"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    <div>
+                      <label className="block text-xs font-bold text-[#d4af6a] mb-1">كلمة أو دعوة مباركة للعروسين 💍</label>
+                      <textarea
+                        rows={2}
+                        value={guestMessage}
+                        onChange={(e) => setGuestMessage(e.target.value)}
+                        placeholder="أطيب التمنيات للعروسين..."
+                        className="w-full px-4 py-2 rounded-xl bg-white/10 border border-[#d4af6a]/40 text-white text-xs placeholder:text-white/40 focus:outline-none focus:border-[#d4af6a]"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isSubmittingRsvp}
+                      className="w-full py-3 rounded-full bg-gradient-to-r from-[#d4af6a] to-[#c59e56] text-[#200806] font-bold text-sm shadow-xl hover:scale-102 transition-all cursor-pointer disabled:opacity-50"
+                    >
+                      {isSubmittingRsvp ? 'جاري الإرسال...' : 'إرسال تأكيد الحضور'}
+                    </button>
+                  </form>
+                )}
+
+              </div>
+            </section>
+          </ScrollReveal>
+        )}
+
       </div>
-
-      {/* Floating Ambient Music Player */}
-      {invitation.toggles.showMusic && (
-        <AmbientMusicPlayer
-          musicUrl={invitation.toggles.musicUrl}
-          theme="gold"
-        />
-      )}
     </div>
   );
 };
