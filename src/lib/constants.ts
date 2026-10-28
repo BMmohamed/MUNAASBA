@@ -369,3 +369,50 @@ export const INITIAL_INVITATIONS: InvitationData[] = [
     updatedAt: '2026-10-21T12:00:00Z',
   },
 ];
+
+export interface WeddingAudioPreset {
+  id: string;
+  title: string;
+  subtitle: string;
+  category: string;
+  url: string;
+}
+
+export const WEDDING_AUDIO_PRESETS: WeddingAudioPreset[] = [
+  {
+    id: 'serene-view',
+    title: 'زفة ملكية هادئة (Serene View)',
+    subtitle: 'بيانو ووتريات فخمة مناسبة لجميع كروت الأفراح',
+    category: 'كلاسيكي ملكي',
+    url: 'https://assets.mixkit.co/music/preview/mixkit-serene-view-443.mp3',
+  },
+  {
+    id: 'gentle-piano',
+    title: 'بيانو رومانسي ناعم (Gentle Romance)',
+    subtitle: 'عزف بيانو هادئ وعذب يبعث على الراحة والرقي',
+    category: 'رومانسي هادئ',
+    url: 'https://assets.mixkit.co/music/preview/mixkit-gentle-piano-love-202.mp3',
+  },
+  {
+    id: 'desert-oud',
+    title: 'عود شرقي وتراث أصيل (Desert Oud)',
+    subtitle: 'تقاسيم عود هادئة مع نغمات شرقية أصيلة ودافئة',
+    category: 'تراثي شرقي',
+    url: 'https://assets.mixkit.co/music/preview/mixkit-oriental-desert-oud-529.mp3',
+  },
+  {
+    id: 'wedding-waltz',
+    title: 'فالس ملكي كلاسيكي (Wedding Waltz)',
+    subtitle: 'ألحان فالس فارهة مناسبة للأعراس الكبرى وقاعات الفنادق',
+    category: 'ملكي فاخر',
+    url: 'https://assets.mixkit.co/music/preview/mixkit-wedding-waltz-238.mp3',
+  },
+  {
+    id: 'celestial-stars',
+    title: 'ليلة النجوم والأنغام الفاخرة (Celestial Stars)',
+    subtitle: 'موسيقى سينمائية ساحرة مع لمسات سحرية حالمة',
+    category: 'حالم وعصري',
+    url: 'https://assets.mixkit.co/music/preview/mixkit-celestial-stars-112.mp3',
+  },
+];
+

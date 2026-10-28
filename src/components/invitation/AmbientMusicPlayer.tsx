@@ -16,8 +16,14 @@ export const AmbientMusicPlayer: React.FC<AmbientMusicPlayerProps> = ({
   const [isReady, setIsReady] = useState<boolean>(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  const effectiveUrl =
+    musicUrl && musicUrl.trim() !== ''
+      ? musicUrl.trim()
+      : 'https://assets.mixkit.co/music/preview/mixkit-serene-view-443.mp3';
+
   useEffect(() => {
-    const audio = new Audio(musicUrl);
+    if (!effectiveUrl) return;
+    const audio = new Audio(effectiveUrl);
     audio.loop = true;
     audio.volume = 0.35; // gentle ambient volume
     audioRef.current = audio;
@@ -30,7 +36,7 @@ export const AmbientMusicPlayer: React.FC<AmbientMusicPlayerProps> = ({
       audio.pause();
       audioRef.current = null;
     };
-  }, [musicUrl]);
+  }, [effectiveUrl]);
 
   const togglePlayback = async () => {
     if (!audioRef.current) return;

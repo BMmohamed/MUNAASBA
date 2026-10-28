@@ -18,6 +18,11 @@ import {
   X,
   FileText,
   Volume2,
+  VolumeX,
+  Music,
+  Play,
+  Pause,
+  Upload,
   Share2,
   ShieldCheck,
   ChevronLeft,
@@ -38,7 +43,11 @@ import {
 } from 'lucide-react';
 import { InvitationData, InvitationTemplateId, TimelineItem } from '@/types/invitation';
 import { TemplateRenderer } from '@/components/templates/TemplateRenderer';
-import { QURANIC_AND_POETIC_PRESETS, INITIAL_INVITATIONS } from '@/lib/constants';
+import {
+  QURANIC_AND_POETIC_PRESETS,
+  INITIAL_INVITATIONS,
+  WEDDING_AUDIO_PRESETS,
+} from '@/lib/constants';
 import { toArabicNumerals } from '@/lib/date-utils';
 
 export const MASTER_TEMPLATE_IDS = ['inv-1', 'inv-2', 'inv-3', 'inv-4', 'inv-5'];
@@ -74,6 +83,11 @@ export default function AdminDashboardPage() {
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [editorTab, setEditorTab] = useState<'editor' | 'preview'>('editor');
+
+  // Audio Player & Upload State in Admin
+  const [isUploadingAudio, setIsUploadingAudio] = useState<boolean>(false);
+  const [isPlayingAdminAudio, setIsPlayingAdminAudio] = useState<boolean>(false);
+  const adminAudioRef = React.useRef<HTMLAudioElement | null>(null);
 
   // Supabase Database Connection State
   const [dbStatus, setDbStatus] = useState<{
@@ -271,6 +285,95 @@ ${url}`;
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  const stopAdminAudio = () => {
+    if (adminAudioRef.current) {
+      adminAudioRef.current.pause();
+      adminAudioRef.current = null;
+    }
+    setIsPlayingAdminAudio(false);
+  };
+
+  const toggleAdminAudioPlay = (url?: string) => {
+    const targetUrl = url || editingInv?.toggles?.musicUrl;
+    if (!targetUrl || targetUrl.trim() === '') {
+      showToast('يرجى اختيار أو رفع أو إدخال رابط مقطع صوتي أولاً');
+      return;
+    }
+
+    if (adminAudioRef.current) {
+      if (isPlayingAdminAudio) {
+        stopAdminAudio();
+        return;
+      }
+    }
+
+    try {
+      const audio = new Audio(targetUrl);
+      adminAudioRef.current = audio;
+      audio.volume = 0.5;
+      audio
+        .play()
+        .then(() => {
+          setIsPlayingAdminAudio(true);
+        })
+        .catch((err) => {
+          console.error('Audio playback error:', err);
+          showToast('تعذر تشغيل المقطع الصوتي، تأكد من صحة الرابط أو الملف');
+          setIsPlayingAdminAudio(false);
+        });
+
+      audio.onended = () => setIsPlayingAdminAudio(false);
+      audio.onerror = () => {
+        setIsPlayingAdminAudio(false);
+        showToast('حدث خطأ أثناء تشغيل الملف الصوتي');
+      };
+    } catch {
+      showToast('تعذر إنشاء مشغل الصوت');
+      setIsPlayingAdminAudio(false);
+    }
+  };
+
+  const handleAudioFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingAudio(true);
+    stopAdminAudio();
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const res = await fetch('/api/upload-audio', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!data.success) {
+        throw new Error(data.error || 'فشل رفع الملف الصوتي');
+      }
+
+      setEditingInv((prev) => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          toggles: {
+            ...prev.toggles!,
+            showMusic: true,
+            musicUrl: data.url,
+          },
+        };
+      });
+
+      showToast(`تم رفع وحفظ المقطع الصوتي بنجاح (${file.name}) 🎵`);
+    } catch (err: any) {
+      showToast(err.message || 'تعذر رفع الملف الصوتي');
+    } finally {
+      setIsUploadingAudio(false);
+      e.target.value = '';
+    }
   };
 
   const openCreateModal = (fromTemplateId: string = 'template-1') => {
@@ -1169,7 +1272,10 @@ ${url}`;
             <div className="flex items-center gap-2 sm:gap-3">
               <button
                 type="button"
-                onClick={() => setIsEditorOpen(false)}
+                onClick={() => {
+                  stopAdminAudio();
+                  setIsEditorOpen(false);
+                }}
                 className="px-3.5 py-2 rounded-xl bg-neutral-900 border border-neutral-800 hover:bg-neutral-800 text-neutral-400 hover:text-neutral-200 text-xs font-cairo font-medium transition-colors"
               >
                 إلغاء
@@ -1185,7 +1291,10 @@ ${url}`;
               </button>
               <button
                 type="button"
-                onClick={() => setIsEditorOpen(false)}
+                onClick={() => {
+                  stopAdminAudio();
+                  setIsEditorOpen(false);
+                }}
                 className="p-2 rounded-xl bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800 transition-colors"
                 title="إغلاق"
               >
@@ -1713,6 +1822,215 @@ ${url}`;
                       >
                         🎯 صيغة 3: موجزة وحاسمة
                       </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Audio / Music Settings Panel */}
+                {editingInv.toggles?.showMusic && (
+                  <div className="mt-4 p-4 rounded-2xl bg-neutral-900/90 border border-amber-500/40 shadow-xl space-y-4">
+                    {/* Header */}
+                    <div className="flex items-center justify-between pb-3 border-b border-neutral-800">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center">
+                          <Music className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <h4 className="text-xs font-bold text-neutral-100 font-cairo">
+                            تخصيص وإضافة مقطع الصوت / الموسيقى الخلفية
+                          </h4>
+                          <p className="text-[10px] text-neutral-400 font-tajawal">
+                            اختر من النغمات الملكية الجاهزة، أو ارفع ملفك الخاص، أو الصق رابطاً مباشراً
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Live Play / Test Button */}
+                      <button
+                        type="button"
+                        onClick={() => toggleAdminAudioPlay()}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-cairo font-bold transition-all shadow-sm ${
+                          isPlayingAdminAudio
+                            ? 'bg-amber-500 text-neutral-950 border-amber-400 animate-pulse'
+                            : 'bg-neutral-800 hover:bg-neutral-700 text-amber-300 border-neutral-700'
+                        }`}
+                        title="تجربة واستماع للمقطع الحالي"
+                      >
+                        {isPlayingAdminAudio ? (
+                          <>
+                            <Pause className="w-3.5 h-3.5 fill-current" />
+                            <span>إيقاف الصوت ⏸</span>
+                          </>
+                        ) : (
+                          <>
+                            <Play className="w-3.5 h-3.5 fill-current" />
+                            <span>استماع وتجربة 🎧</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    {/* Method A: Upload Audio File */}
+                    <div className="p-3 rounded-xl bg-neutral-950/80 border border-neutral-800">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                          <label className="block text-[11px] font-bold text-neutral-200">
+                            📁 رفع ملف صوتي من جهازك (كمبيوتر أو جوال):
+                          </label>
+                          <span className="text-[10px] text-neutral-400">
+                            صيغ مدعومة: MP3, WAV, M4A, AAC, OGG (حتى 25 ميجابايت)
+                          </span>
+                        </div>
+
+                        <label
+                          className={`relative flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold font-cairo transition-all cursor-pointer shrink-0 ${
+                            isUploadingAudio
+                              ? 'bg-neutral-800 text-neutral-400 cursor-not-allowed'
+                              : 'bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-neutral-950 shadow-md shadow-amber-500/20'
+                          }`}
+                        >
+                          <input
+                            type="file"
+                            accept="audio/*"
+                            disabled={isUploadingAudio}
+                            onChange={handleAudioFileUpload}
+                            className="hidden"
+                          />
+                          {isUploadingAudio ? (
+                            <>
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              <span>جاري رفع الصوت...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Upload className="w-3.5 h-3.5" />
+                              <span>اختر ملف صوتي لرفعه</span>
+                            </>
+                          )}
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* Method B: Curated Wedding Audio Presets */}
+                    <div>
+                      <label className="block text-[11px] font-bold text-neutral-300 mb-2">
+                        ✨ أو اختر من مكتبة الزفات والنغمات الملكية الجاهزة:
+                      </label>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {WEDDING_AUDIO_PRESETS.map((preset) => {
+                          const isSelected =
+                            (editingInv.toggles?.musicUrl || '').trim() === preset.url;
+                          return (
+                            <div
+                              key={preset.id}
+                              onClick={() => {
+                                setEditingInv({
+                                  ...editingInv,
+                                  toggles: {
+                                    ...editingInv.toggles!,
+                                    musicUrl: preset.url,
+                                  },
+                                });
+                                stopAdminAudio();
+                              }}
+                              className={`p-2.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-2 ${
+                                isSelected
+                                  ? 'bg-amber-500/15 border-amber-400 text-amber-200 ring-1 ring-amber-400/40'
+                                  : 'bg-neutral-950 border-neutral-800 hover:border-neutral-700 text-neutral-300'
+                              }`}
+                            >
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-xs font-bold font-cairo truncate">
+                                    {preset.title}
+                                  </span>
+                                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-neutral-800 text-neutral-400">
+                                    {preset.category}
+                                  </span>
+                                </div>
+                                <p className="text-[10px] text-neutral-400 font-tajawal truncate mt-0.5">
+                                  {preset.subtitle}
+                                </p>
+                              </div>
+
+                              <div className="flex items-center gap-1 shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleAdminAudioPlay(preset.url);
+                                  }}
+                                  className="p-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-amber-300 transition-colors"
+                                  title="استماع سريع"
+                                >
+                                  <Play className="w-3 h-3 fill-current" />
+                                </button>
+                                {isSelected && (
+                                  <span className="text-[10px] font-bold text-amber-400 px-1.5 py-0.5 rounded bg-amber-400/10">
+                                    المُختار ✔
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Method C: Custom Audio URL */}
+                    <div className="pt-1">
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="block text-[11px] font-bold text-neutral-300">
+                          🔗 أو الصق رابطاً صوتياً خارجياً مباشراً (URL):
+                        </label>
+                        {editingInv.toggles?.musicUrl && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              stopAdminAudio();
+                              setEditingInv({
+                                ...editingInv,
+                                toggles: {
+                                  ...editingInv.toggles!,
+                                  musicUrl: '',
+                                },
+                              });
+                            }}
+                            className="text-[10px] text-rose-400 hover:underline"
+                          >
+                            مسح الرابط الحالي ✕
+                          </button>
+                        )}
+                      </div>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          dir="ltr"
+                          value={editingInv.toggles?.musicUrl || ''}
+                          onChange={(e) => {
+                            stopAdminAudio();
+                            setEditingInv({
+                              ...editingInv,
+                              toggles: {
+                                ...editingInv.toggles!,
+                                musicUrl: e.target.value,
+                              },
+                            });
+                          }}
+                          placeholder="https://example.com/audio.mp3 أو /audio/..."
+                          className="w-full px-3 py-2 rounded-xl bg-neutral-950 border border-neutral-800 text-xs text-neutral-200 focus:outline-none focus:border-amber-500 font-mono"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Mobile Autoplay notice */}
+                    <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-200/90 font-tajawal flex items-start gap-2">
+                      <Volume2 className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                      <div>
+                        <span className="font-bold">تنويه تشغيل الصوت على الهواتف الذكية:</span> تفرض
+                        متصفحات الجوال (Safari / Chrome) تفاعل المستخدم بالضغط على زر تشغيل الصوت العائم
+                        لبدء عزف النغم. الزر العائم في بطاقة الدعوة جاهز ومفعل للزائر تلقائياً.
+                      </div>
                     </div>
                   </div>
                 )}
